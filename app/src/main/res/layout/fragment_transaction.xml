@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relativeLayout_recent"
+    android:layout_width="match_parent"
+    android:layout_height="76dp"
+    android:elevation="8dp"
+    android:padding="12dp">
+
+    <ImageView
+        android:id="@+id/icon_lightning"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/rounded_background9"
+        android:padding="8dp"
+        android:src="@drawable/lightning_bolt" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/textView_recent1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/icon_lightning"
+            android:fontFamily="@font/montserratalternatess_bold"
+            android:text="Electricity"
+            android:textColor="@color/black"
+            android:textSize="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView_recent1"
+            android:layout_toEndOf="@+id/icon_lightning"
+            android:fontFamily="@font/montserratalternatess_regular"
+            android:text="Details"
+            android:textSize="16dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="end"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView_recent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:fontFamily="@font/montserratalternatess_bold"
+            android:text="₱1,000"
+            android:textColor="@color/black"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView_recent"
+            android:layout_alignParentEnd="true"
+            android:fontFamily="@font/montserratalternatess_regular"
+            android:text="Jun 27"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

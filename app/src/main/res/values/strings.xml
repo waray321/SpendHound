@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Spend Hound</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="hint_username">Email Address</string>
+    <string name="hint_password">Password</string>
+    <string name="text_keep_logged_in">Keep me logged in</string>
+    <string name="text_sign_up">Sign up here</string>
+    <string name="text_no_account">Don\'t have an account? </string>
+    <string name="default_web_client_id">1036031691832-bj2a27go248odv58gfkcqb7dfudl65k8.apps.googleusercontent.com</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="transactionTypes_String">
+        <item>Select a transaction</item>
+        <item>Electricity Bill</item>
+        <item>Water Bill</item>
+        <item>Mineral Water</item>
+        <item>Groceries</item>
+        <item>House Necessity</item>
+        <item>Others</item>
+    </string-array>
+</resources>

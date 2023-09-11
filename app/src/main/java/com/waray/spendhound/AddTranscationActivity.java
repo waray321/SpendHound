@@ -1,0 +1,326 @@
+package com.waray.spendhound;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
+import android.widget.Spinner;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import org.json.JSONArray;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+public class AddTranscationActivity extends AppCompatActivity {
+
+    private LinearLayout container;
+    private Button btnAdd;
+    private Button addTransactionbtn;
+    private Spinner payorSpinner;
+    private Spinner transactionTypeSpinner;
+    private String transactionType;
+    public String paymentAmountStr;
+    private ProgressBar progressBar;
+    public List<String> usernames;
+    public FirebaseAuth mAuth;
+    private List<View> rows;
+    public List<String> payorsList;
+    public List<Integer> amountsPaidList;
+    public Integer totalAmaountPaid = 0;
+    public Integer paymentAmount;
+    public String usernamePost;
+    private Integer numberOfUsers;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_transcation);
+
+        // Get the Firebase Authentication instance
+        mAuth = DeclareDatabase.getAuth();
+
+        // Check the user's authentication state
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            // User is not authenticated, you can redirect them to the login activity
+            Intent intent = new Intent(AddTranscationActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish(); // Finish this activity to prevent returning to it when pressing back
+            return;
+        }
+
+        transactionTypeSpinner = findViewById(R.id.transactionType);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.transactionTypes_String, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        transactionTypeSpinner.setAdapter(adapter);
+
+        container = findViewById(R.id.container);
+        btnAdd = findViewById(R.id.btnAdd);
+
+        rows = new ArrayList<>();
+
+        addRow();
+
+        progressBar = findViewById(R.id.progressBar);
+
+        btnAdd.setOnClickListener(v -> {
+            // Check if the number of rows added is less than the number of users
+            if (rows.size() < usernames.size() - 1) {
+                addRow();
+            } else {
+                // Display a message or handle the case where you can't add more rows
+                Toast.makeText(AddTranscationActivity.this, "You can't add more rows.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        addTransactionbtn = findViewById(R.id.addTransactionbtn);
+
+        addTransactionbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addTransaction();
+            }
+        });
+
+    }
+
+    private void addRow() {
+        // Get a reference to the Firebase Realtime Database
+        DatabaseReference databaseReference = DeclareDatabase.getDatabaseReference();
+
+        // Retrieve usernames from the database and populate the spinner
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                usernames = new ArrayList<>();
+                usernames.add("Select a Payor"); // Add the default value
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    String username = userSnapshot.child("username").getValue(String.class);
+                    if (username != null) {
+                        usernames.add(username);
+                    }
+                }
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        AddTranscationActivity.this, // Replace with your activity's name
+                        android.R.layout.simple_spinner_item,
+                        usernames
+                );
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                payorSpinner.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle database read error
+                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                Log.e("FirebaseDatabase", errorMessage);
+
+                // You can also display a Toast message to inform the user
+                Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View row = inflater.inflate(R.layout.row_layout, container, false);
+
+        payorSpinner = row.findViewById(R.id.payor);
+
+        Button btnMinus = row.findViewById(R.id.closeBtn);
+        btnMinus.setOnClickListener(v -> removeRow(row));
+
+        int index = container.getChildCount();
+        int color = index % 2 == 0 ? getResources().getColor(R.color.white) : getResources().getColor(R.color.grey);
+        row.setBackgroundColor(color);
+
+        rows.add(row);
+        container.addView(row);
+    }
+
+
+    private void removeRow(View row) {
+        container.removeView(row);
+        rows.remove(row);
+    }
+
+    private void addTransaction() {
+        progressBar.setVisibility(View.VISIBLE);
+        // Get values from UI components
+        transactionType = transactionTypeSpinner.getSelectedItem().toString();
+        // Assuming you have an EditText with the ID "paymentAmountEditText" in your XML layout
+        EditText paymentAmountEditText = findViewById(R.id.paymentAmount);
+
+        // Get the text from the EditText
+        paymentAmountStr = paymentAmountEditText.getText().toString();
+        if (paymentAmountStr.equals("")){
+            paymentAmount = 0;
+        }else {
+            paymentAmount = Integer.parseInt(paymentAmountStr);
+        }
+        // Create a list to store payors and amounts
+        payorsList = new ArrayList<>();
+        amountsPaidList = new ArrayList<>();
+
+        // Check for null or empty values
+        if ("Select a transaction".equals(transactionType) || paymentAmount == 0) {
+            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.GONE);
+        }else {
+            // Create a HashSet to store payors
+            HashSet<String> uniquePayors = new HashSet<>();
+
+            // Iterate through each row to collect payors and amounts paid
+            for (View row : rows) {
+                Spinner payorSpinner = row.findViewById(R.id.payor);
+                EditText amountPaidEditText = row.findViewById(R.id.amountPaid);
+
+                String payor = payorSpinner.getSelectedItem().toString();
+                String amountPaidStr = amountPaidEditText.getText().toString().trim();
+
+                // Check for null or empty values
+                if ("Select a Payor".equals(payor) || amountPaidStr.equals("")) {
+                    Toast.makeText(AddTranscationActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    return; // Exit the method if "Select a Payor" is selected
+                } else if (uniquePayors.contains(payor)) {
+                    Toast.makeText(AddTranscationActivity.this, "Duplicate payor detected: " + payor, Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    return; // Exit the method if a duplicate payor is detected
+                }
+
+                uniquePayors.add(payor); // Add the payor to the HashSet to check for duplicates
+
+                try {
+                    int amountPaid = Integer.parseInt(amountPaidStr);
+                    payorsList.add(payor);
+                    amountsPaidList.add(amountPaid);
+                    totalAmaountPaid = totalAmaountPaid + amountPaid;
+                } catch (NumberFormatException e) {
+                    Toast.makeText(AddTranscationActivity.this, "Invalid amount format for payor: " + payor, Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    return; // Exit the method if the amount cannot be parsed as an integer
+                }
+            }
+            if (!paymentAmount.equals(totalAmaountPaid)){
+                Toast.makeText(AddTranscationActivity.this, "Please input payment", Toast.LENGTH_SHORT).show();
+                totalAmaountPaid = 0;
+                progressBar.setVisibility(View.GONE);
+                return;
+            }else{
+                totalAmaountPaid = 0;
+            }
+            // Get the current user's unique ID (UID)
+            String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+            // Create a reference to the "users" node in the database
+            DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users").child(currentUserID);
+
+            // Read the username from the database
+            usersRef.child("username").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        // Get the username from the dataSnapshot and assign it to usernamePost
+                        usernamePost = dataSnapshot.getValue(String.class);
+
+                        try {
+                            // Get the current date and time
+                            Calendar calendar = Calendar.getInstance();
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM-yyyy", Locale.getDefault());
+                            SimpleDateFormat dayFormat = new SimpleDateFormat("dd", Locale.getDefault());
+                            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+
+                            String currentMonthYear = dateFormat.format(calendar.getTime());
+                            String currentDay = dayFormat.format(calendar.getTime());
+                            String currentTime = timeFormat.format(calendar.getTime());
+
+                            // Create a reference to the "transactions" node
+                            DatabaseReference databaseReference = DeclareDatabase.getDBRefTransaction();
+                            // Create a child with the format "YYYY-MM" (year-month)
+                            DatabaseReference monthYearRef = databaseReference.child(currentMonthYear);
+                            // Create a child with the current day
+                            DatabaseReference dayRef = monthYearRef.child(currentDay);
+                            // Create a child with the current timestamp
+                            DatabaseReference timestampRef = dayRef.child(currentTime);
+
+
+                            // Create a Transaction object with the data
+                            Transaction transaction = new Transaction(transactionType, paymentAmount, payorsList, amountsPaidList, usernamePost);
+
+                            // Set the value of the transaction in the database under the timestamp
+                            timestampRef.setValue(transaction)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            progressBar.setVisibility(View.GONE);
+                                            Toast.makeText(AddTranscationActivity.this, "Transaction added successfully", Toast.LENGTH_SHORT).show();
+                                            Intent intent = new Intent(AddTranscationActivity.this, MainActivity.class);
+                                            startActivity(intent);
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            progressBar.setVisibility(View.GONE);
+                                            Toast.makeText(AddTranscationActivity.this, "Failed to add transaction", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        } catch (NumberFormatException e) {
+                            // Handle invalid number format for paymentAmount or amountPaid
+                            Toast.makeText(AddTranscationActivity.this, "Invalid number format", Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    } else {
+                        progressBar.setVisibility(View.GONE);
+                        // Handle the case where the username doesn't exist in the database
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    // Handle database read error
+                    String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                    Log.e("FirebaseDatabase", errorMessage);
+                }
+            });
+        }
+    }
+}

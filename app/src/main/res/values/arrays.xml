@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="items">
+        <item>Richmond</item>
+        <item>Dave</item>
+        <item>Chan</item>
+        <item>Holywood</item>
+        <!-- Add more items as needed -->
+    </array>
+    <array name="profile_option_items">
+        <item>Logout</item>
+    </array>
+</resources>
