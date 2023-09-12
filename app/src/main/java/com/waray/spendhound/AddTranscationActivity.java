@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -62,8 +65,9 @@ public class AddTranscationActivity extends AppCompatActivity {
     public List<Integer> amountsPaidList;
     public Integer totalAmaountPaid = 0;
     public Integer paymentAmount;
+    private EditText paymentAmountEditText;
+    private TextView individualPayment;
     public String usernamePost;
-    private Integer numberOfUsers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +123,11 @@ public class AddTranscationActivity extends AppCompatActivity {
                 addTransaction();
             }
         });
+
+        //Calculate Individual Payment
+        paymentAmountEditText = findViewById(R.id.paymentAmount);
+        individualPayment = findViewById(R.id.individualPayment);
+        CalculateIndividualPayment();
 
     }
 
@@ -322,5 +331,51 @@ public class AddTranscationActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void CalculateIndividualPayment(){
+        // Add this code inside your onCreate method after initializing the views
+        paymentAmountEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // This method is not used, but it's required by the TextWatcher interface
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // This method is not used, but it's required by the TextWatcher interface
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Get the payment amount entered by the user as a String
+                String paymentAmountStr = s.toString().trim();
+
+                // Check if the payment amount is not empty
+                if (!TextUtils.isEmpty(paymentAmountStr)) {
+                    try {
+                        // Convert the payment amount to an integer
+                        int paymentAmount = Integer.parseInt(paymentAmountStr);
+
+                        // Calculate the individual payment
+                        int numberOfUsers = usernames.size()-1; // Replace 'usernames' with your list of usernames
+                        if (numberOfUsers > 0) {
+                            int totalindividualPayment = paymentAmount / numberOfUsers;
+                            individualPayment.setText("₱ " + totalindividualPayment + ".00");
+                        } else {
+                            // Handle the case where there are no users
+                            individualPayment.setText("No Users");
+                        }
+                    } catch (NumberFormatException e) {
+                        // Handle invalid number format for paymentAmount
+                        individualPayment.setText("Invalid Amount");
+                    }
+                } else {
+                    // Clear the individual payment TextView if the payment amount is empty
+                    individualPayment.setText("₱ 00.00");
+                }
+            }
+        });
+
     }
 }
