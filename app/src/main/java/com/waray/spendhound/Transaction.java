@@ -1,7 +1,12 @@
 package com.waray.spendhound;
 
+import com.google.firebase.database.DatabaseReference;
+
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class Transaction {
     private String transactionType;
@@ -55,7 +60,7 @@ public class Transaction {
     }
 
     public void setAmountsPaidList(List<Integer> amountsPaidList) {
-        this.amountsPaidList = amountsPaidList;
+        this.amountsPaidList  = amountsPaidList;
     }
 
     public String getUsernamePost() {

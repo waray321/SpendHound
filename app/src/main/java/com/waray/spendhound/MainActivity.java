@@ -47,8 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tomorrow2TextView;
     private TextView tomorrow3TextView;
     public FirebaseAuth mAuth;
-    private Integer totalMonthSpends;
-    private List<Integer> amountsPaidList;
+    public int totalMonthSpends;
 
 
     @Override
@@ -151,48 +150,43 @@ public class MainActivity extends AppCompatActivity {
         return dateFormat.format(calendar.getTime());
     }
 
-    private void getTotalMonthSpends(){
-        // Define your DatabaseReference to the "transactions" node
-        DatabaseReference transactionsRef = DeclareDatabase.getDBRefTransaction();
+    private void getTotalMonthSpends() {
+        // Create a reference to the "transactions" node
+        DatabaseReference databaseReference = DeclareDatabase.getDBRefTransaction();
 
         // Get the current month in the format "MMMM-yyyy" (e.g., "September-2023")
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM-yyyy", Locale.getDefault());
         String currentMonthYear = dateFormat.format(calendar.getTime());
 
-        // Create a query to get all transactions for the current month
-        Query currentMonthQuery = transactionsRef.child(currentMonthYear);
+        // Create a child with the format "YYYY-MM" (year-month)
+        DatabaseReference monthYearRef = databaseReference.child(currentMonthYear);
 
-        totalMonthSpends = 0;
+        totalMonthSpends = 0; // Initialize the totalMonthSpends
 
-        // Add a ValueEventListener to retrieve and sum the amounts
-        currentMonthQuery.addValueEventListener(new ValueEventListener() {
-
-            @SuppressLint("SetTextI18n")
+        // Add a listener to retrieve data for the entire month
+        monthYearRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d("Debug", "onDataChange called");
+                for (DataSnapshot daySnapshot : dataSnapshot.getChildren()) {
+                    for (DataSnapshot timeSnapshot : daySnapshot.getChildren()) {
+                        Transaction transaction = timeSnapshot.getValue(Transaction.class);
+                        if (transaction != null) {
+                            // Retrieve the paymentAmount from the transaction
+                            int paymentAmount = transaction.getPaymentAmount();
 
-                for (DataSnapshot transactionSnapshot : dataSnapshot.getChildren()) {
-                    Transaction transaction = transactionSnapshot.getValue(Transaction.class);
-                    amountsPaidList = Objects.requireNonNull(transaction).getAmountsPaidList();
-
-                    if (amountsPaidList != null) {
-                        for (Integer amount : amountsPaidList) {
-                            totalMonthSpends += amount;
+                            // Add the paymentAmount to totalMonthSpends
+                            totalMonthSpends += paymentAmount;
                         }
                     }
                 }
 
-                Log.d("Debug", "totalMonthSpends: " + totalMonthSpends);
-
+                // Now, totalMonthSpends contains the sum of all paymentAmounts in the current month
+                // You can use it as needed, for example, update a TextView with this value
                 String totalMonthSpendsString = String.valueOf(totalMonthSpends);
                 TextView totalMonthSpendsTextView = findViewById(R.id.totalMonthSpends);
-                // Set the value to the TextView
                 totalMonthSpendsTextView.setText("₱ " + totalMonthSpendsString + ".00");
-                Toast.makeText(MainActivity.this,"₱ " + totalMonthSpendsString + ".00", Toast.LENGTH_SHORT).show();
             }
-
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -201,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("FirebaseDatabase", errorMessage);
             }
         });
-
     }
+
 
 }
