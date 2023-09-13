@@ -6,14 +6,14 @@
     android:layout_marginBottom="8dp"
     android:elevation="4dp"
     android:orientation="horizontal"
-    android:paddingHorizontal="8dp"
-    android:paddingVertical="4dp">
+    android:paddingHorizontal="8dp">
 
     <Spinner
         android:id="@+id/payor"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="4" />
+        android:layout_height="wrap_content"
+        android:layout_weight="4"
+        android:paddingVertical="4dp"/>
 
     <EditText
         android:id="@+id/amountPaid"
@@ -24,7 +24,8 @@
         android:hint="Amount Paid"
         android:inputType="number"
         android:textAlignment="center"
-        android:textSize="14sp" />
+        android:layout_marginTop="4dp"
+        android:textSize="16sp" />
 
     <Button
         android:id="@+id/closeBtn"

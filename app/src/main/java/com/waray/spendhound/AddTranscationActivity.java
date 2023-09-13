@@ -41,6 +41,7 @@ import org.json.JSONArray;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -89,7 +90,8 @@ public class AddTranscationActivity extends AppCompatActivity {
 
         transactionTypeSpinner = findViewById(R.id.transactionType);
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.transactionTypes_String, android.R.layout.simple_spinner_item);
+        String[] transactionTypes = getResources().getStringArray(R.array.transactionTypes_String);
+        SpinnerItem adapter = new SpinnerItem(this, Arrays.asList(transactionTypes));
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
@@ -110,7 +112,7 @@ public class AddTranscationActivity extends AppCompatActivity {
                 addRow();
             } else {
                 // Display a message or handle the case where you can't add more rows
-                Toast.makeText(AddTranscationActivity.this, "You can't add more rows.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddTranscationActivity.this, "You can't add more payor.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -140,19 +142,14 @@ public class AddTranscationActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 usernames = new ArrayList<>();
-                usernames.add("Select a Payor"); // Add the default value
+                usernames.add("Select a payor:"); // Add the default value
                 for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                     String username = userSnapshot.child("username").getValue(String.class);
                     if (username != null) {
                         usernames.add(username);
                     }
                 }
-
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                        AddTranscationActivity.this, // Replace with your activity's name
-                        android.R.layout.simple_spinner_item,
-                        usernames
-                );
+                SpinnerItem adapter = new SpinnerItem(AddTranscationActivity.this, usernames);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 payorSpinner.setAdapter(adapter);
             }

@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void setTextViews() {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR, -3); // Start with 3 days ago
+        calendar.add(Calendar.DAY_OF_YEAR, -6); // Start with 3 days ago
 
         // Set the text for each TextView
         yesterday3TextView.setText(getFormattedDay(calendar));
