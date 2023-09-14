@@ -8,4 +8,9 @@
         <item name="android:padding">8dp</item>
     </style>
 
+    <style name="CustomProgressBarStyle">
+        <!-- Customize the ProgressBar attributes -->
+        <item name="android:indeterminateDrawable">@drawable/custom_progress_bar</item>
+        <!-- Add more attributes here if needed -->
+    </style>
 </resources>
