@@ -200,29 +200,33 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("DefaultLocale")
     private void getEverydaySpends() {
-        // Create a reference to the "transactions" node
-        DatabaseReference databaseReference = DeclareDatabase.getDBRefTransaction();
+        // Initialize an array to store daily spends for each day of the week
+        int[] dailySpends = new int[7];
 
-        // Get the current month in the format "MMMM-yyyy" (e.g., "September-2023")
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd", Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM-yyyy", Locale.getDefault());
+        SimpleDateFormat dayFormat = new SimpleDateFormat("dd", Locale.getDefault());
 
-        // Initialize an array to store daily spends
-        int[] last7DaysSpends = new int[7];
+        String currentMonthYear = dateFormat.format(calendar.getTime());
+        String currentDay = dayFormat.format(calendar.getTime());
 
         // Loop through the last 7 days
         for (int i = 0; i < 7; i++) {
-            String currentDate = dateFormat.format(calendar.getTime());
+            // Create a reference to the "transactions" node
+            DatabaseReference databaseReference = DeclareDatabase.getDBRefTransaction();
+            // Create a child with the format "YYYY-MM" (year-month)
+            DatabaseReference monthYearRef = databaseReference.child(currentMonthYear);
+            // Create a child with the current day
+            DatabaseReference dayRef = monthYearRef.child(currentDay);
 
-            // Create a child reference for the current date
-            DatabaseReference dateRef = databaseReference.child(currentDate);
-
-            // Capture the current value of i in a local variable
-            int dayNum = i;
+            // Initialize daily spend for the current day
+            dailySpend = 0;
 
             // Add a listener to retrieve data for the current date
-            dateRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            final int days = i; // Store the day index for use inside the listener
+            dayRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot timeSnapshot : dataSnapshot.getChildren()) {
@@ -233,15 +237,14 @@ public class MainActivity extends AppCompatActivity {
 
                             // Add the paymentAmount to dailySpend
                             dailySpend += paymentAmount;
+
                         }
                     }
-                    last7DaysSpends[dayNum] = dailySpend;
-                    // Calculate the desired height based on the daily spend
 
-
-
-                    // Debug: Log daily spend
-                    Log.d("DailySpend", "Day " + dayNum + ": " + last7DaysSpends[dayNum]);
+                    // Store the daily spend in the array
+                    dailySpends[days] = dailySpend;
+                    dailySpend = 0;
+                    setViewHeightForDay(days, dailySpends[days]);
                 }
 
                 @Override
@@ -251,48 +254,74 @@ public class MainActivity extends AppCompatActivity {
                     Log.e("FirebaseDatabase", errorMessage);
                 }
             });
-
-            // Move to the previous day
-            calendar.add(Calendar.DAY_OF_YEAR, -1);
+            // Convert currentDay to an integer
+            int currentDayInt = Integer.parseInt(currentDay);
+            currentDayInt--;
+            currentDay = String.format("%02d", currentDayInt);
         }
-        // Set the height of the corresponding view
-        setViewHeightForDay(last7DaysSpends);
     }
 
-    private void setViewHeightForDay(int[] last7DaysSpends) {
-        // Replace "your_view_id" with the actual ID of the corresponding view
+    private void setViewHeightForDay(int day, int dailySpends) {
+        int[] dailySpendsArray = new int[7];
+        dailySpendsArray[day] = dailySpends;
+        String dailySpendString = String.valueOf(dailySpendsArray[day]);
+        TextView day1SpendTextView = findViewById(R.id.totalday1);
+        TextView day2SpendTextView = findViewById(R.id.totalday2);
+        TextView day3SpendTextView = findViewById(R.id.totalday3);
+        TextView day4SpendTextView = findViewById(R.id.totalday4);
+        TextView day5SpendTextView = findViewById(R.id.totalday5);
+        TextView day6SpendTextView = findViewById(R.id.totalday6);
+        TextView day7SpendTextView = findViewById(R.id.totalday7);
         int viewId = 0;
 
-        /*switch (day) {
+        switch (day) {
             case 0:
+                day1SpendTextView.setText(dailySpendString);
                 viewId = R.id.day1_bar;
                 break;
             case 1:
+                day2SpendTextView.setText(dailySpendString);
                 viewId = R.id.day2_bar;
                 break;
             case 2:
+                day3SpendTextView.setText(dailySpendString);
                 viewId = R.id.day3_bar;
                 break;
             case 3:
+                day4SpendTextView.setText(dailySpendString);
                 viewId = R.id.day4_bar;
                 break;
             case 4:
+                day5SpendTextView.setText(dailySpendString);
                 viewId = R.id.day5_bar;
                 break;
             case 5:
+                day6SpendTextView.setText(dailySpendString);
                 viewId = R.id.day6_bar;
                 break;
             case 6:
+                day7SpendTextView.setText(dailySpendString);
                 viewId = R.id.day7_bar;
                 break;
+        }
+        // Calculate the desired height based on the daily spend
+        int desiredHeightInPixels;
+        if (dailySpends >= 1000) {
+            desiredHeightInPixels = 250;
+        } else if (dailySpends <= 100) {
+            desiredHeightInPixels = 25;
+        } else {
+            desiredHeightInPixels = dailySpends / 4;
         }
 
         if (viewId != 0) {
             View view = findViewById(viewId);
             ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-            layoutParams.height = heightInPixels;
+            layoutParams.height = desiredHeightInPixels;
             view.setLayoutParams(layoutParams);
-        }*/
+        }else {
+            showToast("No viewID");
+        }
     }
 
 
