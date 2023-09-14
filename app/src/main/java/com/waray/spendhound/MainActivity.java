@@ -19,6 +19,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -30,7 +32,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.waray.spendhound.databinding.ActivityMainBinding;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -46,8 +50,6 @@ public class MainActivity extends AppCompatActivity {
     public FirebaseAuth mAuth;
     public int totalMonthSpends;
     public int dailySpend;
-    public int i;
-    int desiredHeightInPixels;
 
 
 
@@ -124,6 +126,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /*RecyclerView recyclerView = findViewById(R.id.transactionListRecycler); // Replace with your RecyclerView's ID
+        recyclerView.setLayoutManager(new LinearLayoutManager(this)); // Use LinearLayoutManager or any other layout manager you prefer
+
+        List<Transaction> transactionList = new ArrayList<>(); // Replace with your list of transactions
+        RecentTransactionAdapter adapter = new RecentTransactionAdapter(transactionList);
+        recyclerView.setAdapter(adapter);*/
 
 
     }

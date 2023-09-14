@@ -419,19 +419,22 @@
                 android:textColor="@color/grey"
                 android:textSize="16sp" />
 
-            <!--<androidx.fragment.app.FragmentContainerView
-                android:id="@+id/fragmentContainerView"
-                android:name="com.waray.spendhound.ui.home.HomeFragment"
+
+            <!--<ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_below="@+id/recentTextView"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginStart="0dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="0dp"
-                android:background="@color/darkBlue"
-                tools:layout="@layout/fragment_transaction_list" />-->
+                android:layout_alignParentBottom="true">
+
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/fragmentContainerView"
+                    android:name="com.waray.spendhound.ui.home.HomeFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </ScrollView>-->
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_addTransaction"
@@ -447,8 +450,6 @@
 
         </RelativeLayout>
 
-
     </LinearLayout>
-
 
 </LinearLayout>

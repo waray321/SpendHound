@@ -2,9 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/relativeLayout_recent"
     android:layout_width="match_parent"
-    android:layout_height="76dp"
-    android:elevation="8dp"
-    android:padding="12dp">
+    android:layout_height="wrap_content"
+    android:elevation="4dp"
+    android:paddingVertical="8dp"
+    android:paddingHorizontal="12dp"
+    android:layout_marginBottom="4dp">
 
     <ImageView
         android:id="@+id/icon_lightning"
@@ -42,7 +44,7 @@
             android:layout_below="@+id/textView_recent1"
             android:layout_toEndOf="@+id/icon_lightning"
             android:fontFamily="@font/montserratalternatess_regular"
-            android:text="Details"
+            android:text="See Details >"
             android:textSize="16dp" />
 
     </LinearLayout>
