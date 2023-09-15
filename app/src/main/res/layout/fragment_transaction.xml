@@ -6,16 +6,14 @@
     android:elevation="4dp"
     android:paddingVertical="8dp"
     android:paddingHorizontal="12dp"
-    android:layout_marginBottom="4dp">
+    android:layout_marginBottom="4dp"
+    android:background="@drawable/rounded_background11">
 
     <ImageView
-        android:id="@+id/icon_lightning"
+        android:id="@+id/iconImageView"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
         android:background="@drawable/rounded_background9"
         android:padding="8dp"
         android:src="@drawable/lightning_bolt" />
@@ -28,24 +26,20 @@
 
 
         <TextView
-            android:id="@+id/textView_recent1"
+            android:id="@+id/transactionTypeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/icon_lightning"
             android:fontFamily="@font/montserratalternatess_bold"
             android:text="Electricity"
             android:textColor="@color/black"
-            android:textSize="16dp" />
+            android:textSize="16sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/textView_recent1"
-            android:layout_toEndOf="@+id/icon_lightning"
             android:fontFamily="@font/montserratalternatess_regular"
             android:text="See Details >"
-            android:textSize="16dp" />
+            android:textSize="16sp" />
 
     </LinearLayout>
 
@@ -57,22 +51,18 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView_recent"
+            android:id="@+id/paymentAmountTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
             android:fontFamily="@font/montserratalternatess_bold"
             android:text="₱1,000"
             android:textColor="@color/black"
-            android:textSize="16dp" />
+            android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/textView9"
+            android:id="@+id/dateTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/textView_recent"
-            android:layout_alignParentEnd="true"
             android:fontFamily="@font/montserratalternatess_regular"
             android:text="Jun 27"
             android:textSize="16sp" />

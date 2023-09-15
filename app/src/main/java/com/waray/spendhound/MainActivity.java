@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView day1TextView;
     public FirebaseAuth mAuth;
     public int totalMonthSpends;
+    private ProgressBar progressBar;
     public int dailySpend;
 
 
@@ -58,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        progressBar = findViewById(R.id.progressBar);
 
         mAuth = DeclareDatabase.getAuth();
 
@@ -126,14 +130,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        /*RecyclerView recyclerView = findViewById(R.id.transactionListRecycler); // Replace with your RecyclerView's ID
-        recyclerView.setLayoutManager(new LinearLayoutManager(this)); // Use LinearLayoutManager or any other layout manager you prefer
-
-        List<Transaction> transactionList = new ArrayList<>(); // Replace with your list of transactions
-        RecentTransactionAdapter adapter = new RecentTransactionAdapter(transactionList);
-        recyclerView.setAdapter(adapter);*/
-
-
+        RecyclerView recyclerView = findViewById(R.id.transactionListRecycler); // Replace with your RecyclerView's ID
+        List<RecentTransaction> recentTransactionList = new ArrayList<>(); // Populate this list with your data
+        RecentTransactionAdapter adapter = new RecentTransactionAdapter(recentTransactionList);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this)); // Use a layout manager of your choice
     }
 
     public void setTextViews() {

@@ -19,7 +19,9 @@
         <item>Water Bill</item>
         <item>Mineral Water</item>
         <item>Groceries</item>
+        <item>Foods</item>
         <item>House Necessity</item>
+        <item>Transportation</item>
         <item>Others</item>
     </string-array>
 </resources>

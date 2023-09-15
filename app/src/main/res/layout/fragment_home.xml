@@ -348,6 +348,7 @@
                 android:id="@+id/day4_bar"
                 android:layout_width="10dp"
                 android:layout_height="10dp"
+                android:layout_gravity="center_vertical"
                 android:background="@drawable/rounded_background4" />
 
             <View
@@ -395,6 +396,28 @@
             app:layout_constraintStart_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/constraintLayout" />
 
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="@style/CustomProgressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/glassy_background"
+                android:padding="20dp"
+                android:visibility="gone" />
+
+        </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -419,22 +442,29 @@
                 android:textColor="@color/grey"
                 android:textSize="16sp" />
 
+            <!--<androidx.fragment.app.FragmentContainerView
+                android:id="@+id/fragmentContainerView"
+                android:name="com.waray.spendhound.ui.home.HomeFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/recentTextView"
+                tools:layout="@layout/fragment_transaction_list" />-->
 
-            <!--<ScrollView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/recentTextView"
+                android:layout_alignParentBottom="true"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true">
+                android:orientation="vertical">
 
-
-                <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/fragmentContainerView"
-                    android:name="com.waray.spendhound.ui.home.HomeFragment"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/transactionListRecycler"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </ScrollView>-->
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_addTransaction"

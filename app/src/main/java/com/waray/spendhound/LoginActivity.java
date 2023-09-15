@@ -28,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText passwordEditText;
     public FirebaseAuth mAuth;
     public CheckBox rememberMeCheckbox;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         usernameEditText = findViewById(R.id.usernameEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
         Button loginButton = findViewById(R.id.loginButton);
-        @SuppressLint({"MissingInflatedId", "LocalSuppress"}) ProgressBar progressBar = findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.progressBar);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
