@@ -44,5 +44,4 @@ public class RecentTransaction {
     public void setIconResource(int iconResource) {
         this.iconResource = iconResource;
     }
-
 }

@@ -6,8 +6,8 @@
     android:elevation="4dp"
     android:paddingVertical="8dp"
     android:paddingHorizontal="12dp"
-    android:layout_marginBottom="4dp"
-    android:background="@drawable/rounded_background11">
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/rounded_background10">
 
     <ImageView
         android:id="@+id/iconImageView"

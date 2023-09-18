@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -69,6 +70,7 @@ public class AddTranscationActivity extends AppCompatActivity {
     private EditText paymentAmountEditText;
     private TextView individualPayment;
     public String usernamePost;
+    private ArrayList<RecentTransaction> recentTransactionList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,6 +189,7 @@ public class AddTranscationActivity extends AppCompatActivity {
         rows.remove(row);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void addTransaction() {
         progressBar.setVisibility(View.VISIBLE);
         // Get values from UI components
@@ -328,6 +331,10 @@ public class AddTranscationActivity extends AppCompatActivity {
                 }
             });
         }
+        RecyclerView recyclerView = findViewById(R.id.transactionListRecycler);
+        RecyclerView.Adapter<RecentTransactionAdapter.ViewHolder> adapter = new RecentTransactionAdapter(recentTransactionList);
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     private void CalculateIndividualPayment(){

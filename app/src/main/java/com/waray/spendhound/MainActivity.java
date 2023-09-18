@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,7 +36,6 @@ import com.waray.spendhound.databinding.ActivityMainBinding;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -52,8 +52,7 @@ public class MainActivity extends AppCompatActivity {
     public int totalMonthSpends;
     private ProgressBar progressBar;
     public int dailySpend;
-
-
+    private ArrayList<RecentTransaction> recentTransactionList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
         getTotalMonthSpends();
 
         getEverydaySpends();
+
+        getRecentTransaction();
 
         navView = findViewById(R.id.navView);
         // Passing each menu ID as a set of Ids because each
@@ -129,12 +130,6 @@ public class MainActivity extends AppCompatActivity {
                 popupMenu.show();
             }
         });
-
-        RecyclerView recyclerView = findViewById(R.id.transactionListRecycler); // Replace with your RecyclerView's ID
-        List<RecentTransaction> recentTransactionList = new ArrayList<>(); // Populate this list with your data
-        RecentTransactionAdapter adapter = new RecentTransactionAdapter(recentTransactionList);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this)); // Use a layout manager of your choice
     }
 
     public void setTextViews() {
@@ -339,5 +334,74 @@ public class MainActivity extends AppCompatActivity {
     private void showToast(String message) {
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
     }
+
+    private void getRecentTransaction(){
+        // Initialize Firebase
+        FirebaseApp.initializeApp(this);
+        // Create a reference to the "transactions" node
+        DatabaseReference databaseReference = DeclareDatabase.getDBRefTransaction();
+        DatabaseReference transactionsRef = databaseReference.child("transactions");
+
+        transactionsRef.limitToLast(5).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String mostRecentMonthYear = snapshot.child("MMMM-yyyy").getValue(String.class);
+                    String mostRecentDay = snapshot.child("dd").getValue(String.class);
+                    String mostRecentDate = mostRecentMonthYear + "-" + mostRecentDay;
+                    String mostRecentTransactionType = snapshot.child("transactionType").getValue(String.class);
+                    int mostRecentPaymentAmount = snapshot.child("paymentAmount").getValue(Integer.class);
+                    int iconResource;
+                    if ("Electricity".equals(mostRecentTransactionType)) {
+                        iconResource = R.drawable.lightning_bolt;
+                    } else if ("Water Bill".equals(mostRecentTransactionType)) {
+                        iconResource = R.drawable.faucet;
+                    } else if ("Mineral Water".equals(mostRecentTransactionType)) {
+                        iconResource = R.drawable.water;
+                    } else if ("Groceries".equals(mostRecentTransactionType)) {
+                        iconResource = R.drawable.groceries;
+                    } else if ("Foods".equals(mostRecentTransactionType)) {
+                        iconResource = R.drawable.hamburger;
+                    } else if ("House Necessity".equals(mostRecentTransactionType)) {
+                        iconResource = R.drawable.sofa;
+                    } else if ("Transportation".equals(mostRecentTransactionType)) {
+                        iconResource = R.drawable.vehicles;
+                    } else {
+                        iconResource = R.drawable.house;
+                    }
+                    // Create a RecentTransaction object and add it to the list
+                    RecentTransaction recentTrans = new RecentTransaction(
+                            mostRecentDate,
+                            mostRecentTransactionType,
+                            mostRecentPaymentAmount,
+                            iconResource
+                    );
+                    recentTransactionList.add(recentTrans);
+                }
+
+                // Now you have populated recentTransactionList with data
+                // You can pass this list to your RecyclerView adapter here or in onCreate
+                RecyclerView recyclerView = findViewById(R.id.transactionListRecycler);
+                RecyclerView.Adapter<RecentTransactionAdapter.ViewHolder> adapter = new RecentTransactionAdapter(recentTransactionList);
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+
+                // Set the RecyclerView.LayoutManager
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+                recyclerView.setLayoutManager(layoutManager);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle database read error
+                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                Log.e("FirebaseDatabase", errorMessage);
+            }
+
+        });
+    }
+
 
 }
