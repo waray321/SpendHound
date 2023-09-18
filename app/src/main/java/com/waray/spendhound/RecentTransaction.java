@@ -3,13 +3,13 @@ package com.waray.spendhound;
 public class RecentTransaction {
     private String mostRecentDate;
     private String mostRecentTransactionType;
-    private int mostRecentPaymentAmount;
+    private String mostRecentPaymentAmountStr;
     private int iconResource;
 
-    public RecentTransaction(String mostRecentDate, String mostRecentTransactionType, int mostRecentPaymentAmount, int iconResource) {
+    public RecentTransaction(String mostRecentDate, String mostRecentTransactionType, String mostRecentPaymentAmountStr, int iconResource) {
         this.mostRecentDate = mostRecentDate;
         this.mostRecentTransactionType = mostRecentTransactionType;
-        this.mostRecentPaymentAmount = mostRecentPaymentAmount;
+        this.mostRecentPaymentAmountStr = mostRecentPaymentAmountStr;
         this.iconResource = iconResource;
     }
 
@@ -29,12 +29,12 @@ public class RecentTransaction {
         this.mostRecentTransactionType = mostRecentTransactionType;
     }
 
-    public int getMostRecentPaymentAmount() {
-        return mostRecentPaymentAmount;
+    public String getMostRecentPaymentAmountStr() {
+        return mostRecentPaymentAmountStr;
     }
 
-    public void setMostRecentPaymentAmount(int mostRecentPaymentAmount) {
-        this.mostRecentPaymentAmount = mostRecentPaymentAmount;
+    public void setMostRecentPaymentAmountStr(String mostRecentPaymentAmountStr) {
+        this.mostRecentPaymentAmountStr = mostRecentPaymentAmountStr;
     }
 
     public int getIconResource() {

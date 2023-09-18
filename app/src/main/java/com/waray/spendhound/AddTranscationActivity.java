@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -175,9 +177,11 @@ public class AddTranscationActivity extends AppCompatActivity {
         Button btnMinus = row.findViewById(R.id.closeBtn);
         btnMinus.setOnClickListener(v -> removeRow(row));
 
-        int index = container.getChildCount();
-        int color = index % 2 == 0 ? getResources().getColor(R.color.white) : getResources().getColor(R.color.grey);
-        row.setBackgroundColor(color);
+
+        Drawable roundedDrawable = getResources().getDrawable(R.drawable.rounded_alternating_row);
+        ViewCompat.setBackground(row, roundedDrawable);
+
+
 
         rows.add(row);
         container.addView(row);
@@ -189,7 +193,6 @@ public class AddTranscationActivity extends AppCompatActivity {
         rows.remove(row);
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private void addTransaction() {
         progressBar.setVisibility(View.VISIBLE);
         // Get values from UI components
@@ -209,9 +212,10 @@ public class AddTranscationActivity extends AppCompatActivity {
         amountsPaidList = new ArrayList<>();
 
         // Check for null or empty values
-        if ("Select a transaction".equals(transactionType) || paymentAmount == 0) {
+        if ("Select a transaction:".equals(transactionType) || paymentAmount == 0) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             progressBar.setVisibility(View.GONE);
+            return;
         }else {
             // Create a HashSet to store payors
             HashSet<String> uniquePayors = new HashSet<>();
@@ -225,7 +229,7 @@ public class AddTranscationActivity extends AppCompatActivity {
                 String amountPaidStr = amountPaidEditText.getText().toString().trim();
 
                 // Check for null or empty values
-                if ("Select a Payor".equals(payor) || amountPaidStr.equals("")) {
+                if ("Select a payor:".equals(payor) || amountPaidStr.equals("")) {
                     Toast.makeText(AddTranscationActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.GONE);
                     return; // Exit the method if "Select a Payor" is selected
@@ -331,10 +335,8 @@ public class AddTranscationActivity extends AppCompatActivity {
                 }
             });
         }
-        RecyclerView recyclerView = findViewById(R.id.transactionListRecycler);
-        RecyclerView.Adapter<RecentTransactionAdapter.ViewHolder> adapter = new RecentTransactionAdapter(recentTransactionList);
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+        MainActivity mainActivity = new MainActivity();
+        mainActivity.getRecentTransaction();
     }
 
     private void CalculateIndividualPayment(){

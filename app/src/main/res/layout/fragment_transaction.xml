@@ -3,7 +3,7 @@
     android:id="@+id/relativeLayout_recent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:elevation="4dp"
+    android:elevation="2dp"
     android:paddingVertical="8dp"
     android:paddingHorizontal="12dp"
     android:layout_marginBottom="8dp"
@@ -11,8 +11,8 @@
 
     <ImageView
         android:id="@+id/iconImageView"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginEnd="10dp"
         android:background="@drawable/rounded_background9"
         android:padding="8dp"
@@ -32,14 +32,14 @@
             android:fontFamily="@font/montserratalternatess_bold"
             android:text="Electricity"
             android:textColor="@color/black"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserratalternatess_regular"
             android:text="See Details >"
-            android:textSize="16sp" />
+            android:textSize="10sp" />
 
     </LinearLayout>
 
@@ -57,7 +57,7 @@
             android:fontFamily="@font/montserratalternatess_bold"
             android:text="₱1,000"
             android:textColor="@color/black"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/dateTextView"
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserratalternatess_regular"
             android:text="Jun 27"
-            android:textSize="16sp" />
+            android:textSize="10sp" />
 
     </LinearLayout>
 

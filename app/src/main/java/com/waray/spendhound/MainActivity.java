@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -106,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         cardViewProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                @SuppressLint("ResourceType") PopupMenu popupMenu = new PopupMenu(MainActivity.this, cardViewProfile, Gravity.END, androidx.transition.R.attr.popupMenuStyle, 0);
+                PopupMenu popupMenu = new PopupMenu(MainActivity.this, cardViewProfile, Gravity.END, androidx.transition.R.attr.popupMenuStyle, 0);
                 popupMenu.inflate(R.menu.dropdown_menu);
 
                 // Set a click listener for menu items
@@ -328,80 +327,96 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void getRecentTransaction() {
+        // Initialize an array to store daily spends for each day of the week
+        int[] mostRecent = new int[5];
 
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM-yyyy", Locale.getDefault());
+        SimpleDateFormat dayFormat = new SimpleDateFormat("dd", Locale.getDefault());
+
+        String currentMonthYear = dateFormat.format(calendar.getTime());
+        String currentDay = dayFormat.format(calendar.getTime());
+
+        // Loop through the last 5 days
+        for (int i = 0; i < 3; i++) {
+            // Create a reference to the "transactions" node
+            DatabaseReference databaseReference = DeclareDatabase.getDBRefTransaction();
+            // Create a child with the format "YYYY-MM" (year-month)
+            DatabaseReference monthYearRef = databaseReference.child(currentMonthYear);
+            // Create a child with the current day
+            DatabaseReference dayRef = monthYearRef.child(currentDay);
+
+            // Add a listener to retrieve data for the current date
+            final int days = i; // Store the day index for use inside the listener
+            String finalCurrentDay = currentDay;
+            dayRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot timeSnapshot : dataSnapshot.getChildren()) {
+                        Transaction transaction = timeSnapshot.getValue(Transaction.class);
+                        if (transaction != null) {
+                            String mostRecentDate = currentMonthYear + " - " + finalCurrentDay;
+                            String mostRecentTransactionType = transaction.getTransactionType();
+                            int mostRecentPaymentAmount = transaction.getPaymentAmount();
+                            String mostRecentPaymentAmountStr = "₱ " + mostRecentPaymentAmount;
+                            int iconResource;
+                            if ("Electricity".equals(mostRecentTransactionType)) {
+                                iconResource = R.drawable.lightning_bolt;
+                            } else if ("Water Bill".equals(mostRecentTransactionType)) {
+                                iconResource = R.drawable.faucet;
+                            } else if ("Mineral Water".equals(mostRecentTransactionType)) {
+                                iconResource = R.drawable.water;
+                            } else if ("Groceries".equals(mostRecentTransactionType)) {
+                                iconResource = R.drawable.groceries;
+                            } else if ("Foods".equals(mostRecentTransactionType)) {
+                                iconResource = R.drawable.hamburger;
+                            } else if ("House Necessity".equals(mostRecentTransactionType)) {
+                                iconResource = R.drawable.sofa;
+                            } else if ("Transportation".equals(mostRecentTransactionType)) {
+                                iconResource = R.drawable.vehicles;
+                            } else {
+                                iconResource = R.drawable.house;
+                            }
+                            // Create a RecentTransaction object and add it to the list
+                            RecentTransaction recentTrans = new RecentTransaction(
+                                    mostRecentDate,
+                                    mostRecentTransactionType,
+                                    mostRecentPaymentAmountStr,
+                                    iconResource
+                            );
+                            recentTransactionList.add(recentTrans);
+                        }
+                        // Now you have populated recentTransactionList with data
+                        // You can pass this list to your RecyclerView adapter here or in onCreate
+                        RecyclerView recyclerView = findViewById(R.id.transactionListRecycler);
+                        RecyclerView.Adapter<RecentTransactionAdapter.ViewHolder> adapter = new RecentTransactionAdapter(recentTransactionList);
+                        recyclerView.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+
+                        // Set the RecyclerView.LayoutManager
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+                        recyclerView.setLayoutManager(layoutManager);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // Handle database read error
+                    String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                    Log.e("FirebaseDatabase", errorMessage);
+                }
+            });
+            // Convert currentDay to an integer
+            int currentDayInt = Integer.parseInt(currentDay);
+            currentDayInt--;
+            currentDay = String.format("%02d", currentDayInt);
+        }
+    }
 
     // Utility method to show a toast message
     private void showToast(String message) {
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
     }
-
-    private void getRecentTransaction(){
-        // Initialize Firebase
-        FirebaseApp.initializeApp(this);
-        // Create a reference to the "transactions" node
-        DatabaseReference databaseReference = DeclareDatabase.getDBRefTransaction();
-        DatabaseReference transactionsRef = databaseReference.child("transactions");
-
-        transactionsRef.limitToLast(5).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String mostRecentMonthYear = snapshot.child("MMMM-yyyy").getValue(String.class);
-                    String mostRecentDay = snapshot.child("dd").getValue(String.class);
-                    String mostRecentDate = mostRecentMonthYear + "-" + mostRecentDay;
-                    String mostRecentTransactionType = snapshot.child("transactionType").getValue(String.class);
-                    int mostRecentPaymentAmount = snapshot.child("paymentAmount").getValue(Integer.class);
-                    int iconResource;
-                    if ("Electricity".equals(mostRecentTransactionType)) {
-                        iconResource = R.drawable.lightning_bolt;
-                    } else if ("Water Bill".equals(mostRecentTransactionType)) {
-                        iconResource = R.drawable.faucet;
-                    } else if ("Mineral Water".equals(mostRecentTransactionType)) {
-                        iconResource = R.drawable.water;
-                    } else if ("Groceries".equals(mostRecentTransactionType)) {
-                        iconResource = R.drawable.groceries;
-                    } else if ("Foods".equals(mostRecentTransactionType)) {
-                        iconResource = R.drawable.hamburger;
-                    } else if ("House Necessity".equals(mostRecentTransactionType)) {
-                        iconResource = R.drawable.sofa;
-                    } else if ("Transportation".equals(mostRecentTransactionType)) {
-                        iconResource = R.drawable.vehicles;
-                    } else {
-                        iconResource = R.drawable.house;
-                    }
-                    // Create a RecentTransaction object and add it to the list
-                    RecentTransaction recentTrans = new RecentTransaction(
-                            mostRecentDate,
-                            mostRecentTransactionType,
-                            mostRecentPaymentAmount,
-                            iconResource
-                    );
-                    recentTransactionList.add(recentTrans);
-                }
-
-                // Now you have populated recentTransactionList with data
-                // You can pass this list to your RecyclerView adapter here or in onCreate
-                RecyclerView recyclerView = findViewById(R.id.transactionListRecycler);
-                RecyclerView.Adapter<RecentTransactionAdapter.ViewHolder> adapter = new RecentTransactionAdapter(recentTransactionList);
-                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-
-                // Set the RecyclerView.LayoutManager
-                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
-                recyclerView.setLayoutManager(layoutManager);
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle database read error
-                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
-                Log.e("FirebaseDatabase", errorMessage);
-            }
-
-        });
-    }
-
 
 }
