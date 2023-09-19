@@ -11,13 +11,15 @@ import java.util.Locale;
 public class Transaction {
     private String transactionType;
     private int paymentAmount;
+    private String multilineStr;
     private List<String> payorsList;
     private List<Integer> amountsPaidList;
     private String usernamePost;
 
-    public Transaction(String transactionType, int paymentAmount, List<String> payorsList, List<Integer> amountsPaidList, String usernamePost) {
+    public Transaction(String transactionType, int paymentAmount,String multilineStr, List<String> payorsList, List<Integer> amountsPaidList, String usernamePost) {
         this.transactionType = transactionType;
         this.paymentAmount = paymentAmount;
+        this.multilineStr = multilineStr;
         this.payorsList = payorsList;
         this.amountsPaidList = amountsPaidList;
         this.usernamePost= usernamePost;
@@ -69,5 +71,13 @@ public class Transaction {
 
     public void setUsernamePost(String usernamePost) {
         this.usernamePost = usernamePost;
+    }
+
+    public String getMultilineStr() {
+        return multilineStr;
+    }
+
+    public void setMultilineStr(String multilineStr) {
+        this.multilineStr = multilineStr;
     }
 }

@@ -11,6 +11,7 @@
     <color name="darkBlue">#03071e</color>
     <color name="yellow">#ffba08</color>
     <color name="white">#e9ecef</color>
+    <color name="whitest">#FFFFFF</color>
     <color name="selected_color">#03071e</color>
     <color name="default_color">#FF000000</color>
 </resources>

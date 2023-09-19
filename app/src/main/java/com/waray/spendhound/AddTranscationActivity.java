@@ -11,7 +11,9 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -61,6 +63,7 @@ public class AddTranscationActivity extends AppCompatActivity {
     private Spinner transactionTypeSpinner;
     private String transactionType;
     public String paymentAmountStr;
+    public String multilineStr;
     private ProgressBar progressBar;
     public List<String> usernames;
     public FirebaseAuth mAuth;
@@ -70,6 +73,7 @@ public class AddTranscationActivity extends AppCompatActivity {
     public Integer totalAmaountPaid = 0;
     public Integer paymentAmount;
     private EditText paymentAmountEditText;
+    private EditText editTextTextMultiLine;
     private TextView individualPayment;
     public String usernamePost;
     private ArrayList<RecentTransaction> recentTransactionList = new ArrayList<>();
@@ -135,6 +139,9 @@ public class AddTranscationActivity extends AppCompatActivity {
         individualPayment = findViewById(R.id.individualPayment);
         CalculateIndividualPayment();
 
+        detailsCharacterCount();
+        exitEditText();
+
     }
 
     private void addRow() {
@@ -197,11 +204,12 @@ public class AddTranscationActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         // Get values from UI components
         transactionType = transactionTypeSpinner.getSelectedItem().toString();
-        // Assuming you have an EditText with the ID "paymentAmountEditText" in your XML layout
-        EditText paymentAmountEditText = findViewById(R.id.paymentAmount);
+        paymentAmountEditText = findViewById(R.id.paymentAmount);
+        editTextTextMultiLine = findViewById(R.id.editTextTextMultiLine);
 
         // Get the text from the EditText
         paymentAmountStr = paymentAmountEditText.getText().toString();
+        multilineStr = paymentAmountEditText.getText().toString();
         if (paymentAmountStr.equals("")){
             paymentAmount = 0;
         }else {
@@ -296,7 +304,7 @@ public class AddTranscationActivity extends AppCompatActivity {
 
 
                             // Create a Transaction object with the data
-                            Transaction transaction = new Transaction(transactionType, paymentAmount, payorsList, amountsPaidList, usernamePost);
+                            Transaction transaction = new Transaction(transactionType, paymentAmount, multilineStr, payorsList, amountsPaidList, usernamePost);
 
                             // Set the value of the transaction in the database under the timestamp
                             timestampRef.setValue(transaction)
@@ -383,5 +391,84 @@ public class AddTranscationActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void detailsCharacterCount(){
+        EditText editText = findViewById(R.id.editTextTextMultiLine);
+        final TextView characterCount = findViewById(R.id.characterCount);
+        final int maxLength = 50; // Maximum character limit
+
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Not needed
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Calculate the current character count
+                int currentCount = s.length();
+
+                // Update the character count TextView
+                characterCount.setText(currentCount + "/" + maxLength);
+
+                // Check if the current character count exceeds the limit
+                if (currentCount > maxLength) {
+                    // Truncate the input text to the maximum length
+                    String truncatedText = s.subSequence(0, maxLength).toString();
+                    editText.setText(truncatedText);
+                    editText.setSelection(maxLength); // Move cursor to the end
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Not needed
+            }
+        });
+    }
+
+    public void exitEditText(){
+        final EditText editText = findViewById(R.id.editTextTextMultiLine);
+        final EditText editTextPaymentAmount = findViewById(R.id.paymentAmount);
+        editText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Consume the touch event on the EditText to prevent it from being intercepted
+                v.performClick();
+                return false;
+            }
+        });
+
+        editTextPaymentAmount.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Consume the touch event on the EditText to prevent it from being intercepted
+                v.performClick();
+                return false;
+            }
+        });
+
+        // Add an OnTouchListener to the root layout (or any other layout that covers the whole screen)
+        View rootView = findViewById(android.R.id.content);
+        rootView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Hide the keyboard when the user touches outside the EditText
+                hideKeyboard(editText);
+                hideKeyboardPaymentAmount(editTextPaymentAmount);
+                return false;
+            }
+        });
+    }
+
+    // Helper method to hide the keyboard
+    private void hideKeyboard(EditText editText) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+    }
+    private void hideKeyboardPaymentAmount(EditText editTextPaymentAmount) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(editTextPaymentAmount.getWindowToken(), 0);
     }
 }

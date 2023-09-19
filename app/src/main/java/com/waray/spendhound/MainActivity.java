@@ -356,7 +356,10 @@ public class MainActivity extends AppCompatActivity {
                     for (DataSnapshot timeSnapshot : dataSnapshot.getChildren()) {
                         Transaction transaction = timeSnapshot.getValue(Transaction.class);
                         if (transaction != null) {
-                            String mostRecentDate = currentMonthYear + " - " + finalCurrentDay;
+                            // Split the string by hyphen and keep only the first part (the month)
+                            String[] parts = currentMonthYear.split("-");
+                            String finalCurrentMonth = parts[0];
+                            String mostRecentDate = finalCurrentMonth + " - " + finalCurrentDay;
                             String mostRecentTransactionType = transaction.getTransactionType();
                             int mostRecentPaymentAmount = transaction.getPaymentAmount();
                             String mostRecentPaymentAmountStr = "₱ " + mostRecentPaymentAmount;
