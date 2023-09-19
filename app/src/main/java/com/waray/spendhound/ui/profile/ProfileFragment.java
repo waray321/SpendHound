@@ -1,4 +1,4 @@
-package com.waray.spendhound.ui.notifications;
+package com.waray.spendhound.ui.profile;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,11 +11,11 @@ import androidx.fragment.app.Fragment;
 
 import com.waray.spendhound.R;
 
-public class NotificationsFragment extends Fragment {
+public class ProfileFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_notifications, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         // Get the hosting Activity and remove the ActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -23,11 +23,5 @@ public class NotificationsFragment extends Fragment {
             activity.getSupportActionBar().hide();
         }
         return view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        com.waray.spendhound.databinding.FragmentNotificationsBinding binding = null;
     }
 }
