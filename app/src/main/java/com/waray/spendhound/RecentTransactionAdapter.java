@@ -32,6 +32,7 @@ public class RecentTransactionAdapter extends RecyclerView.Adapter<RecentTransac
         // Bind data to the ViewHolder's views
         holder.dateTextView.setText(transaction.getMostRecentDate());
         holder.typeTextView.setText(transaction.getMostRecentTransactionType());
+        holder.detailsTextView.setText(transaction.getMostRecentDetails());
         holder.amountTextView.setText(transaction.getMostRecentPaymentAmountStr());
         holder.iconImageView.setImageResource(transaction.getIconResource());
     }
@@ -44,6 +45,7 @@ public class RecentTransactionAdapter extends RecyclerView.Adapter<RecentTransac
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView dateTextView;
         public TextView typeTextView;
+        public TextView detailsTextView;
         public TextView amountTextView;
         public ImageView iconImageView;
 
@@ -51,6 +53,7 @@ public class RecentTransactionAdapter extends RecyclerView.Adapter<RecentTransac
             super(itemView);
             dateTextView = itemView.findViewById(R.id.dateTextView);
             typeTextView = itemView.findViewById(R.id.transactionTypeTextView);
+            detailsTextView = itemView.findViewById(R.id.detailsTextView);
             amountTextView = itemView.findViewById(R.id.paymentAmountTextView);
             iconImageView = itemView.findViewById(R.id.iconImageView);
         }

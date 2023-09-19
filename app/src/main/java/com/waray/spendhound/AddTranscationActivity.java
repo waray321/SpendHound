@@ -209,7 +209,7 @@ public class AddTranscationActivity extends AppCompatActivity {
 
         // Get the text from the EditText
         paymentAmountStr = paymentAmountEditText.getText().toString();
-        multilineStr = paymentAmountEditText.getText().toString();
+        multilineStr = editTextTextMultiLine.getText().toString();
         if (paymentAmountStr.equals("")){
             paymentAmount = 0;
         }else {

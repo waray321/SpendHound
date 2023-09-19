@@ -328,9 +328,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getRecentTransaction() {
-        // Initialize an array to store daily spends for each day of the week
-        int[] mostRecent = new int[5];
-
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM-yyyy", Locale.getDefault());
         SimpleDateFormat dayFormat = new SimpleDateFormat("dd", Locale.getDefault());
@@ -338,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
         String currentMonthYear = dateFormat.format(calendar.getTime());
         String currentDay = dayFormat.format(calendar.getTime());
 
-        // Loop through the last 5 days
+        // Loop through the last 3 days
         for (int i = 0; i < 3; i++) {
             // Create a reference to the "transactions" node
             DatabaseReference databaseReference = DeclareDatabase.getDBRefTransaction();
@@ -361,9 +358,11 @@ public class MainActivity extends AppCompatActivity {
                             String finalCurrentMonth = parts[0];
                             String mostRecentDate = finalCurrentMonth + " - " + finalCurrentDay;
                             String mostRecentTransactionType = transaction.getTransactionType();
+                            String mostRecentDetails = transaction.getMultilineStr();
                             int mostRecentPaymentAmount = transaction.getPaymentAmount();
                             String mostRecentPaymentAmountStr = "₱ " + mostRecentPaymentAmount;
                             int iconResource;
+
                             if ("Electricity".equals(mostRecentTransactionType)) {
                                 iconResource = R.drawable.lightning_bolt;
                             } else if ("Water Bill".equals(mostRecentTransactionType)) {
@@ -385,6 +384,7 @@ public class MainActivity extends AppCompatActivity {
                             RecentTransaction recentTrans = new RecentTransaction(
                                     mostRecentDate,
                                     mostRecentTransactionType,
+                                    mostRecentDetails,
                                     mostRecentPaymentAmountStr,
                                     iconResource
                             );
