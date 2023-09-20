@@ -17,6 +17,7 @@
             android:id="@+id/imageView2"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
+            android:layout_gravity="center"
             android:layout_weight="1"
             android:fontFamily="@font/montserratalternatess_regular"
             android:scaleType="fitStart"
@@ -28,9 +29,11 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:innerRadius="0dp"
+            android:elevation="4dp"
+            android:layout_margin="4dp"
             android:shape="ring"
             android:thicknessRatio="1.9"
-            app:cardCornerRadius="40dp">
+            app:cardCornerRadius="10dp">
 
             <ImageView
                 android:id="@+id/profileImageView"

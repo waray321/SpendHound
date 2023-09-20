@@ -54,12 +54,13 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<RecentTransaction> recentTransactionList = new ArrayList<>();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
 
         mAuth = DeclareDatabase.getAuth();
 
@@ -129,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 popupMenu.show();
             }
         });
+        progressBar.setVisibility(View.GONE);
     }
 
     public void setTextViews() {

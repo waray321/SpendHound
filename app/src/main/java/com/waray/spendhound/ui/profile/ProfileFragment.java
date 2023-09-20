@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.waray.spendhound.MainActivity;
 import com.waray.spendhound.R;
 
 public class ProfileFragment extends Fragment {
@@ -23,5 +24,6 @@ public class ProfileFragment extends Fragment {
             activity.getSupportActionBar().hide();
         }
         return view;
+
     }
 }
