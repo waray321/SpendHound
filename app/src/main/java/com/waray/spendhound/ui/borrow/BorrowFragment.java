@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.waray.spendhound.MainActivity;
 import com.waray.spendhound.R;
 
 public class BorrowFragment extends Fragment {
@@ -16,6 +17,7 @@ public class BorrowFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_borrow, container, false);
+
 
         // Get the hosting Activity and remove the ActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();

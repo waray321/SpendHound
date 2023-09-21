@@ -35,6 +35,7 @@ import com.waray.spendhound.databinding.FragmentHomeBinding;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
@@ -120,13 +121,8 @@ public class HomeFragment extends Fragment {
     public void setProfileImage(ImageView imageView) {
         // Check if the fragment is attached to an activity
         if (isAdded()) {
-            // Get the current user's ID
-            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-            // Construct the reference to the user's profile image in Firebase Storage
+            String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
             StorageReference storageRef = FirebaseStorage.getInstance().getReference("profile_images").child(userId);
-
-            // Load and display the user's profile image using Glide
             storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri downloadUri) {
