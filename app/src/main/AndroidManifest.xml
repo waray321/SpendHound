@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SpendHound"
-        tools:targetApi="31">
+        tools:targetApi="tiramisu"
+        android:enableOnBackInvokedCallback="true">
 
         <!-- Firebase Authentication -->
         <activity
@@ -47,7 +48,8 @@
         <activity android:name=".AddTranscationActivity"
             android:exported="true"
             android:parentActivityName=".MainActivity"
-            android:label="Add Transaction"/>
+            android:label="Add Transaction"
+            android:windowSoftInputMode="adjustPan"/>
 
         <activity android:name=".LoginActivity"
             android:exported="true"

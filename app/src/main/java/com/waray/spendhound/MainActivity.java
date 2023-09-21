@@ -39,14 +39,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    private BottomNavigationView navView;
-    private TextView day7TextView;
-    private TextView day6TextView;
-    private TextView day5TextView;
-    private TextView day4TextView;
-    private TextView day3TextView;
-    private TextView day2TextView;
-    private TextView day1TextView;
+    public BottomNavigationView navView;
     public FirebaseAuth mAuth;
     public int totalMonthSpends;
     private ProgressBar progressBar;
@@ -64,101 +57,19 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = DeclareDatabase.getAuth();
 
-        day7TextView = findViewById(R.id.day7);
-        day6TextView = findViewById(R.id.day6);
-        day5TextView = findViewById(R.id.day5);
-        day4TextView = findViewById(R.id.day4);
-        day3TextView = findViewById(R.id.day3);
-        day2TextView = findViewById(R.id.day2);
-        day1TextView = findViewById(R.id.day1);
-
-        // Update the text of each TextView
-        setTextViews();
-
-        getTotalMonthSpends();
-
-        getEverydaySpends();
-
-        getRecentTransaction();
-
         navView = findViewById(R.id.navView);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
+                R.id.navigation_home, R.id.navigation_borrow, R.id.navigation_profile)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupWithNavController(navView, navController);
 
-        FloatingActionButton fab_addTransaction = findViewById(R.id.fab_addTransaction);
-
-        fab_addTransaction.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Create an Intent to navigate to NewActivity
-                Intent intent = new Intent(MainActivity.this, AddTranscationActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        CardView cardViewProfile = findViewById(R.id.cardView_profile);
-
-        cardViewProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu popupMenu = new PopupMenu(MainActivity.this, cardViewProfile, Gravity.END, androidx.transition.R.attr.popupMenuStyle, 0);
-                popupMenu.inflate(R.menu.dropdown_menu);
-
-                // Set a click listener for menu items
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getItemId() == R.id.menu_logout) {
-                            // Handle logout action
-                            Toast.makeText(MainActivity.this, "Logout Successfully", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                            startActivity(intent);
-                            mAuth.signOut();
-                            return true;
-                        } else {
-                            // Handle other menu item clicks
-                            return false;
-                        }
-                    }
-                });
-
-                popupMenu.show();
-            }
-        });
         progressBar.setVisibility(View.GONE);
     }
 
-    public void setTextViews() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR, -6); // Start with 6 days ago
-
-        // Set the text for each TextView
-        day7TextView.setText(getFormattedDay(calendar));
-        calendar.add(Calendar.DAY_OF_YEAR, 1);
-        day6TextView.setText(getFormattedDay(calendar));
-        calendar.add(Calendar.DAY_OF_YEAR, 1);
-        day5TextView.setText(getFormattedDay(calendar));
-        calendar.add(Calendar.DAY_OF_YEAR, 1);
-        day4TextView.setText(getFormattedDay(calendar));
-        calendar.add(Calendar.DAY_OF_YEAR, 1);
-        day3TextView.setText(getFormattedDay(calendar));
-        calendar.add(Calendar.DAY_OF_YEAR, 1);
-        day2TextView.setText(getFormattedDay(calendar));
-        calendar.add(Calendar.DAY_OF_YEAR, 1);
-        day1TextView.setText(getFormattedDay(calendar));
-    }
-
-    private String getFormattedDay(Calendar calendar) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE", Locale.getDefault());
-        return dateFormat.format(calendar.getTime());
-    }
-
-    private void getTotalMonthSpends() {
+    public void getTotalMonthSpends() {
         // Create a reference to the "transactions" node
         DatabaseReference databaseReference = DeclareDatabase.getDBRefTransaction();
 
@@ -206,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("DefaultLocale")
-    private void getEverydaySpends() {
+    public void getEverydaySpends() {
         // Initialize an array to store daily spends for each day of the week
         int[] dailySpends = new int[7];
 
@@ -266,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setViewHeightForDay(int day, int dailySpends) {
+    public void setViewHeightForDay(int day, int dailySpends) {
         int[] dailySpendsArray = new int[7];
         dailySpendsArray[day] = dailySpends;
         String dailySpendString = String.valueOf(dailySpendsArray[day]);
@@ -330,12 +241,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getRecentTransaction() {
+        // Clear the existing transaction data
+        recentTransactionList.clear();
+
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM-yyyy", Locale.getDefault());
         SimpleDateFormat dayFormat = new SimpleDateFormat("dd", Locale.getDefault());
 
         String currentMonthYear = dateFormat.format(calendar.getTime());
         String currentDay = dayFormat.format(calendar.getTime());
+
 
         // Loop through the last 3 days
         for (int i = 0; i < 3; i++) {
@@ -346,8 +261,6 @@ public class MainActivity extends AppCompatActivity {
             // Create a child with the current day
             DatabaseReference dayRef = monthYearRef.child(currentDay);
 
-            // Add a listener to retrieve data for the current date
-            final int days = i; // Store the day index for use inside the listener
             String finalCurrentDay = currentDay;
             dayRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -420,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Utility method to show a toast message
-    private void showToast(String message) {
+    public void showToast(String message) {
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 

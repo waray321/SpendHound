@@ -70,7 +70,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_regular"
-                android:text=" (not required)"
+                android:text=" (optional)"
                 android:textColor="@color/yellow" />
 
             <TextView
@@ -187,7 +187,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserratalternatess_regular"
-            android:hint="Input payment here"
             android:text="Who paid?:" />
 
         <Button
@@ -204,7 +203,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -217,7 +216,9 @@
                     android:id="@+id/container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"></LinearLayout>
+                    android:orientation="vertical">
+
+                </LinearLayout>
             </ScrollView>
         </LinearLayout>
 
