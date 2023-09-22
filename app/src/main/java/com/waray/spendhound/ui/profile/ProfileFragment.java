@@ -38,6 +38,7 @@ import com.waray.spendhound.R;
 import com.waray.spendhound.RecentTransaction;
 import com.waray.spendhound.RecentTransactionAdapter;
 import com.waray.spendhound.SpinnerItem;
+import com.waray.spendhound.SpinnerItemMonths;
 import com.waray.spendhound.Transaction;
 import com.waray.spendhound.ui.home.HomeFragment;
 
@@ -219,8 +220,9 @@ public class ProfileFragment extends Fragment {
                 List<String> sortedMonths = new ArrayList<>(uniqueMonths);
                 Collections.sort(sortedMonths);
 
-                SpinnerItem adapter = new SpinnerItem(getActivity(), sortedMonths);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                monthSpinner.setBackgroundResource(R.drawable.transparent_background);
+
+                SpinnerItemMonths adapter = new SpinnerItemMonths(getActivity(), sortedMonths);
                 monthSpinner.setAdapter(adapter);
             }
 

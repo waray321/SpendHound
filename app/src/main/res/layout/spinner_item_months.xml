@@ -9,15 +9,15 @@
         android:id="@android:id/text2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
+        android:textSize="13sp"
+        android:text="September"
+        android:layout_margin="8dp"
+        android:background="@drawable/transparent_background"
         android:fontFamily="@font/montserratalternatess_regular"
-        android:textColor="@color/whitest"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
+        android:textColor="@color/yellow"
         android:gravity="center_vertical"
     />
+
 
 
 </LinearLayout>

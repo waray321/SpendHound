@@ -97,12 +97,9 @@ public class AddTranscationActivity extends AppCompatActivity {
         }
 
         transactionTypeSpinner = findViewById(R.id.transactionType);
-        // Create an ArrayAdapter using the string array and a default spinner layout
         String[] transactionTypes = getResources().getStringArray(R.array.transactionTypes_String);
         SpinnerItem adapter = new SpinnerItem(this, Arrays.asList(transactionTypes));
-        // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
         transactionTypeSpinner.setAdapter(adapter);
 
         container = findViewById(R.id.container);
