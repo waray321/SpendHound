@@ -272,7 +272,7 @@ public class AddTranscationActivity extends AppCompatActivity {
             String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
             // Create a reference to the "users" node in the database
-            DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users").child(currentUserID);
+            DatabaseReference usersRef = DeclareDatabase.getDatabaseReference().child(currentUserID);
 
             // Read the username from the database
             usersRef.child("username").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -343,8 +343,6 @@ public class AddTranscationActivity extends AppCompatActivity {
                 }
             });
         }
-        MainActivity mainActivity = new MainActivity();
-        mainActivity.getRecentTransaction();
     }
 
     private void CalculateIndividualPayment(){
@@ -428,6 +426,7 @@ public class AddTranscationActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public void exitEditText(){
         final EditText editText = findViewById(R.id.editTextTextMultiLine);
         final EditText editTextPaymentAmount = findViewById(R.id.paymentAmount);
