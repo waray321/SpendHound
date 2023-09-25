@@ -75,6 +75,7 @@ public class AddTranscationActivity extends AppCompatActivity {
     private EditText paymentAmountEditText;
     private EditText editTextTextMultiLine;
     private TextView individualPayment;
+    private int totalIndividualPayment, totalBalanced, totalUnpaid, totalOwed, totalDept;
     public String usernamePost;
     private ArrayList<RecentTransaction> recentTransactionList = new ArrayList<>();
 
@@ -207,6 +208,7 @@ public class AddTranscationActivity extends AppCompatActivity {
         // Get the text from the EditText
         paymentAmountStr = paymentAmountEditText.getText().toString();
         multilineStr = editTextTextMultiLine.getText().toString();
+
         if (paymentAmountStr.equals("")){
             paymentAmount = 0;
         }else {
@@ -301,7 +303,7 @@ public class AddTranscationActivity extends AppCompatActivity {
 
 
                             // Create a Transaction object with the data
-                            Transaction transaction = new Transaction(transactionType, paymentAmount, multilineStr, payorsList, amountsPaidList, usernamePost);
+                            Transaction transaction = new Transaction(transactionType, paymentAmount, multilineStr, payorsList, amountsPaidList, usernamePost, totalIndividualPayment);
 
                             // Set the value of the transaction in the database under the timestamp
                             timestampRef.setValue(transaction)
@@ -369,8 +371,8 @@ public class AddTranscationActivity extends AppCompatActivity {
                         // Calculate the individual payment
                         int numberOfUsers = usernames.size()-1; // Replace 'usernames' with your list of usernames
                         if (numberOfUsers > 0) {
-                            int totalindividualPayment = paymentAmount / numberOfUsers;
-                            individualPayment.setText("₱ " + totalindividualPayment + ".00");
+                            totalIndividualPayment = paymentAmount / numberOfUsers;
+                            individualPayment.setText("₱ " + totalIndividualPayment + ".00");
                         } else {
                             // Handle the case where there are no users
                             individualPayment.setText("No Users");

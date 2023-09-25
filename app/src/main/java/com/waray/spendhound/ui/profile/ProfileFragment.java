@@ -1,5 +1,7 @@
 package com.waray.spendhound.ui.profile;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -24,6 +27,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -58,12 +62,16 @@ public class ProfileFragment extends Fragment {
 
     private ImageView profileImageView;
     private TextView nicknameTextView;
+    private TextView totalBalancedTextView;
     private EditText nicknameEditText;
     private ImageView editNickname;
     private ImageView saveNickname;
     private Spinner monthSpinner;
-
+    public FirebaseAuth mAuth;
+    private List<String> sortedMonths;
     private String currentNickname = "";
+    private String monthYear;
+    private int totalIndividualPayment, totalPaymentList;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -76,11 +84,14 @@ public class ProfileFragment extends Fragment {
         editNickname = view.findViewById(R.id.editNickname);
         saveNickname = view.findViewById(R.id.saveNickname);
         monthSpinner = view.findViewById(R.id.monthSpinner);
+        totalBalancedTextView = view.findViewById(R.id.totalBalancedTextView);
 
         loadNickname();
         EditNickname();
         SaveNickname();
         MonthlyFilter();
+        TotalBalanced();
+        //TotalPaymentList();
 
         // Get the hosting Activity and remove the ActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -88,7 +99,6 @@ public class ProfileFragment extends Fragment {
             activity.getSupportActionBar().hide();
         }
         return view;
-
     }
 
     public void setProfileImage(ImageView imageView) {
@@ -217,7 +227,7 @@ public class ProfileFragment extends Fragment {
                 }
 
                 // Convert the Set to a List for sorting (if needed)
-                List<String> sortedMonths = new ArrayList<>(uniqueMonths);
+                sortedMonths = new ArrayList<>(uniqueMonths);
                 Collections.sort(sortedMonths);
 
                 monthSpinner.setBackgroundResource(R.drawable.transparent_background);
@@ -234,5 +244,145 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+    }
+
+    /*private void TotalPaymentList(){
+        monthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                DatabaseReference databaseReference = DeclareDatabase.getDBRefTransaction();
+                String currentYear = new SimpleDateFormat("yyyy", Locale.getDefault()).format(Calendar.getInstance().getTime());
+
+                String selectedMonth = sortedMonths.get(position);
+                monthYear = selectedMonth + "-" + currentYear;
+                DatabaseReference monthYearRef = databaseReference.child(monthYear);
+                DatabaseReference payorsListRef = monthYearRef.child("payorsList");
+
+                mAuth = DeclareDatabase.getAuth();
+                FirebaseUser currentUser = mAuth.getCurrentUser();
+
+                totalPaymentList = 0;
+                payorsListRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            for (DataSnapshot daySnapshot : dataSnapshot.getChildren()) {
+                                for (DataSnapshot timeSnapshot : daySnapshot.getChildren()) {
+                                    for (DataSnapshot payorSnapshot : timeSnapshot.getChildren()) {
+                                        String payorUsername = payorSnapshot.getValue(String.class);
+                                        if (payorUsername != null && payorUsername.equals(currentUser)) {
+                                            // This payor is "Deku," so you can access their amountsPaidList
+                                            DataSnapshot amountsPaidListSnapshot = payorSnapshot.child("amountsPaidList");
+
+                                            // Iterate through amountsPaidList and add up the payment amounts
+                                            for (DataSnapshot amountSnapshot : amountsPaidListSnapshot.getChildren()) {
+                                                Integer paymentAmount = amountSnapshot.getValue(Integer.class);
+                                                if (paymentAmount != null) {
+                                                    totalPaymentList += paymentAmount;
+
+                                                    Toast.makeText(getActivity(), totalPaymentList, Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            String totalPaymentListStr = String.valueOf(totalPaymentList);
+                            //String totalIndividualPaymentStr = String.valueOf(totalIndividualPayment);
+                            totalBalancedTextView.setText("₱ " + totalPaymentListStr + ".00");
+                            Toast.makeText(getActivity(), totalPaymentListStr, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+
+                });
+                Toast.makeText(getActivity(), "Test3", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        Toast.makeText(getActivity(), "Test4", Toast.LENGTH_SHORT).show();
+    }*/
+
+
+    private void TotalBalanced() {
+        monthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                DatabaseReference databaseReference = DeclareDatabase.getDBRefTransaction();
+                String currentYear = new SimpleDateFormat("yyyy", Locale.getDefault()).format(Calendar.getInstance().getTime());
+
+                String selectedMonth = sortedMonths.get(position);
+                monthYear = selectedMonth + "-" + currentYear;
+                DatabaseReference monthYearRef = databaseReference.child(monthYear);
+
+                mAuth = DeclareDatabase.getAuth();
+                FirebaseUser currentUser = mAuth.getCurrentUser();
+                String username = currentUser.getDisplayName();
+
+                totalIndividualPayment = 0;
+
+                // Add a listener to retrieve data for the entire month
+                monthYearRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot daySnapshot : dataSnapshot.getChildren()) {
+                            for (DataSnapshot timeSnapshot : daySnapshot.getChildren()) {
+                                Transaction transaction = timeSnapshot.getValue(Transaction.class);
+                                if (transaction != null) {
+
+                                    int individualPayment = transaction.getTotalIndividualPayment();
+                                    totalIndividualPayment += individualPayment;
+                                }
+                                DataSnapshot payorsSnapshot = timeSnapshot.child("payorsList");
+                                for (DataSnapshot payorSnapshot : payorsSnapshot.getChildren()) {
+                                    String payorUsername = payorSnapshot.getValue(String.class);
+                                    if (payorUsername.equals(currentUser)) {
+                                        // This payor is "Deku," so you can access their amountsPaidList
+                                        DataSnapshot amountsPaidListSnapshot = timeSnapshot.child("amountsPaidList");
+                                        // Iterate through amountsPaidList and add up the payment amounts
+                                        for (DataSnapshot amountSnapshot : amountsPaidListSnapshot.getChildren()) {
+                                            Integer paymentAmount = amountSnapshot.getValue(Integer.class);
+                                            if (paymentAmount != null) {
+                                                totalPaymentList += paymentAmount;
+                                                Toast.makeText(getActivity(), totalPaymentList, Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    }else {
+                                        Toast.makeText(getActivity(), username, Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }
+                        }
+                        totalIndividualPayment -= totalPaymentList;
+                        String totalPaymentListStr = String.valueOf(totalPaymentList);
+                        String totalIndividualPaymentStr = String.valueOf(totalIndividualPayment);
+                        //totalBalancedTextView.setText("₱ " + totalPaymentListStr + ".00");
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        // Handle database read error
+                        String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                        Log.e("FirebaseDatabase", errorMessage);
+                    }
+                });
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 }

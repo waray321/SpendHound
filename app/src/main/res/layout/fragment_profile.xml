@@ -177,7 +177,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_regular"
-                android:text="Total Balance:"
+                android:text="Total Balanced:"
                 android:textColor="@color/white"
                 android:textSize="14sp" />
 
@@ -187,6 +187,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/totalBalancedTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -218,7 +219,7 @@
                     android:layout_gravity="center_vertical"
                     android:fontFamily="@font/montserratalternatess_regular"
                     android:gravity="center_vertical"
-                    android:text="month of:"
+                    android:text="in month of:"
                     android:textColor="@color/white"
                     android:textSize="12sp" />
 
@@ -238,6 +239,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/balancedTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
@@ -245,11 +247,12 @@
                     android:fontFamily="@font/montserratalternatess_regular"
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="4dp"
-                    android:text="Balance"
+                    android:text="Balanced"
                     android:textColor="@color/yellow"
                     android:textSize="14sp" />
 
                 <TextView
+                    android:id="@+id/unpaidTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
@@ -261,6 +264,19 @@
                     android:textSize="14sp" />
 
                 <TextView
+                    android:id="@+id/owedTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:fontFamily="@font/montserratalternatess_regular"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="4dp"
+                    android:text="Owed"
+                    android:textColor="@color/whitest"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/debtTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"

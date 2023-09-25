@@ -40,6 +40,11 @@ public class SignUpActivity extends AppCompatActivity {
     private Uri profileImageUri;
     private ImageView profileImageView;
     private static final int PICK_IMAGE_REQUEST = 1;
+    private String userId;
+    private int balanced = 0;
+    private int unpaid = 0;
+    private int owed = 0;
+    private int debt = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,13 +94,13 @@ public class SignUpActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                String userId = mAuth.getCurrentUser().getUid();
+                                userId = mAuth.getCurrentUser().getUid();
 
                                 if (profileImageUri != null && profileImageUri.getPath() != null) {
                                     uploadProfileImage(userId);
                                 } else {
                                     String profileImageUrl = "android.resource://" + getPackageName() + "/drawable/placeholder_profile_image";
-                                    saveUserToDatabase(userId, username, email, profileImageUrl, password);
+                                    saveUserToDatabase(username, email, profileImageUrl, password, balanced, unpaid, owed, debt);
                                     signUpSuccess();
                                 }
 
@@ -123,7 +128,7 @@ public class SignUpActivity extends AppCompatActivity {
                         storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri downloadUri) {
-                                saveUserToDatabase(userId, usernameEditText.getText().toString().trim(), emailEditText.getText().toString().trim(), downloadUri.toString(), passwordEditText.getText().toString().trim());
+                                saveUserToDatabase(usernameEditText.getText().toString().trim(), emailEditText.getText().toString().trim(), downloadUri.toString(), passwordEditText.getText().toString().trim(), 0, 0,0,0);
                             }
                         });
                     }
@@ -137,10 +142,10 @@ public class SignUpActivity extends AppCompatActivity {
                 });
     }
 
-    private void saveUserToDatabase(String userId, String username, String email, String profileImageUrl, String password) {
+    private void saveUserToDatabase(String username, String email, String profileImageUrl, String password, int balanced, int unpaid, int owed, int debt) {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
 
-        User user = new User(email, password, profileImageUrl, username);
+        User user = new User(username, email, profileImageUrl, password, balanced, unpaid, owed, debt);
 
         usersRef.child(userId).setValue(user)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {

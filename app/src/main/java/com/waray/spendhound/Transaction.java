@@ -15,14 +15,16 @@ public class Transaction {
     private List<String> payorsList;
     private List<Integer> amountsPaidList;
     private String usernamePost;
+    private int totalIndividualPayment;
 
-    public Transaction(String transactionType, int paymentAmount,String multilineStr, List<String> payorsList, List<Integer> amountsPaidList, String usernamePost) {
+    public Transaction(String transactionType, int paymentAmount,String multilineStr, List<String> payorsList, List<Integer> amountsPaidList, String usernamePost, int totalIndividualPayment) {
         this.transactionType = transactionType;
         this.paymentAmount = paymentAmount;
         this.multilineStr = multilineStr;
         this.payorsList = payorsList;
         this.amountsPaidList = amountsPaidList;
         this.usernamePost= usernamePost;
+        this.totalIndividualPayment= totalIndividualPayment;
     }
 
     // Add an empty constructor
@@ -79,5 +81,13 @@ public class Transaction {
 
     public void setMultilineStr(String multilineStr) {
         this.multilineStr = multilineStr;
+    }
+
+    public int getTotalIndividualPayment() {
+        return totalIndividualPayment;
+    }
+
+    public void setTotalIndividualPayment(int totalIndividualPayment) {
+        this.totalIndividualPayment = totalIndividualPayment;
     }
 }
