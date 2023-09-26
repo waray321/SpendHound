@@ -202,7 +202,7 @@
                     android:layout_height="48dp"
                     android:layout_marginEnd="20dp"
                     android:layout_weight="1"
-                    android:background="@drawable/glassy_background"
+                    android:background="@drawable/glassy_background2"
                     android:elevation="4dp"
                     android:src="@drawable/chip" />
 
@@ -243,7 +243,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
-                    android:background="@drawable/glassy_background"
+                    android:background="@drawable/glassy_background2"
                     android:fontFamily="@font/montserratalternatess_regular"
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="4dp"

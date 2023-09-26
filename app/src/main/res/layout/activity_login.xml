@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/whitest"
     android:gravity="top|center"
     android:orientation="vertical"
     android:padding="24dp"
@@ -30,9 +30,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="4dp"
             android:layout_marginBottom="24dp"
             android:background="@drawable/glassy_background"
-            android:elevation="10dp"
+            android:elevation="4dp"
             android:orientation="horizontal">
 
             <ImageView
@@ -41,7 +42,7 @@
                 android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="14dp"
-                app:srcCompat="@drawable/profile_icon" />
+                app:srcCompat="@drawable/email" />
 
             <EditText
                 android:id="@+id/usernameEditText"
@@ -62,9 +63,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="4dp"
             android:layout_marginBottom="24dp"
             android:background="@drawable/glassy_background"
-            android:elevation="10dp"
+            android:elevation="4dp"
             android:orientation="horizontal">
 
             <ImageView
@@ -142,23 +144,24 @@
                 tools:ignore="TouchTargetSizeCheck" />
         </LinearLayout>
     </LinearLayout>
+
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true">
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true">
 
         <ProgressBar
             android:id="@+id/progressBar"
+            style="@style/CustomProgressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:layout_gravity="center"
             android:background="@drawable/glassy_background"
             android:padding="20dp"
-            style="@style/CustomProgressBarStyle"/>
+            android:visibility="gone" />
 
     </FrameLayout>
 

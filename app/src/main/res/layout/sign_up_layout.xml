@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/whitest"
     tools:context=".SignUpActivity">
 
     <LinearLayout
@@ -20,15 +21,15 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/view2"
-            android:layout_width="130dp"
-            android:layout_height="130dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="24dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:layout_marginBottom="10dp"
-            android:elevation="20dp"
+            android:elevation="4dp"
+            android:layout_marginTop="20dp"
+            android:foreground="@drawable/round_border_profile"
             android:shape="ring"
             android:thicknessRatio="0"
-            app:cardCornerRadius="100dp">
+            app:cardCornerRadius="15dp">
 
             <ImageView
                 android:id="@+id/profileImageView"
@@ -55,10 +56,11 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="4dp"
             android:layout_marginTop="40dp"
             android:layout_marginBottom="24dp"
             android:background="@drawable/glassy_background"
-            android:elevation="10dp"
+            android:elevation="4dp"
             android:orientation="horizontal">
 
             <ImageView
@@ -88,9 +90,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="4dp"
             android:layout_marginBottom="24dp"
             android:background="@drawable/glassy_background"
-            android:elevation="10dp"
+            android:elevation="4dp"
             android:orientation="horizontal">
 
             <ImageView
@@ -99,7 +102,7 @@
                 android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="14dp"
-                app:srcCompat="@drawable/profile_icon" />
+                app:srcCompat="@drawable/email" />
 
             <EditText
                 android:id="@+id/emailSignup"
@@ -120,9 +123,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="4dp"
             android:layout_marginBottom="24dp"
             android:background="@drawable/glassy_background"
-            android:elevation="10dp"
+            android:elevation="4dp"
             android:orientation="horizontal">
 
             <ImageView
@@ -153,9 +157,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="4dp"
             android:layout_marginBottom="40dp"
             android:background="@drawable/glassy_background"
-            android:elevation="10dp"
+            android:elevation="4dp"
             android:orientation="horizontal">
 
             <ImageView
@@ -188,6 +193,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/yellow"
+            android:elevation="4dp"
             android:fontFamily="@font/montserratalternatess_bold"
             android:onClick="onSignUpClicked"
             android:paddingVertical="20dp"
@@ -233,13 +239,13 @@
 
         <ProgressBar
             android:id="@+id/progressBar"
+            style="@style/CustomProgressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:layout_gravity="center"
             android:background="@drawable/glassy_background"
             android:padding="20dp"
-            style="@style/CustomProgressBarStyle"/>
+            android:visibility="gone" />
 
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

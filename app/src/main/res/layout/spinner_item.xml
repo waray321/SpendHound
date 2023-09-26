@@ -13,12 +13,11 @@
         android:text="Blackwater"
         android:fontFamily="@font/montserratalternatess_regular"
         android:textColor="@color/darkBlue"
-        android:paddingStart="16dp"
         android:paddingEnd="16dp"
+        android:layout_marginHorizontal="8dp"
         android:paddingTop="12dp"
         android:paddingBottom="12dp"
-        android:gravity="center_vertical"
-    />
+        android:gravity="center_vertical" />
 
 
 </LinearLayout>

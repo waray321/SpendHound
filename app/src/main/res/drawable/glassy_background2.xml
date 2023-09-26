@@ -3,7 +3,8 @@
     <!-- Bottom layer: A solid color background (you can customize this color) -->
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="#40000000" />
+            <solid android:color="#40FFFFFF" />
+            <corners android:radius="8dp" />
         </shape>
     </item>
 </layer-list>
