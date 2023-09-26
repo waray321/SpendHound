@@ -72,6 +72,7 @@ public class ProfileFragment extends Fragment {
     private String currentNickname = "";
     private String monthYear;
     private int totalIndividualPayment, totalPaymentList;
+    private int i, e;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -258,6 +259,8 @@ public class ProfileFragment extends Fragment {
                 DatabaseReference monthYearRef = databaseReference.child(monthYear);
 
                 totalIndividualPayment = 0;
+                totalPaymentList = 0;
+                i = 0;
 
                 // Add a listener to retrieve data for the entire month
                 monthYearRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -268,29 +271,32 @@ public class ProfileFragment extends Fragment {
                             for (DataSnapshot timeSnapshot : daySnapshot.getChildren()) {
                                 DataSnapshot payorsSnapshot = timeSnapshot.child("payorsList");
                                 for (DataSnapshot payorSnapshot : payorsSnapshot.getChildren()) {
+
                                     String payorUsername = payorSnapshot.getValue(String.class);
                                     if (payorUsername != null && payorUsername.equals(currentNickname)) {
+                                        i++;
                                         // This payor is "Deku," so you can access their amountsPaidList
                                         DataSnapshot amountsPaidListSnapshot = timeSnapshot.child("amountsPaidList");
                                         // Iterate through amountsPaidList and add up the payment amounts
                                         for (DataSnapshot amountSnapshot : amountsPaidListSnapshot.getChildren()) {
                                             Integer paymentAmount = amountSnapshot.getValue(Integer.class);
-                                            if (paymentAmount != null) {
+                                            e = 1;
+                                            if (e == i) {
                                                 totalPaymentList += paymentAmount;
+                                                i = 0;
+                                            }else{
+                                                e++;
                                             }
                                         }
-
-                                    }else {
-
+                                        break;
                                     }
+                                    i++;
                                 }
                             }
                         }
-                        //totalIndividualPayment -= totalPaymentList;
                         String totalPaymentListStr = String.valueOf(totalPaymentList);
-                        String totalIndividualPaymentStr = String.valueOf(totalIndividualPayment);
+                        Toast.makeText(getActivity(), totalPaymentListStr, Toast.LENGTH_SHORT).show();
                         totalBalancedTextView.setText("₱ " + totalPaymentListStr + ".00");
-
                     }
 
                     @Override
@@ -300,8 +306,8 @@ public class ProfileFragment extends Fragment {
                         Log.e("FirebaseDatabase", errorMessage);
                     }
                 });
-            }
 
+            }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
@@ -309,8 +315,7 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-
-    private void TotalBalanced() {
+    /*private void TotalBalanced() {
         monthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -381,5 +386,5 @@ public class ProfileFragment extends Fragment {
 
             }
         });
-    }
+    }*/
 }

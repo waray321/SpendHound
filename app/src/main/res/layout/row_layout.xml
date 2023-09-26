@@ -27,7 +27,7 @@
         android:hint="Amount Paid"
         android:inputType="number"
         android:textAlignment="center"
-        android:textSize="16sp" />
+        android:textSize="14sp" />
 
     <Button
         android:id="@+id/closeBtn"
