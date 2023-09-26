@@ -258,9 +258,11 @@
                     android:layout_gravity="bottom"
                     android:fontFamily="@font/montserratalternatess_regular"
                     android:paddingHorizontal="12dp"
+                    android:background="@drawable/text_view_selector"
+                    android:textColor="@color/selected_color"
+                    android:clickable="true"
                     android:paddingVertical="4dp"
                     android:text="Unpaid"
-                    android:textColor="@color/whitest"
                     android:textSize="14sp" />
 
                 <TextView

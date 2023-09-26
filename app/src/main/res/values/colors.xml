@@ -14,4 +14,15 @@
     <color name="whitest">#FFFFFF</color>
     <color name="selected_color">#03071e</color>
     <color name="default_color">#FF000000</color>
+
+
+    <!-- res/color/text_color_selector.xml -->
+    <selector xmlns:android="http://schemas.android.com/apk/res/android"
+        name="text_color_selector">
+        <item android:state_pressed="false" android:color="#FFFFFF" />
+        <item android:state_pressed="true" android:color="#ffba08" />
+    </selector>
+
 </resources>
+
+

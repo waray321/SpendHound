@@ -61,8 +61,7 @@ import java.util.Set;
 public class ProfileFragment extends Fragment {
 
     private ImageView profileImageView;
-    private TextView nicknameTextView;
-    private TextView totalBalancedTextView;
+    private TextView nicknameTextView, totalBalancedTextView, unpaidTextView;
     private EditText nicknameEditText;
     private ImageView editNickname;
     private ImageView saveNickname;
@@ -71,8 +70,8 @@ public class ProfileFragment extends Fragment {
     private List<String> sortedMonths;
     private String currentNickname = "";
     private String monthYear;
-    private int totalIndividualPayment, totalPaymentList;
-    private int i, e;
+    private int totalIndividualPayment, totalPaymentList, balance = 0, unpaid = 0, owe = 0, debt = 0;
+    private int i, e, o;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -86,13 +85,13 @@ public class ProfileFragment extends Fragment {
         saveNickname = view.findViewById(R.id.saveNickname);
         monthSpinner = view.findViewById(R.id.monthSpinner);
         totalBalancedTextView = view.findViewById(R.id.totalBalancedTextView);
+        unpaidTextView = view.findViewById(R.id.unpaidTextView);
 
         loadNickname();
         EditNickname();
         SaveNickname();
         MonthlyFilter();
-        //TotalBalanced();
-        TotalPaymentList();
+        TotalBalanceUnpaid();
 
         // Get the hosting Activity and remove the ActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -247,7 +246,7 @@ public class ProfileFragment extends Fragment {
 
     }
 
-    private void TotalPaymentList(){
+/*    private void TotalPaymentList(){
         monthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -261,6 +260,8 @@ public class ProfileFragment extends Fragment {
                 totalIndividualPayment = 0;
                 totalPaymentList = 0;
                 i = 0;
+                e = 1;
+                o = 0;
 
                 // Add a listener to retrieve data for the entire month
                 monthYearRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -271,33 +272,34 @@ public class ProfileFragment extends Fragment {
                             for (DataSnapshot timeSnapshot : daySnapshot.getChildren()) {
                                 DataSnapshot payorsSnapshot = timeSnapshot.child("payorsList");
                                 for (DataSnapshot payorSnapshot : payorsSnapshot.getChildren()) {
-
                                     String payorUsername = payorSnapshot.getValue(String.class);
                                     if (payorUsername != null && payorUsername.equals(currentNickname)) {
                                         i++;
-                                        // This payor is "Deku," so you can access their amountsPaidList
-                                        DataSnapshot amountsPaidListSnapshot = timeSnapshot.child("amountsPaidList");
-                                        // Iterate through amountsPaidList and add up the payment amounts
-                                        for (DataSnapshot amountSnapshot : amountsPaidListSnapshot.getChildren()) {
-                                            Integer paymentAmount = amountSnapshot.getValue(Integer.class);
-                                            e = 1;
-                                            if (e == i) {
-                                                totalPaymentList += paymentAmount;
-                                                i = 0;
-                                            }else{
-                                                e++;
-                                            }
-                                        }
-                                        break;
+                                        o = i;
+                                    } else {
+                                        i++;
                                     }
-                                    i++;
                                 }
+                                DataSnapshot amountsPaidListSnapshot = timeSnapshot.child("amountsPaidList");
+                                for (DataSnapshot amountSnapshot : amountsPaidListSnapshot.getChildren()) {
+                                    Integer paymentAmount = amountSnapshot.getValue(Integer.class);
+                                    if (e == o) {
+                                        totalPaymentList += paymentAmount;
+                                        e = 100;
+                                    } else{
+                                        e++;
+                                    }
+                                }
+                                i = 0;
+                                e = 1;
+                                o = 0;
                             }
                         }
                         String totalPaymentListStr = String.valueOf(totalPaymentList);
                         Toast.makeText(getActivity(), totalPaymentListStr, Toast.LENGTH_SHORT).show();
                         totalBalancedTextView.setText("₱ " + totalPaymentListStr + ".00");
                     }
+
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -313,9 +315,9 @@ public class ProfileFragment extends Fragment {
 
             }
         });
-    }
+    }*/
 
-    /*private void TotalBalanced() {
+    private void TotalBalanceUnpaid() {
         monthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -326,13 +328,12 @@ public class ProfileFragment extends Fragment {
                 monthYear = selectedMonth + "-" + currentYear;
                 DatabaseReference monthYearRef = databaseReference.child(monthYear);
 
-                mAuth = DeclareDatabase.getAuth();
-                FirebaseUser currentUser = mAuth.getCurrentUser();
-                String username = currentUser.getDisplayName();
-
                 totalIndividualPayment = 0;
+                totalPaymentList = 0;
+                i = 0;
+                e = 1;
+                o = 0;
 
-                // Add a listener to retrieve data for the entire month
                 monthYearRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @SuppressLint("SetTextI18n")
                     @Override
@@ -341,35 +342,22 @@ public class ProfileFragment extends Fragment {
                             for (DataSnapshot timeSnapshot : daySnapshot.getChildren()) {
                                 Transaction transaction = timeSnapshot.getValue(Transaction.class);
                                 if (transaction != null) {
-
                                     int individualPayment = transaction.getTotalIndividualPayment();
                                     totalIndividualPayment += individualPayment;
                                 }
-                                DataSnapshot payorsSnapshot = timeSnapshot.child("payorsList");
-                                for (DataSnapshot payorSnapshot : payorsSnapshot.getChildren()) {
-                                    String payorUsername = payorSnapshot.getValue(String.class);
-                                    if (payorUsername.equals(currentUser)) {
-                                        // This payor is "Deku," so you can access their amountsPaidList
-                                        DataSnapshot amountsPaidListSnapshot = timeSnapshot.child("amountsPaidList");
-                                        // Iterate through amountsPaidList and add up the payment amounts
-                                        for (DataSnapshot amountSnapshot : amountsPaidListSnapshot.getChildren()) {
-                                            Integer paymentAmount = amountSnapshot.getValue(Integer.class);
-                                            if (paymentAmount != null) {
-                                                totalPaymentList += paymentAmount;
-                                                Toast.makeText(getActivity(), totalPaymentList, Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    }else {
-                                        Toast.makeText(getActivity(), username, Toast.LENGTH_SHORT).show();
-                                    }
-                                }
                             }
                         }
-                        totalIndividualPayment -= totalPaymentList;
-                        String totalPaymentListStr = String.valueOf(totalPaymentList);
-                        String totalIndividualPaymentStr = String.valueOf(totalIndividualPayment);
-                        //totalBalancedTextView.setText("₱ " + totalPaymentListStr + ".00");
 
+                        if (totalPaymentList > totalIndividualPayment){
+                            balance = totalPaymentList - totalIndividualPayment;
+                        } else if (totalPaymentList < totalIndividualPayment){
+                            unpaid = totalIndividualPayment - totalPaymentList;
+                        } else if (totalPaymentList == totalIndividualPayment) {
+                            balance = 0;
+                            unpaid = 0;
+                        }
+                        String totalIndividualPaymentStr = String.valueOf(totalIndividualPayment);
+                        totalBalancedTextView.setText("₱ " + totalIndividualPaymentStr + ".00");
                     }
 
                     @Override
@@ -386,5 +374,16 @@ public class ProfileFragment extends Fragment {
 
             }
         });
-    }*/
+    }
+
+    private void UnpaidButton(){
+        unpaidTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Handle the click event
+                unpaidTextView.setSelected(true);
+            }
+        });
+
+    }
 }
