@@ -177,7 +177,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_regular"
-                android:text="Total Balanced:"
+                android:text="Total Balance:"
                 android:textColor="@color/white"
                 android:textSize="14sp" />
 
@@ -243,27 +243,31 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
-                    android:background="@drawable/glassy_background2"
+                    android:background="@drawable/text_view_selector"
+                    android:clickable="true"
                     android:fontFamily="@font/montserratalternatess_regular"
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="4dp"
-                    android:text="Balanced"
-                    android:textColor="@color/yellow"
-                    android:textSize="14sp" />
+                    android:state_pressed= "true"
+                    android:text="Balance"
+                    android:textColor="@color/text_color_selector"
+                    android:textSize="14sp"
+                    android:focusable="true" />
 
                 <TextView
                     android:id="@+id/unpaidTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
+                    android:background="@drawable/text_view_selector"
+                    android:clickable="true"
                     android:fontFamily="@font/montserratalternatess_regular"
                     android:paddingHorizontal="12dp"
-                    android:background="@drawable/text_view_selector"
-                    android:textColor="@color/selected_color"
-                    android:clickable="true"
                     android:paddingVertical="4dp"
                     android:text="Unpaid"
-                    android:textSize="14sp" />
+                    android:textColor="@color/text_color_selector"
+                    android:textSize="14sp"
+                    android:focusable="true" />
 
                 <TextView
                     android:id="@+id/owedTextView"

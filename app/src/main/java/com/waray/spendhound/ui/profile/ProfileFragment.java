@@ -61,7 +61,7 @@ import java.util.Set;
 public class ProfileFragment extends Fragment {
 
     private ImageView profileImageView;
-    private TextView nicknameTextView, totalBalancedTextView, unpaidTextView;
+    private TextView nicknameTextView, totalBalancedTextView, balanceTextView, unpaidTextView;
     private EditText nicknameEditText;
     private ImageView editNickname;
     private ImageView saveNickname;
@@ -85,13 +85,15 @@ public class ProfileFragment extends Fragment {
         saveNickname = view.findViewById(R.id.saveNickname);
         monthSpinner = view.findViewById(R.id.monthSpinner);
         totalBalancedTextView = view.findViewById(R.id.totalBalancedTextView);
+        balanceTextView = view.findViewById(R.id.balancedTextView);
         unpaidTextView = view.findViewById(R.id.unpaidTextView);
 
         loadNickname();
         EditNickname();
         SaveNickname();
         MonthlyFilter();
-        TotalBalanceUnpaid();
+        UnpaidButton();
+        BalanceButton();
 
         // Get the hosting Activity and remove the ActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -345,19 +347,31 @@ public class ProfileFragment extends Fragment {
                                     int individualPayment = transaction.getTotalIndividualPayment();
                                     totalIndividualPayment += individualPayment;
                                 }
+                                DataSnapshot payorsSnapshot = timeSnapshot.child("payorsList");
+                                for (DataSnapshot payorSnapshot : payorsSnapshot.getChildren()) {
+                                    String payorUsername = payorSnapshot.getValue(String.class);
+                                    if (payorUsername != null && payorUsername.equals(currentNickname)) {
+                                        i++;
+                                        o = i;
+                                    } else {
+                                        i++;
+                                    }
+                                }
+                                DataSnapshot amountsPaidListSnapshot = timeSnapshot.child("amountsPaidList");
+                                for (DataSnapshot amountSnapshot : amountsPaidListSnapshot.getChildren()) {
+                                    Integer paymentAmount = amountSnapshot.getValue(Integer.class);
+                                    if (e == o) {
+                                        totalPaymentList += paymentAmount;
+                                        e = 100;
+                                    } else{
+                                        e++;
+                                    }
+                                }
+                                i = 0;
+                                e = 1;
+                                o = 0;
                             }
                         }
-
-                        if (totalPaymentList > totalIndividualPayment){
-                            balance = totalPaymentList - totalIndividualPayment;
-                        } else if (totalPaymentList < totalIndividualPayment){
-                            unpaid = totalIndividualPayment - totalPaymentList;
-                        } else if (totalPaymentList == totalIndividualPayment) {
-                            balance = 0;
-                            unpaid = 0;
-                        }
-                        String totalIndividualPaymentStr = String.valueOf(totalIndividualPayment);
-                        totalBalancedTextView.setText("₱ " + totalIndividualPaymentStr + ".00");
                     }
 
                     @Override
@@ -376,14 +390,46 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    private void UnpaidButton(){
+    private void BalanceButton(){
         unpaidTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                TotalBalanceUnpaid();
                 // Handle the click event
-                unpaidTextView.setSelected(true);
+                balanceTextView.setSelected(true);
+                if (totalPaymentList == totalIndividualPayment) {
+                    balance = 0;
+                    unpaid = 0;
+                } else {
+                    balance = totalPaymentList - totalIndividualPayment;
+                }
+                String balanceStr = String.valueOf(balance);
+                totalBalancedTextView.setText("₱ " + balanceStr + ".00");
+                Toast.makeText(getActivity(), balanceStr, Toast.LENGTH_SHORT).show();
             }
         });
 
     }
+
+    private void UnpaidButton(){
+        unpaidTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TotalBalanceUnpaid();
+                // Handle the click event
+                unpaidTextView.setSelected(true);
+                if (totalPaymentList == totalIndividualPayment) {
+                    balance = 0;
+                    unpaid = 0;
+                } else {
+                    unpaid = totalIndividualPayment - totalPaymentList;
+                }
+                String unpaidStr = String.valueOf(unpaid);
+                totalBalancedTextView.setText("₱ " + unpaidStr + ".00");
+                Toast.makeText(getActivity(), unpaidStr, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
 }
