@@ -14,6 +14,7 @@
     <color name="whitest">#FFFFFF</color>
     <color name="selected_color">#03071e</color>
     <color name="default_color">#FF000000</color>
+    <color name="glassy_background">#60FFFFFF</color>
 </resources>
 
 

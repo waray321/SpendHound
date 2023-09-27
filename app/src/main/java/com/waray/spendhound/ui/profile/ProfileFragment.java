@@ -3,6 +3,9 @@ package com.waray.spendhound.ui.profile;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -19,6 +23,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,6 +51,8 @@ import com.waray.spendhound.SpinnerItemMonths;
 import com.waray.spendhound.Transaction;
 import com.waray.spendhound.ui.home.HomeFragment;
 
+import org.w3c.dom.Text;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,7 +68,7 @@ import java.util.Set;
 public class ProfileFragment extends Fragment {
 
     private ImageView profileImageView;
-    private TextView nicknameTextView, totalBalancedTextView, balanceTextView, unpaidTextView;
+    private TextView nicknameTextView, totalBalancedTextView, balanceTextView, unpaidTextView, oweTextView, debtTextView;
     private EditText nicknameEditText;
     private ImageView editNickname;
     private ImageView saveNickname;
@@ -70,8 +77,10 @@ public class ProfileFragment extends Fragment {
     private List<String> sortedMonths;
     private String currentNickname = "";
     private String monthYear;
-    private int totalIndividualPayment, totalPaymentList, balance = 0, unpaid = 0, owe = 0, debt = 0;
-    private int i, e, o;
+    private int totalIndividualPayment, totalPaymentList, balance, unpaid, owe, debt;
+    private int i, e, o, currentBalance, currentUnpaid, currentOwe, currentDebt;
+    private View balanceUnpaidLayout, oweDebtLayout;
+    private Drawable balanceUnpaidDrawable, oweDebtDrawable, balanceUnpaidDrawableTransparent, oweDebtDrawableTransparent;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -85,15 +94,36 @@ public class ProfileFragment extends Fragment {
         saveNickname = view.findViewById(R.id.saveNickname);
         monthSpinner = view.findViewById(R.id.monthSpinner);
         totalBalancedTextView = view.findViewById(R.id.totalBalancedTextView);
-        balanceTextView = view.findViewById(R.id.balancedTextView);
+        balanceTextView = view.findViewById(R.id.balanceTextView);
         unpaidTextView = view.findViewById(R.id.unpaidTextView);
+        oweTextView = view.findViewById(R.id.oweTextView);
+        debtTextView = view.findViewById(R.id.debtTextView);
+        balanceUnpaidLayout = view.findViewById(R.id.balanceUnpaidLayout);
+        oweDebtLayout = view.findViewById(R.id.oweDebtLayout);
+
+        balanceUnpaidDrawable = ContextCompat.getDrawable(getContext(), R.drawable.round_border_glassy);
+        balanceUnpaidDrawableTransparent = ContextCompat.getDrawable(getContext(), R.drawable.transparent_background);
+        oweDebtDrawable = ContextCompat.getDrawable(getContext(), R.drawable.round_border_glassy);
+        oweDebtDrawableTransparent = ContextCompat.getDrawable(getContext(), R.drawable.transparent_background);
+        balanceUnpaidLayout.setForeground(balanceUnpaidDrawable);
+
+
+        balanceTextView.setBackgroundResource(R.drawable.button_background_visible);
+        balanceTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.yellow));
+        getBalance();
+        String currentBalanceStr = String.valueOf(currentBalance);
+        totalBalancedTextView.setText("₱ " + currentBalanceStr + ".00");
 
         loadNickname();
         EditNickname();
         SaveNickname();
         MonthlyFilter();
+        TotalBalanceUnpaid();
         UnpaidButton();
         BalanceButton();
+        OweButton();
+        DebtButton();
+
 
         // Get the hosting Activity and remove the ActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -248,77 +278,6 @@ public class ProfileFragment extends Fragment {
 
     }
 
-/*    private void TotalPaymentList(){
-        monthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                DatabaseReference databaseReference = DeclareDatabase.getDBRefTransaction();
-                String currentYear = new SimpleDateFormat("yyyy", Locale.getDefault()).format(Calendar.getInstance().getTime());
-
-                String selectedMonth = sortedMonths.get(position);
-                monthYear = selectedMonth + "-" + currentYear;
-                DatabaseReference monthYearRef = databaseReference.child(monthYear);
-
-                totalIndividualPayment = 0;
-                totalPaymentList = 0;
-                i = 0;
-                e = 1;
-                o = 0;
-
-                // Add a listener to retrieve data for the entire month
-                monthYearRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @SuppressLint("SetTextI18n")
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot daySnapshot : dataSnapshot.getChildren()) {
-                            for (DataSnapshot timeSnapshot : daySnapshot.getChildren()) {
-                                DataSnapshot payorsSnapshot = timeSnapshot.child("payorsList");
-                                for (DataSnapshot payorSnapshot : payorsSnapshot.getChildren()) {
-                                    String payorUsername = payorSnapshot.getValue(String.class);
-                                    if (payorUsername != null && payorUsername.equals(currentNickname)) {
-                                        i++;
-                                        o = i;
-                                    } else {
-                                        i++;
-                                    }
-                                }
-                                DataSnapshot amountsPaidListSnapshot = timeSnapshot.child("amountsPaidList");
-                                for (DataSnapshot amountSnapshot : amountsPaidListSnapshot.getChildren()) {
-                                    Integer paymentAmount = amountSnapshot.getValue(Integer.class);
-                                    if (e == o) {
-                                        totalPaymentList += paymentAmount;
-                                        e = 100;
-                                    } else{
-                                        e++;
-                                    }
-                                }
-                                i = 0;
-                                e = 1;
-                                o = 0;
-                            }
-                        }
-                        String totalPaymentListStr = String.valueOf(totalPaymentList);
-                        Toast.makeText(getActivity(), totalPaymentListStr, Toast.LENGTH_SHORT).show();
-                        totalBalancedTextView.setText("₱ " + totalPaymentListStr + ".00");
-                    }
-
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        // Handle database read error
-                        String errorMessage = "Database read error occurred: " + databaseError.getMessage();
-                        Log.e("FirebaseDatabase", errorMessage);
-                    }
-                });
-
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-    }*/
-
     private void TotalBalanceUnpaid() {
         monthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -330,8 +289,6 @@ public class ProfileFragment extends Fragment {
                 monthYear = selectedMonth + "-" + currentYear;
                 DatabaseReference monthYearRef = databaseReference.child(monthYear);
 
-                totalIndividualPayment = 0;
-                totalPaymentList = 0;
                 i = 0;
                 e = 1;
                 o = 0;
@@ -372,6 +329,22 @@ public class ProfileFragment extends Fragment {
                                 o = 0;
                             }
                         }
+                        if (totalPaymentList == totalIndividualPayment ) {
+                            balance = 0;
+                            unpaid = 0;
+                        } else if (totalIndividualPayment > totalPaymentList){
+                            unpaid = totalIndividualPayment - totalPaymentList;
+                        } else if (totalIndividualPayment < totalPaymentList){
+                            balance = totalPaymentList - totalIndividualPayment;
+                        } else {
+                            balance = 0;
+                            unpaid = 0;
+                        }
+
+                        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        DatabaseReference userRef = DeclareDatabase.getDatabaseReference().child(userId);
+                        userRef.child("balanced").setValue(balance);
+                        userRef.child("unpaid").setValue(unpaid);
                     }
 
                     @Override
@@ -391,21 +364,25 @@ public class ProfileFragment extends Fragment {
     }
 
     private void BalanceButton(){
-        unpaidTextView.setOnClickListener(new View.OnClickListener() {
+        balanceTextView.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                TotalBalanceUnpaid();
-                // Handle the click event
-                balanceTextView.setSelected(true);
-                if (totalPaymentList == totalIndividualPayment) {
-                    balance = 0;
-                    unpaid = 0;
-                } else {
-                    balance = totalPaymentList - totalIndividualPayment;
-                }
-                String balanceStr = String.valueOf(balance);
-                totalBalancedTextView.setText("₱ " + balanceStr + ".00");
-                Toast.makeText(getActivity(), balanceStr, Toast.LENGTH_SHORT).show();
+                balanceUnpaidLayout.setForeground(balanceUnpaidDrawable);
+                oweDebtLayout.setForeground(oweDebtDrawableTransparent);
+
+                balanceTextView.setBackgroundResource(R.drawable.button_background_visible);
+                balanceTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.yellow));
+                unpaidTextView.setBackgroundResource(R.drawable.button_background_invisible);
+                unpaidTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.whitest));
+                oweTextView.setBackgroundResource(R.drawable.button_background_invisible);
+                oweTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.whitest));
+                debtTextView.setBackgroundResource(R.drawable.button_background_invisible);
+                debtTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.whitest));
+
+                getBalance();
+                String currentBalanceStr = String.valueOf(currentBalance);
+                totalBalancedTextView.setText("₱ " + currentBalanceStr + ".00");
             }
         });
 
@@ -413,23 +390,157 @@ public class ProfileFragment extends Fragment {
 
     private void UnpaidButton(){
         unpaidTextView.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                TotalBalanceUnpaid();
-                // Handle the click event
-                unpaidTextView.setSelected(true);
-                if (totalPaymentList == totalIndividualPayment) {
-                    balance = 0;
-                    unpaid = 0;
-                } else {
-                    unpaid = totalIndividualPayment - totalPaymentList;
-                }
-                String unpaidStr = String.valueOf(unpaid);
-                totalBalancedTextView.setText("₱ " + unpaidStr + ".00");
-                Toast.makeText(getActivity(), unpaidStr, Toast.LENGTH_SHORT).show();
+                balanceUnpaidLayout.setForeground(balanceUnpaidDrawable);
+                oweDebtLayout.setForeground(oweDebtDrawableTransparent);
+
+                balanceTextView.setBackgroundResource(R.drawable.button_background_invisible);
+                balanceTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.whitest));
+                unpaidTextView.setBackgroundResource(R.drawable.button_background_visible);
+                unpaidTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.yellow));
+                oweTextView.setBackgroundResource(R.drawable.button_background_invisible);
+                oweTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.whitest));
+                debtTextView.setBackgroundResource(R.drawable.button_background_invisible);
+                debtTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.whitest));
+
+                getUnpaid();
+                String currentUnpaidStr = String.valueOf(currentUnpaid);
+                totalBalancedTextView.setText("₱ " + currentUnpaidStr + ".00");
             }
         });
 
+    }
+
+    private void OweButton(){
+        oweTextView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                oweDebtLayout.setForeground(oweDebtDrawable);
+                balanceUnpaidLayout.setForeground(balanceUnpaidDrawableTransparent);
+
+                balanceTextView.setBackgroundResource(R.drawable.button_background_invisible);
+                balanceTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.whitest));
+                unpaidTextView.setBackgroundResource(R.drawable.button_background_invisible);
+                unpaidTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.whitest));
+                oweTextView.setBackgroundResource(R.drawable.button_background_visible);
+                oweTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.yellow));
+                debtTextView.setBackgroundResource(R.drawable.button_background_invisible);
+                debtTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.whitest));
+
+                getOwe();
+                String currentOweStr = String.valueOf(currentOwe);
+                totalBalancedTextView.setText("₱ " + currentOweStr + ".00");
+            }
+        });
+
+    }
+
+    private void DebtButton(){
+        debtTextView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                oweDebtLayout.setForeground(oweDebtDrawable);
+                balanceUnpaidLayout.setForeground(balanceUnpaidDrawableTransparent);
+
+                balanceTextView.setBackgroundResource(R.drawable.button_background_invisible);
+                balanceTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.whitest));
+                unpaidTextView.setBackgroundResource(R.drawable.button_background_invisible);
+                unpaidTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.whitest));
+                oweTextView.setBackgroundResource(R.drawable.button_background_invisible);
+                oweTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.whitest));
+                debtTextView.setBackgroundResource(R.drawable.button_background_visible);
+                debtTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.yellow));
+
+                getDebt();
+                String currebtDebtStr = String.valueOf(currentDebt);
+                totalBalancedTextView.setText("₱ " + currebtDebtStr + ".00");
+            }
+        });
+
+    }
+
+    private void getBalance() {
+        String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        DatabaseReference usersRef = DeclareDatabase.getDatabaseReference().child(currentUserID);
+        usersRef.child("balanced").addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    currentBalance = dataSnapshot.getValue(Integer.class);
+                } else {
+                    Log.d("FirebaseDatabase", "Nickname not found in database.");
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle database read error
+                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                Log.e("FirebaseDatabase", errorMessage);
+            }
+        });
+    }
+
+    private void getUnpaid() {
+        String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        DatabaseReference usersRef = DeclareDatabase.getDatabaseReference().child(currentUserID);
+        usersRef.child("unpaid").addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    currentUnpaid = dataSnapshot.getValue(Integer.class);
+                } else {
+                    Log.d("FirebaseDatabase", "Nickname not found in database.");
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle database read error
+                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                Log.e("FirebaseDatabase", errorMessage);
+            }
+        });
+    }
+
+    private void getOwe() {
+        String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        DatabaseReference usersRef = DeclareDatabase.getDatabaseReference().child(currentUserID);
+        usersRef.child("owed").addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    currentOwe = dataSnapshot.getValue(Integer.class);
+                } else {
+                    Log.d("FirebaseDatabase", "Nickname not found in database.");
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle database read error
+                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                Log.e("FirebaseDatabase", errorMessage);
+            }
+        });
+    }
+
+    private void getDebt() {
+        String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        DatabaseReference usersRef = DeclareDatabase.getDatabaseReference().child(currentUserID);
+        usersRef.child("debt").addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    currentDebt = dataSnapshot.getValue(Integer.class);
+                } else {
+                    Log.d("FirebaseDatabase", "Nickname not found in database.");
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle database read error
+                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                Log.e("FirebaseDatabase", errorMessage);
+            }
+        });
     }
 
 }

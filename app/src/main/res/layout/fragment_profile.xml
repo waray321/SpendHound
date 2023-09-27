@@ -238,60 +238,73 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/balancedTextView"
+                <LinearLayout
+                    android:id="@+id/balanceUnpaidLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
-                    android:background="@drawable/text_view_selector"
-                    android:clickable="true"
-                    android:fontFamily="@font/montserratalternatess_regular"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="4dp"
-                    android:state_pressed= "true"
-                    android:text="Balance"
-                    android:textColor="@color/text_color_selector"
-                    android:textSize="14sp"
-                    android:focusable="true" />
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/unpaidTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:background="@drawable/text_view_selector"
-                    android:clickable="true"
-                    android:fontFamily="@font/montserratalternatess_regular"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="4dp"
-                    android:text="Unpaid"
-                    android:textColor="@color/text_color_selector"
-                    android:textSize="14sp"
-                    android:focusable="true" />
+                    <TextView
+                        android:id="@+id/balanceTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/transparent_background"
+                        android:fontFamily="@font/montserratalternatess_regular"
+                        android:paddingVertical="8dp"
+                        android:paddingHorizontal="12dp"
+                        android:text="Balance"
+                        android:textAlignment="center"
+                        android:textColor="@color/whitest"
+                        android:textSize="12sp" />
 
-                <TextView
-                    android:id="@+id/owedTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:fontFamily="@font/montserratalternatess_regular"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="4dp"
-                    android:text="Owed"
-                    android:textColor="@color/whitest"
-                    android:textSize="14sp" />
+                    <TextView
+                        android:id="@+id/unpaidTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/transparent_background"
+                        android:fontFamily="@font/montserratalternatess_regular"
+                        android:paddingVertical="8dp"
+                        android:paddingHorizontal="12dp"
+                        android:text="Unpaid"
+                        android:textAlignment="center"
+                        android:textColor="@color/whitest"
+                        android:textSize="12sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/debtTextView"
+                <LinearLayout
+                    android:id="@+id/oweDebtLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
-                    android:fontFamily="@font/montserratalternatess_regular"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="4dp"
-                    android:text="Debt"
-                    android:textColor="@color/whitest"
-                    android:textSize="14sp" />
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/oweTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/transparent_background"
+                        android:fontFamily="@font/montserratalternatess_regular"
+                        android:paddingVertical="8dp"
+                        android:paddingHorizontal="12dp"
+                        android:text="Owe"
+                        android:textAlignment="center"
+                        android:textColor="@color/whitest"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/debtTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/transparent_background"
+                        android:fontFamily="@font/montserratalternatess_regular"
+                        android:paddingVertical="8dp"
+                        android:paddingHorizontal="12dp"
+                        android:text="Debt"
+                        android:textAlignment="center"
+                        android:textColor="@color/whitest"
+                        android:textSize="12sp" />
+                </LinearLayout>
 
             </LinearLayout>
 
