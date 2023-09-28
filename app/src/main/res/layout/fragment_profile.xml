@@ -137,7 +137,6 @@
 
             </LinearLayout>
 
-
             <View
                 android:id="@+id/bottom_border"
                 android:layout_width="match_parent"
