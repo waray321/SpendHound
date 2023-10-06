@@ -37,7 +37,7 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserratalternatess_regular"
-            android:text="Name of payor: "
+            android:text="Name of borrowee: "
             android:textAlignment="textStart"
             android:textSize="12dp" />
 

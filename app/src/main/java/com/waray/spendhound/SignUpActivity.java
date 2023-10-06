@@ -1,11 +1,15 @@
 package com.waray.spendhound;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -60,6 +64,8 @@ public class SignUpActivity extends AppCompatActivity {
         profileImageView = findViewById(R.id.profileImageView);
 
         mAuth = FirebaseAuth.getInstance();
+
+        exitEditText();
 
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,6 +180,65 @@ public class SignUpActivity extends AppCompatActivity {
             profileImageUri = data.getData();
             profileImageView.setImageURI(profileImageUri);
         }
+    }
+    @SuppressLint("ClickableViewAccessibility")
+    public void exitEditText(){
+        final EditText usernameSignUp = findViewById(R.id.usernameSignUp);
+        final EditText emailSignup = findViewById(R.id.emailSignup);
+        final EditText passwordSignup = findViewById(R.id.passwordSignup);
+        final EditText confirmPasswordSignup = findViewById(R.id.confirmPasswordSignup);
+        usernameSignUp.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Consume the touch event on the EditText to prevent it from being intercepted
+                v.performClick();
+                return false;
+            }
+        });
+
+        emailSignup.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Consume the touch event on the EditText to prevent it from being intercepted
+                v.performClick();
+                return false;
+            }
+        });
+
+        passwordSignup.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Consume the touch event on the EditText to prevent it from being intercepted
+                v.performClick();
+                return false;
+            }
+        });
+
+        confirmPasswordSignup.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Consume the touch event on the EditText to prevent it from being intercepted
+                v.performClick();
+                return false;
+            }
+        });
+
+        // Add an OnTouchListener to the root layout (or any other layout that covers the whole screen)
+        View rootView = findViewById(android.R.id.content);
+        rootView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Hide the keyboard when the user touches outside the EditText
+                hideKeyboard(usernameEditText);
+                hideKeyboard(passwordEditText);
+                return false;
+            }
+        });
+    }
+
+    private void hideKeyboard(EditText editText) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
     }
 }
 

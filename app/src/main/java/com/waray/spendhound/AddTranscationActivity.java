@@ -222,7 +222,6 @@ public class AddTranscationActivity extends AppCompatActivity {
         if ("Select a transaction:".equals(transactionType) || paymentAmount == 0) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             progressBar.setVisibility(View.GONE);
-            return;
         }else {
             // Create a HashSet to store payors
             HashSet<String> uniquePayors = new HashSet<>();
@@ -454,7 +453,7 @@ public class AddTranscationActivity extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 // Hide the keyboard when the user touches outside the EditText
                 hideKeyboard(editText);
-                hideKeyboardPaymentAmount(editTextPaymentAmount);
+                hideKeyboard(editTextPaymentAmount);
                 return false;
             }
         });
@@ -464,9 +463,5 @@ public class AddTranscationActivity extends AppCompatActivity {
     private void hideKeyboard(EditText editText) {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-    }
-    private void hideKeyboardPaymentAmount(EditText editTextPaymentAmount) {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(editTextPaymentAmount.getWindowToken(), 0);
     }
 }

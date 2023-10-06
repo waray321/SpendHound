@@ -51,6 +51,11 @@
             android:label="Add Transaction"
             android:windowSoftInputMode="adjustPan"/>
 
+        <activity android:name=".BorrowNowActivity"
+            android:exported="true"
+            android:label="Borrow Money"
+            android:windowSoftInputMode="adjustPan"/>
+
         <activity android:name=".LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>

@@ -74,9 +74,9 @@ public class ProfileFragment extends Fragment {
     private ImageView saveNickname;
     private Spinner monthSpinner;
     public FirebaseAuth mAuth;
-    private List<String> sortedMonths;
+    public List<String> sortedMonths;
     private String currentNickname = "";
-    private String monthYear;
+    public String monthYear;
     private int totalIndividualPayment, totalPaymentList, balance, unpaid, owe, debt;
     private int i, e, o, currentBalance, currentUnpaid, currentOwe, currentDebt;
     private View balanceUnpaidLayout, oweDebtLayout;
@@ -243,7 +243,7 @@ public class ProfileFragment extends Fragment {
 
     }
 
-    private void MonthlyFilter(){
+    public void MonthlyFilter(){
         DatabaseReference transRef = DeclareDatabase.getDBRefTransaction();
         // Initialize an empty set to store unique months
         Set<String> uniqueMonths = new HashSet<>();
@@ -278,7 +278,7 @@ public class ProfileFragment extends Fragment {
 
     }
 
-    private void TotalBalanceUnpaid() {
+    public void TotalBalanceUnpaid() {
         monthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {

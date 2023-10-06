@@ -232,7 +232,7 @@
             android:fontFamily="@font/montserratalternatess_bold"
             android:paddingVertical="20dp"
             android:text="Add Transaction"
-            android:textColor="#ffffff" />
+            android:textColor="@color/whitest" />
 
     </LinearLayout>
 
