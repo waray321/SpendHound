@@ -8,20 +8,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import com.waray.spendhound.AddTranscationActivity;
-import com.waray.spendhound.BorrowNowActivity;
 import com.waray.spendhound.BorrowNowActivity;
 import com.waray.spendhound.DeclareDatabase;
+import com.waray.spendhound.MainActivity;
 import com.waray.spendhound.R;
 import com.waray.spendhound.SpinnerItemMonths;
 
@@ -36,16 +39,31 @@ public class BorrowFragment extends Fragment {
     private Spinner monthSpinner;
     public List<String> sortedMonths;
     private Button borrowNowBtn, payNowBtn;
+    private TextView owedTV, debtTV;
+    private LinearLayout debtButtons;
+    private ScrollView debtScrollView, owedScrollView;
 
+    @SuppressLint("MissingInflatedId")
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_borrow, container, false);
         monthSpinner = view.findViewById(R.id.monthSpinner);
         borrowNowBtn = view.findViewById(R.id.borrowNowBtn);
         payNowBtn = view.findViewById(R.id.payNowBtn);
+        owedTV = view.findViewById(R.id.owedTV);
+        debtTV = view.findViewById(R.id.debtTV);
+        debtButtons  = view.findViewById(R.id.debtButtons);
+        debtScrollView  = view.findViewById(R.id.debtScrollView);
+        owedScrollView  = view.findViewById(R.id.owedScrollView);
 
         MonthlyFilter();
         BorrowNow();
+        OwedTVClicked();
+        DebtTVClicked();
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            mainActivity.getOwedList();
+        }
 
         // Get the hosting Activity and remove the ActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -96,6 +114,53 @@ public class BorrowFragment extends Fragment {
                 // Create an Intent to navigate to NewActivity
                 Intent intent = new Intent(getActivity(), BorrowNowActivity.class);
                 startActivity(intent);
+            }
+        });
+    }
+
+    private void OwedTVClicked(){
+        owedTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                debtTV.setBackgroundResource(R.drawable.button_background_invisible);
+                owedTV.setBackgroundResource(R.drawable.top_round_border);
+                debtTV.setTextColor(ContextCompat.getColor(getContext(), R.color.whitest));
+                owedTV.setTextColor(ContextCompat.getColor(getContext(), R.color.darkBlue));
+                debtButtons.setVisibility(View.INVISIBLE);
+                owedScrollView.setVisibility(View.VISIBLE);
+                debtScrollView.setVisibility(View.GONE);
+
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null) {
+                    mainActivity.getOwedList();
+                }
+
+                owedTV.setEnabled(false);
+                debtTV.setEnabled(true);
+            }
+        });
+    }
+
+    private void DebtTVClicked(){
+        debtTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                owedTV.setBackgroundResource(R.drawable.button_background_invisible);
+                debtTV.setBackgroundResource(R.drawable.top_round_border);
+                owedTV.setTextColor(ContextCompat.getColor(getContext(), R.color.whitest));
+                debtTV.setTextColor(ContextCompat.getColor(getContext(), R.color.darkBlue));
+                debtButtons.setVisibility(View.VISIBLE);
+                owedScrollView.setVisibility(View.GONE);
+                debtScrollView.setVisibility(View.VISIBLE);
+
+
+                debtTV.setEnabled(false);
+                owedTV.setEnabled(true);
+
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null) {
+                    mainActivity.getDebtList();
+                }
             }
         });
     }

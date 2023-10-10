@@ -18,13 +18,16 @@
             android:textAlignment="textEnd"
             android:textSize="12dp" />
 
-        <Spinner
-            android:id="@+id/date"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/debtDateTV"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:textAlignment="textStart"
-            android:layout_marginLeft="4dp"
-            android:background="@drawable/transparent_background" />
+            android:fontFamily="@font/montserratalternatess_regular"
+            android:text="October 6, 2023"
+            android:textColor="@color/darkBlue"
+            android:textAlignment="textEnd"
+            android:textSize="12dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -42,6 +45,7 @@
             android:textSize="12dp" />
 
         <TextView
+            android:id="@+id/debtBorroweeTV"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
@@ -62,11 +66,12 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserratalternatess_regular"
-            android:text="Amount owed: "
+            android:text="Amount borrowed: "
             android:textAlignment="textStart"
             android:textSize="12dp" />
 
         <TextView
+            android:id="@+id/debtAmountBorrowedTV"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
@@ -93,6 +98,7 @@
             android:textSize="12dp" />
 
         <TextView
+            android:id="@+id/debtStatusTV"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"

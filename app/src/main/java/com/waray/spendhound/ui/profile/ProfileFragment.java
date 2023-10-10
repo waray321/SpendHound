@@ -200,8 +200,6 @@ public class ProfileFragment extends Fragment {
                 Log.e("FirebaseDatabase", errorMessage);
             }
         });
-
-        nicknameTextView.setText(currentNickname);
     }
 
     private void switchToEditMode() {

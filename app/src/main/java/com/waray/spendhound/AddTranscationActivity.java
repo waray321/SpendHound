@@ -368,7 +368,11 @@ public class AddTranscationActivity extends AppCompatActivity {
                         int paymentAmount = Integer.parseInt(paymentAmountStr);
 
                         // Calculate the individual payment
-                        int numberOfUsers = usernames.size()-1; // Replace 'usernames' with your list of usernames
+                        int numberOfUsers = 0;
+
+                        if (usernames != null) {
+                            numberOfUsers = usernames.size() - 1;
+                        }
                         if (numberOfUsers > 0) {
                             totalIndividualPayment = paymentAmount / numberOfUsers;
                             individualPayment.setText("₱ " + totalIndividualPayment + ".00");

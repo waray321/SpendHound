@@ -40,7 +40,7 @@ public class BorrowNowActivity extends AppCompatActivity {
     public List<String> usernames;
     private Spinner borrowSpinner;
     private TextView date, borrower;
-    private String currentNickname, borrowee, currentDate;
+    private String currentNickname, borrowee, currentDate, status, borrowedAmountSTR;
     private Integer borrowedAmount = 0;
     private ProgressBar progressBar;
     private Button borrowBtn;
@@ -56,12 +56,13 @@ public class BorrowNowActivity extends AppCompatActivity {
         borrower = findViewById(R.id.borrower);
         progressBar = findViewById(R.id.progressBar);
         borrowBtn = findViewById(R.id.borrowBtn);
+        status = "Unpaid";
 
         setDate();
-        setName();
         getUsers();
         BorrowBtnClicked();
         exitEditText();
+        getCurrentNickname();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -99,48 +100,12 @@ public class BorrowNowActivity extends AppCompatActivity {
         });
     }
 
-    private String getCurrentUsername() {
-        // Implement your logic to get the current user's username here
-        // You can use FirebaseAuth to retrieve the current user's information
-        // For example, you can use FirebaseAuth.getInstance().getCurrentUser().getDisplayName()
-        // This depends on how you have set up user authentication in your app.
-        // Replace the following line with your actual logic:
-        return "ReplaceThisWithActualUsername"; // Replace with actual username retrieval logic
-    }
-
-
     private void setDate() {
         // Get the current date and time
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM-dd-yyyy", Locale.getDefault());
         currentDate = dateFormat.format(calendar.getTime());
         date.setText(currentDate);
-    }
-
-    private void setName() {
-        String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        DatabaseReference usersRef = DeclareDatabase.getDatabaseReference().child(currentUserID);
-        usersRef.child("username").addListenerForSingleValueEvent(new ValueEventListener() {
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // Get the username from the dataSnapshot and assign it to usernamePost
-                    currentNickname = dataSnapshot.getValue(String.class);
-                    Log.d("FirebaseDatabase", "Nickname loaded: " + currentNickname);
-
-                    // Update the TextView with the loaded nickname
-                    borrower.setText(currentNickname);
-                } else {
-                    Log.d("FirebaseDatabase", "Nickname not found in database.");
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Handle database read error
-                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
-                Log.e("FirebaseDatabase", errorMessage);
-            }
-        });
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -167,14 +132,16 @@ public class BorrowNowActivity extends AppCompatActivity {
 
         DatabaseReference databaseReference = DeclareDatabase.getDBRefLending();
         DatabaseReference borrowRef = databaseReference.child("borrows");
+
+        DatabaseReference currentUserRef = borrowRef.child(currentNickname);
         // Create a child with the format "YYYY-MM" (year-month)
-        DatabaseReference monthYearRef = borrowRef.child(currentMonthYear);
+        DatabaseReference monthYearRef = currentUserRef.child(currentMonthYear);
         // Create a child with the current day
         DatabaseReference dayRef = monthYearRef.child(currentDay);
         // Create a child with the current timestamp
         DatabaseReference timestampRef = dayRef.child(currentTime);
 
-        BorrowTransaction borrowTransaction = new BorrowTransaction(currentDate, currentNickname, borrowee, borrowedAmount);
+        BorrowTransaction borrowTransaction = new BorrowTransaction(currentDate, borrowee, borrowedAmountSTR, status);
 
         timestampRef.setValue(borrowTransaction).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -199,8 +166,10 @@ public class BorrowNowActivity extends AppCompatActivity {
                 String borrowedAmountStr = borrowEditText.getText().toString();
                 if (!borrowedAmountStr.isEmpty()) {
                     borrowedAmount = Integer.parseInt(borrowedAmountStr);
+                    borrowedAmountSTR = String.valueOf(borrowedAmount);
                 } else {
                     borrowedAmount = 0;
+                    borrowedAmountSTR = String.valueOf(borrowedAmount);
                 }
                 progressBar.setVisibility(View.VISIBLE);
                 borrowee = borrowSpinner.getSelectedItem().toString();
@@ -235,6 +204,28 @@ public class BorrowNowActivity extends AppCompatActivity {
                 // Hide the keyboard when the user touches outside the EditText
                 hideKeyboard(borrowEditText);
                 return false;
+            }
+        });
+    }
+
+    private void getCurrentNickname() {
+        String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        DatabaseReference usersRef = DeclareDatabase.getDatabaseReference().child(currentUserID);
+        usersRef.child("username").addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Get the username from the dataSnapshot and assign it to usernamePost
+                    currentNickname = dataSnapshot.getValue(String.class);
+                    Log.d("FirebaseDatabase", "Nickname loaded: " + currentNickname);
+                } else {
+                    Log.d("FirebaseDatabase", "Nickname not found in database.");
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle database read error
+                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                Log.e("FirebaseDatabase", errorMessage);
             }
         });
     }

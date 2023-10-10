@@ -1,22 +1,16 @@
 package com.waray.spendhound;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.cardview.widget.CardView;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -25,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,8 +38,11 @@ public class MainActivity extends AppCompatActivity {
     public FirebaseAuth mAuth;
     public int totalMonthSpends;
     private ProgressBar progressBar;
+    public String currentNickname = "";
     public int dailySpend;
     private ArrayList<RecentTransaction> recentTransactionList = new ArrayList<>();
+    public ArrayList<BorrowTransaction> debtList = new ArrayList<>();
+    public ArrayList<BorrowTransaction> owedList = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
 
         mAuth = DeclareDatabase.getAuth();
+        getCurrentNickname();
 
         navView = findViewById(R.id.navView);
         // Passing each menu ID as a set of Ids because each
@@ -331,6 +329,138 @@ public class MainActivity extends AppCompatActivity {
             currentDayInt--;
             currentDay = String.format("%02d", currentDayInt);
         }
+    }
+
+    public void getDebtList() {
+        debtList.clear();
+
+        DatabaseReference databaseReference = DeclareDatabase.getDBRefLending();
+        DatabaseReference borrowRef = databaseReference.child("borrows");
+
+        DatabaseReference currentUserRef = borrowRef.child(currentNickname);
+        currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot monthSnapshot : dataSnapshot.getChildren()) {
+                    for (DataSnapshot daySnapshot : monthSnapshot.getChildren()) {
+                        for (DataSnapshot timeSnapshot : daySnapshot.getChildren()) {
+                            BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
+                            if (borrowTransaction != null) {
+                                String date = borrowTransaction.getDate();
+                                String borrowee = borrowTransaction.getBorrowee();
+                                String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
+                                String status = borrowTransaction.getStatus();
+
+                                // Create a RecentTransaction object and add it to the list
+                                BorrowTransaction borrowTrans = new BorrowTransaction(
+                                        date,
+                                        borrowee,
+                                        borrowedAmount,
+                                        status
+                                );
+                                debtList.add(borrowTrans);
+                            }
+                            RecyclerView recyclerView = findViewById(R.id.debtRecyclerList);
+                            RecyclerView.Adapter<BorrowTransactionAdapter.ViewHolder> adapter = new BorrowTransactionAdapter(debtList);
+                            recyclerView.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+
+                            // Set the RecyclerView.LayoutManager
+                            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+                            recyclerView.setLayoutManager(layoutManager);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle database read error
+                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                Log.e("FirebaseDatabase", errorMessage);
+            }
+        });
+    }
+
+    public void getOwedList() {
+        owedList.clear();
+
+        DatabaseReference databaseReference = DeclareDatabase.getDBRefLending();
+        DatabaseReference borrowRef = databaseReference.child("borrows");
+
+        borrowRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot currentUserRef : dataSnapshot.getChildren()) {
+                    String currentUserStr = currentUserRef.getKey();
+                    if (!Objects.equals(currentUserStr, currentNickname)) {
+                        for (DataSnapshot monthSnapshot : currentUserRef.getChildren()) {
+                            for (DataSnapshot daySnapshot : monthSnapshot.getChildren()) {
+                                for (DataSnapshot timeSnapshot : daySnapshot.getChildren()) {
+                                    BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
+                                    if (borrowTransaction != null) {
+                                        String date = borrowTransaction.getDate();
+                                        String borrowee = borrowTransaction.getBorrowee();
+                                        String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
+                                        String status = borrowTransaction.getStatus();
+
+                                        // Create a RecentTransaction object and add it to the list
+                                        BorrowTransaction borrowTrans = new BorrowTransaction(
+                                                date,
+                                                borrowee,
+                                                borrowedAmount,
+                                                status
+                                        );
+                                        owedList.add(borrowTrans);
+                                    }
+                                    RecyclerView recyclerView = findViewById(R.id.owedRecyclerList);
+                                    RecyclerView.Adapter<BorrowTransactionAdapter.ViewHolder> adapter = new BorrowTransactionAdapter(owedList);
+                                    recyclerView.setAdapter(adapter);
+                                    adapter.notifyDataSetChanged();
+
+                                    // Set the RecyclerView.LayoutManager
+                                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+                                    recyclerView.setLayoutManager(layoutManager);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle database read error
+                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                Log.e("FirebaseDatabase", errorMessage);
+            }
+        });
+    }
+
+    private void getCurrentNickname() {
+        String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        DatabaseReference usersRef = DeclareDatabase.getDatabaseReference().child(currentUserID);
+        usersRef.child("username").addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Get the username from the dataSnapshot and assign it to usernamePost
+                    currentNickname = dataSnapshot.getValue(String.class);
+                    Log.d("FirebaseDatabase", "Nickname loaded: " + currentNickname);
+                } else {
+                    Log.d("FirebaseDatabase", "Nickname not found in database.");
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle database read error
+                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                Log.e("FirebaseDatabase", errorMessage);
+            }
+        });
     }
 
     public void showToast(String message) {

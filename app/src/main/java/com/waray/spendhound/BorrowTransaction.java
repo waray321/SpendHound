@@ -1,14 +1,17 @@
 package com.waray.spendhound;
 
 public class BorrowTransaction {
-    private String date, borrower, borrowee;
-    private int borrowedAmount;
+    private String date, borrowee, borrowedAmountStr, status;
 
-    public BorrowTransaction(String date, String borrower, String borrowee, int borrowedAmount) {
+    public BorrowTransaction() {
+        // Default constructor required by Firebase Realtime Database
+    }
+
+    public BorrowTransaction(String date, String borrowee, String borrowedAmountStr, String status) {
         this.date = String.valueOf(date);
-        this.borrower = borrower;
         this.borrowee = borrowee;
-        this.borrowedAmount = borrowedAmount;
+        this.borrowedAmountStr = borrowedAmountStr;
+        this.status = status;
     }
 
     public String getDate() {
@@ -19,14 +22,6 @@ public class BorrowTransaction {
         this.date = date;
     }
 
-    public String getBorrower() {
-        return borrower;
-    }
-
-    public void setBorrower(String borrower) {
-        this.borrower = borrower;
-    }
-
     public String getBorrowee() {
         return borrowee;
     }
@@ -35,11 +30,19 @@ public class BorrowTransaction {
         this.borrowee = borrowee;
     }
 
-    public int getBorrowedAmount() {
-        return borrowedAmount;
+    public String getBorrowedAmountStr() {
+        return borrowedAmountStr;
     }
 
-    public void setBorrowedAmount(int borrowedAmount) {
-        this.borrowedAmount = borrowedAmount;
+    public void setBorrowedAmountStr(String borrowedAmountStr) {
+        this.borrowedAmountStr = borrowedAmountStr;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
