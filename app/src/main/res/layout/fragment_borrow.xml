@@ -142,7 +142,7 @@
                             android:id="@+id/owedRecyclerList"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            tools:listitem="@layout/debt_row_layout" />
+                            tools:listitem="@layout/owed_row_layout" />
                     </ScrollView>
 
                     <ScrollView

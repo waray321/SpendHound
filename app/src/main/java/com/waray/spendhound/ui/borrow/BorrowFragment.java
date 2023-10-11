@@ -61,9 +61,8 @@ public class BorrowFragment extends Fragment {
         OwedTVClicked();
         DebtTVClicked();
         MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            mainActivity.getOwedList();
-        }
+        assert mainActivity != null;
+        mainActivity.getOwedList();
 
         // Get the hosting Activity and remove the ActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();

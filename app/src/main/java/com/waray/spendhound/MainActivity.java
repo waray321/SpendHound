@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     public int dailySpend;
     private ArrayList<RecentTransaction> recentTransactionList = new ArrayList<>();
     public ArrayList<BorrowTransaction> debtList = new ArrayList<>();
-    public ArrayList<BorrowTransaction> owedList = new ArrayList<>();
+    public ArrayList<OwedTransaction> owedList = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -334,10 +334,9 @@ public class MainActivity extends AppCompatActivity {
     public void getDebtList() {
         debtList.clear();
 
-        DatabaseReference databaseReference = DeclareDatabase.getDBRefLending();
-        DatabaseReference borrowRef = databaseReference.child("borrows");
+        DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
 
-        DatabaseReference currentUserRef = borrowRef.child(currentNickname);
+        DatabaseReference currentUserRef = databaseReference.child(currentNickname);
         currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @SuppressLint("NotifyDataSetChanged")
@@ -387,10 +386,9 @@ public class MainActivity extends AppCompatActivity {
     public void getOwedList() {
         owedList.clear();
 
-        DatabaseReference databaseReference = DeclareDatabase.getDBRefLending();
-        DatabaseReference borrowRef = databaseReference.child("borrows");
+        DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
 
-        borrowRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -403,22 +401,25 @@ public class MainActivity extends AppCompatActivity {
                                 for (DataSnapshot timeSnapshot : daySnapshot.getChildren()) {
                                     BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
                                     if (borrowTransaction != null) {
-                                        String date = borrowTransaction.getDate();
-                                        String borrowee = borrowTransaction.getBorrowee();
-                                        String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
-                                        String status = borrowTransaction.getStatus();
-
-                                        // Create a RecentTransaction object and add it to the list
-                                        BorrowTransaction borrowTrans = new BorrowTransaction(
-                                                date,
-                                                borrowee,
-                                                borrowedAmount,
-                                                status
-                                        );
-                                        owedList.add(borrowTrans);
+                                        String borrower = borrowTransaction.getBorrowee();
+                                        if (Objects.equals(borrower, currentNickname)){
+                                            String date = borrowTransaction.getDate();
+                                            String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
+                                            String status = borrowTransaction.getStatus();
+                                            // Create a RecentTransaction object and add it to the list
+                                            OwedTransaction owedTrans = new OwedTransaction(
+                                                    date,
+                                                    borrower,
+                                                    borrowedAmount,
+                                                    status
+                                            );
+                                            owedList.add(owedTrans);
+                                        }
+                                    } else {
+                                        showToast("No data");
                                     }
                                     RecyclerView recyclerView = findViewById(R.id.owedRecyclerList);
-                                    RecyclerView.Adapter<BorrowTransactionAdapter.ViewHolder> adapter = new BorrowTransactionAdapter(owedList);
+                                    RecyclerView.Adapter<OwedTransactionAdapter.ViewHolder> adapter = new OwedTransactionAdapter(owedList);
                                     recyclerView.setAdapter(adapter);
                                     adapter.notifyDataSetChanged();
 

@@ -31,8 +31,8 @@ public class DeclareDatabase {
     public static DatabaseReference getDBRefTransaction() {
         return FirebaseDatabase.getInstance().getReference("transactions");
     }
-    public static DatabaseReference getDBRefLending() {
-        return FirebaseDatabase.getInstance().getReference("lending");
+    public static DatabaseReference getDBRefBorrows() {
+        return FirebaseDatabase.getInstance().getReference("borrows");
     }
 
     // Get a reference to the Firebase Storage
