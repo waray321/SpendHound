@@ -39,10 +39,11 @@ public class MainActivity extends AppCompatActivity {
     public int totalMonthSpends;
     private ProgressBar progressBar;
     public String currentNickname = "";
-    public int dailySpend;
+    public int dailySpend, owedNum = 0, debtNum = 0;
     private ArrayList<RecentTransaction> recentTransactionList = new ArrayList<>();
     public ArrayList<BorrowTransaction> debtList = new ArrayList<>();
     public ArrayList<OwedTransaction> owedList = new ArrayList<>();
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -234,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
             ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
             layoutParams.height = desiredHeightInPixels;
             view.setLayoutParams(layoutParams);
-        }else {
+        } else {
             showToast("No viewID");
         }
     }
@@ -335,43 +336,49 @@ public class MainActivity extends AppCompatActivity {
         debtList.clear();
 
         DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
-
-        DatabaseReference currentUserRef = databaseReference.child(currentNickname);
-        currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot monthSnapshot : dataSnapshot.getChildren()) {
                     for (DataSnapshot daySnapshot : monthSnapshot.getChildren()) {
-                        for (DataSnapshot timeSnapshot : daySnapshot.getChildren()) {
-                            BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
-                            if (borrowTransaction != null) {
-                                String date = borrowTransaction.getDate();
-                                String borrowee = borrowTransaction.getBorrowee();
-                                String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
-                                String status = borrowTransaction.getStatus();
+                        for (DataSnapshot currentUserRef : daySnapshot.getChildren()) {
+                            String currentUserStr = currentUserRef.getKey();
+                            if (Objects.equals(currentUserStr, currentNickname)) {
+                                for (DataSnapshot timeSnapshot : currentUserRef.getChildren()) {
+                                    BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
+                                    if (borrowTransaction != null) {
+                                        String date = borrowTransaction.getDate();
+                                        String borrowee = borrowTransaction.getBorrowee();
+                                        String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
+                                        String status = borrowTransaction.getStatus();
 
-                                // Create a RecentTransaction object and add it to the list
-                                BorrowTransaction borrowTrans = new BorrowTransaction(
-                                        date,
-                                        borrowee,
-                                        borrowedAmount,
-                                        status
-                                );
-                                debtList.add(borrowTrans);
+                                        // Create a RecentTransaction object and add it to the list
+                                        BorrowTransaction borrowTrans = new BorrowTransaction(
+                                                date,
+                                                borrowee,
+                                                borrowedAmount,
+                                                status
+                                        );
+                                        debtList.add(borrowTrans);
+                                    }
+
+                                    RecyclerView recyclerView = findViewById(R.id.debtRecyclerList);
+                                    RecyclerView.Adapter<BorrowTransactionAdapter.ViewHolder> adapter = new BorrowTransactionAdapter(debtList);
+                                    recyclerView.setAdapter(adapter);
+                                    adapter.notifyDataSetChanged();
+
+                                    // Set the RecyclerView.LayoutManager
+                                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+                                    recyclerView.setLayoutManager(layoutManager);
+                                }
                             }
-                            RecyclerView recyclerView = findViewById(R.id.debtRecyclerList);
-                            RecyclerView.Adapter<BorrowTransactionAdapter.ViewHolder> adapter = new BorrowTransactionAdapter(debtList);
-                            recyclerView.setAdapter(adapter);
-                            adapter.notifyDataSetChanged();
-
-                            // Set the RecyclerView.LayoutManager
-                            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
-                            recyclerView.setLayoutManager(layoutManager);
                         }
                     }
                 }
+
+                debtNum = debtList.size();
             }
 
             @Override
@@ -393,16 +400,16 @@ public class MainActivity extends AppCompatActivity {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot currentUserRef : dataSnapshot.getChildren()) {
-                    String currentUserStr = currentUserRef.getKey();
-                    if (!Objects.equals(currentUserStr, currentNickname)) {
-                        for (DataSnapshot monthSnapshot : currentUserRef.getChildren()) {
-                            for (DataSnapshot daySnapshot : monthSnapshot.getChildren()) {
-                                for (DataSnapshot timeSnapshot : daySnapshot.getChildren()) {
+                for (DataSnapshot monthSnapshot : dataSnapshot.getChildren()) {
+                    for (DataSnapshot daySnapshot : monthSnapshot.getChildren()) {
+                        for (DataSnapshot currentUserRef : daySnapshot.getChildren()) {
+                            String currentUserStr = currentUserRef.getKey();
+                            if (!Objects.equals(currentUserStr, currentNickname)) {
+                                for (DataSnapshot timeSnapshot : currentUserRef.getChildren()) {
                                     BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
                                     if (borrowTransaction != null) {
                                         String borrower = borrowTransaction.getBorrowee();
-                                        if (Objects.equals(borrower, currentNickname)){
+                                        if (Objects.equals(borrower, currentNickname)) {
                                             String date = borrowTransaction.getDate();
                                             String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
                                             String status = borrowTransaction.getStatus();
@@ -415,6 +422,7 @@ public class MainActivity extends AppCompatActivity {
                                             );
                                             owedList.add(owedTrans);
                                         }
+
                                     } else {
                                         showToast("No data");
                                     }
@@ -431,6 +439,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
+                owedNum = owedList.size();
             }
 
             @Override
@@ -442,7 +451,131 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void getCurrentNickname() {
+    public void getOwedListMonthly(String selectedMonth) {
+        owedList.clear();
+
+        DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
+
+        if (selectedMonth != null && !selectedMonth.equals("All")) {
+            DatabaseReference monthRef = databaseReference.child(selectedMonth);
+            monthRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @SuppressLint("NotifyDataSetChanged")
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot daySnapshot : dataSnapshot.getChildren()) {
+                        for (DataSnapshot currentUserRef : daySnapshot.getChildren()) {
+                            String currentUserStr = currentUserRef.getKey();
+                            if (!Objects.equals(currentUserStr, currentNickname)) {
+                                for (DataSnapshot timeSnapshot : currentUserRef.getChildren()) {
+                                    BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
+                                    if (borrowTransaction != null) {
+                                        String borrower = borrowTransaction.getBorrowee();
+                                        if (Objects.equals(borrower, currentNickname)) {
+                                            String date = borrowTransaction.getDate();
+                                            String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
+                                            String status = borrowTransaction.getStatus();
+                                            // Create a RecentTransaction object and add it to the list
+                                            OwedTransaction owedTrans = new OwedTransaction(
+                                                    date,
+                                                    borrower,
+                                                    borrowedAmount,
+                                                    status
+                                            );
+                                            owedList.add(owedTrans);
+                                        }
+                                    } else {
+                                        showToast("Borrow Transaction has no data");
+                                    }
+                                    RecyclerView recyclerView = findViewById(R.id.owedRecyclerList);
+                                    RecyclerView.Adapter<OwedTransactionAdapter.ViewHolder> adapter = new OwedTransactionAdapter(owedList);
+                                    recyclerView.setAdapter(adapter);
+                                    adapter.notifyDataSetChanged();
+
+                                    // Set the RecyclerView.LayoutManager
+                                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+                                    recyclerView.setLayoutManager(layoutManager);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // Handle database read error
+                    String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                    Log.e("FirebaseDatabase", errorMessage);
+                }
+            });
+        } else {
+            showToast("Selected month has no data");
+            owedList.clear();
+        }
+
+    }
+
+    public void getDebtListMonthly(String selectedMonth) {
+        debtList.clear();
+
+        DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
+
+        if (selectedMonth != null && !selectedMonth.equals("All")) {
+            DatabaseReference monthRef = databaseReference.child(selectedMonth);
+            monthRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @SuppressLint("NotifyDataSetChanged")
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot daySnapshot : dataSnapshot.getChildren()) {
+                        for (DataSnapshot currentUserRef : daySnapshot.getChildren()) {
+                            String currentUserStr = currentUserRef.getKey();
+                            if (Objects.equals(currentUserStr, currentNickname)) {
+                                for (DataSnapshot timeSnapshot : currentUserRef.getChildren()) {
+                                    BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
+                                    if (borrowTransaction != null) {
+                                        String date = borrowTransaction.getDate();
+                                        String borrowee = borrowTransaction.getBorrowee();
+                                        String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
+                                        String status = borrowTransaction.getStatus();
+
+                                        // Create a RecentTransaction object and add it to the list
+                                        BorrowTransaction borrowTrans = new BorrowTransaction(
+                                                date,
+                                                borrowee,
+                                                borrowedAmount,
+                                                status
+                                        );
+                                        debtList.add(borrowTrans);
+                                    }
+                                    RecyclerView recyclerView = findViewById(R.id.debtRecyclerList);
+                                    RecyclerView.Adapter<BorrowTransactionAdapter.ViewHolder> adapter = new BorrowTransactionAdapter(debtList);
+                                    recyclerView.setAdapter(adapter);
+                                    adapter.notifyDataSetChanged();
+
+                                    // Set the RecyclerView.LayoutManager
+                                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+                                    recyclerView.setLayoutManager(layoutManager);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // Handle database read error
+                    String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                    Log.e("FirebaseDatabase", errorMessage);
+                }
+            });
+        } else {
+            showToast("Selected month has no data");
+            debtList.clear();
+        }
+    }
+
+    public void getCurrentNickname() {
         String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         DatabaseReference usersRef = DeclareDatabase.getDatabaseReference().child(currentUserID);
         usersRef.child("username").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -455,6 +588,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("FirebaseDatabase", "Nickname not found in database.");
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Handle database read error
@@ -462,6 +596,14 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("FirebaseDatabase", errorMessage);
             }
         });
+    }
+
+    public boolean isOwedListEmpty() {
+        return owedNum == 0;
+    }
+
+    public boolean isDebtListEmpty() {
+        return debtNum == 0;
     }
 
     public void showToast(String message) {

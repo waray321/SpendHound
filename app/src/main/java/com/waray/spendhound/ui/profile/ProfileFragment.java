@@ -1,11 +1,7 @@
 package com.waray.spendhound.ui.profile;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,52 +9,35 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.waray.spendhound.AddTranscationActivity;
 import com.waray.spendhound.DeclareDatabase;
-import com.waray.spendhound.MainActivity;
 import com.waray.spendhound.R;
-import com.waray.spendhound.RecentTransaction;
-import com.waray.spendhound.RecentTransactionAdapter;
-import com.waray.spendhound.SpinnerItem;
 import com.waray.spendhound.SpinnerItemMonths;
 import com.waray.spendhound.Transaction;
-import com.waray.spendhound.ui.home.HomeFragment;
-
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -85,8 +64,8 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        profileImageView = view.findViewById(R.id.profileImageView);
 
+        profileImageView = view.findViewById(R.id.profileImageView);
         setProfileImage(profileImageView);
         nicknameTextView = view.findViewById(R.id.nicknameTextView);
         nicknameEditText = view.findViewById(R.id.nicknameEditText);
@@ -110,9 +89,6 @@ public class ProfileFragment extends Fragment {
 
         balanceTextView.setBackgroundResource(R.drawable.button_background_visible);
         balanceTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.yellow));
-        getBalance();
-        String currentBalanceStr = String.valueOf(currentBalance);
-        totalBalancedTextView.setText("₱ " + currentBalanceStr + ".00");
 
         loadNickname();
         EditNickname();
@@ -124,12 +100,14 @@ public class ProfileFragment extends Fragment {
         OweButton();
         DebtButton();
 
-
         // Get the hosting Activity and remove the ActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null && activity.getSupportActionBar() != null) {
             activity.getSupportActionBar().hide();
         }
+
+
+
         return view;
     }
 
@@ -361,7 +339,7 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    private void BalanceButton(){
+    public void BalanceButton(){
         balanceTextView.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -540,5 +518,4 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
-
 }

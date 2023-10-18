@@ -131,14 +131,10 @@ public class BorrowNowActivity extends AppCompatActivity {
         String currentTime = timeFormat.format(calendar.getTime());
 
         DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
-
-        DatabaseReference currentUserRef = databaseReference.child(currentNickname);
-        // Create a child with the format "YYYY-MM" (year-month)
-        DatabaseReference monthYearRef = currentUserRef.child(currentMonthYear);
-        // Create a child with the current day
+        DatabaseReference monthYearRef = databaseReference.child(currentMonthYear);
         DatabaseReference dayRef = monthYearRef.child(currentDay);
-        // Create a child with the current timestamp
-        DatabaseReference timestampRef = dayRef.child(currentTime);
+        DatabaseReference currentUserRef = dayRef.child(currentNickname);
+        DatabaseReference timestampRef = currentUserRef.child(currentTime);
 
         BorrowTransaction borrowTransaction = new BorrowTransaction(currentDate, borrowee, borrowedAmountSTR, status);
 

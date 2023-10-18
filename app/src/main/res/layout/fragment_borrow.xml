@@ -102,28 +102,63 @@
                     android:orientation="vertical">
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginBottom="12dp"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="12dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center|end"
-                            android:fontFamily="@font/montserratalternatess_regular"
-                            android:text="In month of: "
-                            android:textColor="@color/darkBlue"
-                            android:textSize="12dp" />
+                            android:layout_weight="1"
+                            android:orientation="vertical">
 
-                        <Spinner
-                            android:id="@+id/monthSpinner"
-                            android:layout_width="wrap_content"
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/montserratalternatess_regular"
+                                android:text="Month &amp; Year"
+                                android:textSize="12dp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <Spinner
+                                    android:id="@+id/monthYearSpinner"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/transparent_background"
+                                    android:textAlignment="textStart" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="4dp"
-                            android:background="@drawable/transparent_background"
-                            android:textAlignment="textStart" />
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/montserratalternatess_regular"
+                                android:text="Status"
+                                android:textAlignment="textEnd"
+                                android:textSize="12dp" />
+
+                            <Spinner
+                                android:id="@+id/statusSpinner"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                android:background="@drawable/transparent_background" />
+
+                        </LinearLayout>
+
                     </LinearLayout>
 
                     <View
@@ -158,6 +193,27 @@
                             android:layout_height="wrap_content"
                             tools:listitem="@layout/debt_row_layout" />
                     </ScrollView>
+
+                    <TextView
+                        android:id="@+id/noDebtTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserratalternatess_regular"
+                        android:text="You have no debt!"
+                        android:textAlignment="center"
+                        android:textSize="12dp"
+                        android:padding="16dp"
+                        android:visibility="gone"/>
+                    <TextView
+                        android:id="@+id/noOwedTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserratalternatess_regular"
+                        android:text="No one owed you money!"
+                        android:textAlignment="center"
+                        android:textSize="12dp"
+                        android:padding="16dp"
+                        android:visibility="gone"/>
 
 
                 </LinearLayout>

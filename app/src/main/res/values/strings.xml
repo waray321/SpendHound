@@ -24,4 +24,11 @@
         <item>Transportation</item>
         <item>Others</item>
     </string-array>
+
+    <string-array name="borrowStatus_String">
+        <item>All</item>
+        <item>Unpaid</item>
+        <item>Paid</item>
+        <item>Paid Partially</item>
+    </string-array>
 </resources>

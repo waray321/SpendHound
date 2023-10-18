@@ -103,8 +103,8 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserratalternatess_regular"
-            android:text="Not Paid"
-            android:textColor="@color/darkBlue"
+            android:text="Unpaid"
+            android:textColor="@color/red"
             android:textAlignment="textEnd"
             android:textSize="12dp" />
     </LinearLayout>
