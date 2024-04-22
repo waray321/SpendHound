@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.waray.spendhound.DeclareDatabase;
+import com.waray.spendhound.LoginActivity;
 import com.waray.spendhound.R;
 import com.waray.spendhound.SpinnerItemMonths;
 import com.waray.spendhound.Transaction;
@@ -434,6 +436,7 @@ public class ProfileFragment extends Fragment {
                 getDebt();
                 String currebtDebtStr = String.valueOf(currentDebt);
                 totalBalancedTextView.setText("₱ " + currebtDebtStr + ".00");
+                Toast.makeText(getActivity(), "₱ " + currebtDebtStr + ".00", Toast.LENGTH_SHORT).show();
             }
         });
 
