@@ -19,6 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -30,8 +32,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.waray.spendhound.BorrowTransaction;
+import com.waray.spendhound.BorrowTransactionAdapter;
 import com.waray.spendhound.DeclareDatabase;
 import com.waray.spendhound.LoginActivity;
+import com.waray.spendhound.MainActivity;
 import com.waray.spendhound.R;
 import com.waray.spendhound.SpinnerItemMonths;
 import com.waray.spendhound.Transaction;
@@ -62,6 +67,7 @@ public class ProfileFragment extends Fragment {
     private int i, e, o, currentBalance, currentUnpaid, currentOwe, currentDebt;
     private View balanceUnpaidLayout, oweDebtLayout;
     private Drawable balanceUnpaidDrawable, oweDebtDrawable, balanceUnpaidDrawableTransparent, oweDebtDrawableTransparent;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -101,6 +107,8 @@ public class ProfileFragment extends Fragment {
         BalanceButton();
         OweButton();
         DebtButton();
+        getDebt();
+        getOwe();
 
         // Get the hosting Activity and remove the ActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -408,7 +416,6 @@ public class ProfileFragment extends Fragment {
                 debtTextView.setBackgroundResource(R.drawable.button_background_invisible);
                 debtTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.whitest));
 
-                getOwe();
                 String currentOweStr = String.valueOf(currentOwe);
                 totalBalancedTextView.setText("₱ " + currentOweStr + ".00");
             }
@@ -433,48 +440,40 @@ public class ProfileFragment extends Fragment {
                 debtTextView.setBackgroundResource(R.drawable.button_background_visible);
                 debtTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.yellow));
 
-                getDebt();
-                String currebtDebtStr = String.valueOf(currentDebt);
-                totalBalancedTextView.setText("₱ " + currebtDebtStr + ".00");
-                Toast.makeText(getActivity(), "₱ " + currebtDebtStr + ".00", Toast.LENGTH_SHORT).show();
+                String currentDebtStr = String.valueOf(currentDebt);
+                totalBalancedTextView.setText("₱ " + currentDebtStr + ".00");
             }
         });
 
     }
 
-    private void getBalance() {
-        String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        DatabaseReference usersRef = DeclareDatabase.getDatabaseReference().child(currentUserID);
-        usersRef.child("balanced").addListenerForSingleValueEvent(new ValueEventListener() {
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    currentBalance = dataSnapshot.getValue(Integer.class);
-                } else {
-                    Log.d("FirebaseDatabase", "Nickname not found in database.");
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Handle database read error
-                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
-                Log.e("FirebaseDatabase", errorMessage);
-            }
-        });
-    }
+    private void getDebt() {
+        DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
 
-    private void getUnpaid() {
-        String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        DatabaseReference usersRef = DeclareDatabase.getDatabaseReference().child(currentUserID);
-        usersRef.child("unpaid").addListenerForSingleValueEvent(new ValueEventListener() {
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    currentUnpaid = dataSnapshot.getValue(Integer.class);
-                } else {
-                    Log.d("FirebaseDatabase", "Nickname not found in database.");
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot monthSnapshot : dataSnapshot.getChildren()) {
+                    for (DataSnapshot daySnapshot : monthSnapshot.getChildren()) {
+                        for (DataSnapshot currentUserRef : daySnapshot.getChildren()) {
+                            String currentUserStr = currentUserRef.getKey();
+                            if (Objects.equals(currentUserStr, currentNickname)) {
+                                for (DataSnapshot timeSnapshot : currentUserRef.getChildren()) {
+                                    BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
+                                    if (borrowTransaction != null) {
+                                        int borrowedAmount = Integer.parseInt(borrowTransaction.getBorrowedAmountStr());
+                                        currentDebt += borrowedAmount;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
+
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
                 // Handle database read error
                 String errorMessage = "Database read error occurred: " + databaseError.getMessage();
                 Log.e("FirebaseDatabase", errorMessage);
@@ -483,18 +482,34 @@ public class ProfileFragment extends Fragment {
     }
 
     private void getOwe() {
-        String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        DatabaseReference usersRef = DeclareDatabase.getDatabaseReference().child(currentUserID);
-        usersRef.child("owed").addListenerForSingleValueEvent(new ValueEventListener() {
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    currentOwe = dataSnapshot.getValue(Integer.class);
-                } else {
-                    Log.d("FirebaseDatabase", "Nickname not found in database.");
+        DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot monthSnapshot : dataSnapshot.getChildren()) {
+                    for (DataSnapshot daySnapshot : monthSnapshot.getChildren()) {
+                        for (DataSnapshot currentUserRef : daySnapshot.getChildren()) {
+                            for (DataSnapshot timeSnapshot : currentUserRef.getChildren()) {
+                                BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
+                                if (borrowTransaction != null) {
+                                    String borrowee = borrowTransaction.getBorrowee();
+                                    int borrowedAmount = Integer.parseInt(borrowTransaction.getBorrowedAmountStr());
+                                    if (Objects.equals(currentNickname, borrowee)) {
+                                        currentOwe += borrowedAmount;
+                                        Toast.makeText(getActivity(), "CurrentOwed:  " + currentOwe, Toast.LENGTH_SHORT).show();
+                                    }
+
+                                }
+                            }
+                        }
+                    }
                 }
             }
+
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
                 // Handle database read error
                 String errorMessage = "Database read error occurred: " + databaseError.getMessage();
                 Log.e("FirebaseDatabase", errorMessage);
@@ -502,19 +517,67 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    private void getDebt() {
-        String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        DatabaseReference usersRef = DeclareDatabase.getDatabaseReference().child(currentUserID);
-        usersRef.child("debt").addListenerForSingleValueEvent(new ValueEventListener() {
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    currentDebt = dataSnapshot.getValue(Integer.class);
-                } else {
-                    Log.d("FirebaseDatabase", "Nickname not found in database.");
+    private void getUnpaid() {
+        DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot monthSnapshot : dataSnapshot.getChildren()) {
+                    for (DataSnapshot daySnapshot : monthSnapshot.getChildren()) {
+                        for (DataSnapshot currentUserRef : daySnapshot.getChildren()) {
+                            String currentUserStr = currentUserRef.getKey();
+                            if (Objects.equals(currentUserStr, currentNickname)) {
+                                for (DataSnapshot timeSnapshot : currentUserRef.getChildren()) {
+                                    BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
+                                    if (borrowTransaction != null) {
+                                        int borrowedAmount = Integer.parseInt(borrowTransaction.getBorrowedAmountStr());
+                                        currentUnpaid += borrowedAmount;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
+
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle database read error
+                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                Log.e("FirebaseDatabase", errorMessage);
+            }
+        });
+    }
+
+    private void getBalance() {
+        DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot monthSnapshot : dataSnapshot.getChildren()) {
+                    for (DataSnapshot daySnapshot : monthSnapshot.getChildren()) {
+                        for (DataSnapshot currentUserRef : daySnapshot.getChildren()) {
+                            String currentUserStr = currentUserRef.getKey();
+                            if (Objects.equals(currentUserStr, currentNickname)) {
+                                for (DataSnapshot timeSnapshot : currentUserRef.getChildren()) {
+                                    BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
+                                    if (borrowTransaction != null) {
+                                        int borrowedAmount = Integer.parseInt(borrowTransaction.getBorrowedAmountStr());
+                                        currentBalance += borrowedAmount;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
                 // Handle database read error
                 String errorMessage = "Database read error occurred: " + databaseError.getMessage();
                 Log.e("FirebaseDatabase", errorMessage);
