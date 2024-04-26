@@ -72,9 +72,8 @@ public class BorrowFragment extends Fragment {
         BorrowNow();
         OwedTVClicked();
         DebtTVClicked();
-        monthFilterSelected();
-
         OwedMonthlyFilterList();
+        monthFilterSelected();
 
 
         // Get the hosting Activity and remove the ActionBar

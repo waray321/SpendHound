@@ -54,7 +54,7 @@ import java.util.Set;
 public class ProfileFragment extends Fragment {
 
     private ImageView profileImageView;
-    private TextView nicknameTextView, totalBalancedTextView, balanceTextView, unpaidTextView, oweTextView, debtTextView;
+    private TextView nicknameTextView, totalBalancedTextView, balanceTextView, unpaidTextView, oweTextView, debtTextView, totalTextView;
     private EditText nicknameEditText;
     private ImageView editNickname;
     private ImageView saveNickname;
@@ -63,8 +63,7 @@ public class ProfileFragment extends Fragment {
     public List<String> sortedMonths;
     private String currentNickname = "";
     public String monthYear;
-    private int totalIndividualPayment, totalPaymentList, balance, unpaid, owe, debt;
-    private int i, e, o, currentBalance, currentUnpaid, currentOwe, currentDebt;
+    private int totalIndividualPayment, totalPaymentList, balance, unpaid, owe, debt, i, e, o, currentBalance, currentUnpaid, currentOwe, currentDebt;
     private View balanceUnpaidLayout, oweDebtLayout;
     private Drawable balanceUnpaidDrawable, oweDebtDrawable, balanceUnpaidDrawableTransparent, oweDebtDrawableTransparent;
 
@@ -79,8 +78,9 @@ public class ProfileFragment extends Fragment {
         nicknameEditText = view.findViewById(R.id.nicknameEditText);
         editNickname = view.findViewById(R.id.editNickname);
         saveNickname = view.findViewById(R.id.saveNickname);
-        monthSpinner = view.findViewById(R.id.monthSpinner);
+        //monthSpinner = view.findViewById(R.id.monthSpinner);
         totalBalancedTextView = view.findViewById(R.id.totalBalancedTextView);
+        totalTextView = view.findViewById(R.id.totalTextView);
         balanceTextView = view.findViewById(R.id.balanceTextView);
         unpaidTextView = view.findViewById(R.id.unpaidTextView);
         oweTextView = view.findViewById(R.id.oweTextView);
@@ -101,7 +101,7 @@ public class ProfileFragment extends Fragment {
         loadNickname();
         EditNickname();
         SaveNickname();
-        MonthlyFilter();
+        //MonthlyFilter();
         TotalBalanceUnpaid();
         UnpaidButton();
         BalanceButton();
@@ -109,6 +109,8 @@ public class ProfileFragment extends Fragment {
         DebtButton();
         getDebt();
         getOwe();
+
+
 
         // Get the hosting Activity and remove the ActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -229,7 +231,7 @@ public class ProfileFragment extends Fragment {
 
     }
 
-    public void MonthlyFilter(){
+    /*public void MonthlyFilter(){
         DatabaseReference transRef = DeclareDatabase.getDBRefTransaction();
         // Initialize an empty set to store unique months
         Set<String> uniqueMonths = new HashSet<>();
@@ -262,92 +264,84 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-    }
+    }*/
 
     public void TotalBalanceUnpaid() {
-        monthSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        DatabaseReference transRef = DeclareDatabase.getDBRefTransaction();
+        String currentYear = new SimpleDateFormat("yyyy", Locale.getDefault()).format(Calendar.getInstance().getTime());
+
+        i = 0;
+        e = 1;
+        o = 0;
+
+        transRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                DatabaseReference databaseReference = DeclareDatabase.getDBRefTransaction();
-                String currentYear = new SimpleDateFormat("yyyy", Locale.getDefault()).format(Calendar.getInstance().getTime());
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Initialize variables to hold total balance and unpaid amounts
+                int totalBalance = 0;
+                int totalUnpaid = 0;
 
-                String selectedMonth = sortedMonths.get(position);
-                monthYear = selectedMonth + "-" + currentYear;
-                DatabaseReference monthYearRef = databaseReference.child(monthYear);
-
-                i = 0;
-                e = 1;
-                o = 0;
-
-                monthYearRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @SuppressLint("SetTextI18n")
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot daySnapshot : dataSnapshot.getChildren()) {
-                            for (DataSnapshot timeSnapshot : daySnapshot.getChildren()) {
-                                Transaction transaction = timeSnapshot.getValue(Transaction.class);
-                                if (transaction != null) {
-                                    int individualPayment = transaction.getTotalIndividualPayment();
-                                    totalIndividualPayment += individualPayment;
-                                }
-                                DataSnapshot payorsSnapshot = timeSnapshot.child("payorsList");
-                                for (DataSnapshot payorSnapshot : payorsSnapshot.getChildren()) {
-                                    String payorUsername = payorSnapshot.getValue(String.class);
-                                    if (payorUsername != null && payorUsername.equals(currentNickname)) {
-                                        i++;
-                                        o = i;
-                                    } else {
-                                        i++;
-                                    }
-                                }
-                                DataSnapshot amountsPaidListSnapshot = timeSnapshot.child("amountsPaidList");
-                                for (DataSnapshot amountSnapshot : amountsPaidListSnapshot.getChildren()) {
-                                    Integer paymentAmount = amountSnapshot.getValue(Integer.class);
-                                    if (e == o) {
-                                        totalPaymentList += paymentAmount;
-                                        e = 100;
-                                    } else{
-                                        e++;
-                                    }
-                                }
-                                i = 0;
-                                e = 1;
-                                o = 0;
+                // Iterate over all months in the database
+                for (DataSnapshot monthSnapshot : dataSnapshot.getChildren()) {
+                    for (DataSnapshot daySnapshot : monthSnapshot.getChildren()) {
+                        for (DataSnapshot timeSnapshot : daySnapshot.getChildren()) {
+                            Transaction transaction = timeSnapshot.getValue(Transaction.class);
+                            if (transaction != null) {
+                                int individualPayment = transaction.getTotalIndividualPayment();
+                                totalIndividualPayment += individualPayment;
                             }
+                            DataSnapshot payorsSnapshot = timeSnapshot.child("payorsList");
+                            for (DataSnapshot payorSnapshot : payorsSnapshot.getChildren()) {
+                                String payorUsername = payorSnapshot.getValue(String.class);
+                                if (payorUsername != null && payorUsername.equals(currentNickname)) {
+                                    i++;
+                                    o = i;
+                                } else {
+                                    i++;
+                                }
+                            }
+                            DataSnapshot amountsPaidListSnapshot = timeSnapshot.child("amountsPaidList");
+                            for (DataSnapshot amountSnapshot : amountsPaidListSnapshot.getChildren()) {
+                                Integer paymentAmount = amountSnapshot.getValue(Integer.class);
+                                if (e == o) {
+                                    totalPaymentList += paymentAmount;
+                                    e = 100;
+                                } else{
+                                    e++;
+                                }
+                            }
+                            i = 0;
+                            e = 1;
+                            o = 0;
                         }
-                        if (totalPaymentList == totalIndividualPayment ) {
-                            balance = 0;
-                            unpaid = 0;
-                        } else if (totalIndividualPayment > totalPaymentList){
-                            unpaid = totalIndividualPayment - totalPaymentList;
-                        } else if (totalIndividualPayment < totalPaymentList){
-                            balance = totalPaymentList - totalIndividualPayment;
-                        } else {
-                            balance = 0;
-                            unpaid = 0;
-                        }
-
-                        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                        DatabaseReference userRef = DeclareDatabase.getDatabaseReference().child(userId);
-                        userRef.child("balanced").setValue(balance);
-                        userRef.child("unpaid").setValue(unpaid);
+                    }
+                    if (totalPaymentList == totalIndividualPayment ) {
+                        balance = 0;
+                        unpaid = 0;
+                    } else if (totalIndividualPayment > totalPaymentList){
+                        unpaid = totalIndividualPayment - totalPaymentList;
+                    } else if (totalIndividualPayment < totalPaymentList){
+                        balance = totalPaymentList - totalIndividualPayment;
+                    } else {
+                        balance = 0;
+                        unpaid = 0;
                     }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        // Handle database read error
-                        String errorMessage = "Database read error occurred: " + databaseError.getMessage();
-                        Log.e("FirebaseDatabase", errorMessage);
-                    }
-                });
+                    String currentBalanceStr = String.valueOf(balance);
+                    totalBalancedTextView.setText("₱ " + currentBalanceStr + ".00");
+                    totalTextView.setText("Total Balance:");
+                }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle database read error
+                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                Log.e("FirebaseDatabase", errorMessage);
             }
         });
     }
+
 
     public void BalanceButton(){
         balanceTextView.setOnClickListener(new View.OnClickListener() {
@@ -366,9 +360,9 @@ public class ProfileFragment extends Fragment {
                 debtTextView.setBackgroundResource(R.drawable.button_background_invisible);
                 debtTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.whitest));
 
-                getBalance();
-                String currentBalanceStr = String.valueOf(currentBalance);
+                String currentBalanceStr = String.valueOf(balance);
                 totalBalancedTextView.setText("₱ " + currentBalanceStr + ".00");
+                totalTextView.setText("Total Balance:");
             }
         });
 
@@ -391,9 +385,9 @@ public class ProfileFragment extends Fragment {
                 debtTextView.setBackgroundResource(R.drawable.button_background_invisible);
                 debtTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.whitest));
 
-                getUnpaid();
-                String currentUnpaidStr = String.valueOf(currentUnpaid);
+                String currentUnpaidStr = String.valueOf(unpaid);
                 totalBalancedTextView.setText("₱ " + currentUnpaidStr + ".00");
+                totalTextView.setText("Total Unpaid Balance:");
             }
         });
 
@@ -418,6 +412,7 @@ public class ProfileFragment extends Fragment {
 
                 String currentOweStr = String.valueOf(currentOwe);
                 totalBalancedTextView.setText("₱ " + currentOweStr + ".00");
+                totalTextView.setText("Total Owed Balance:");
             }
         });
 
@@ -442,6 +437,7 @@ public class ProfileFragment extends Fragment {
 
                 String currentDebtStr = String.valueOf(currentDebt);
                 totalBalancedTextView.setText("₱ " + currentDebtStr + ".00");
+                totalTextView.setText("Total Debt:");
             }
         });
 
@@ -498,7 +494,6 @@ public class ProfileFragment extends Fragment {
                                     int borrowedAmount = Integer.parseInt(borrowTransaction.getBorrowedAmountStr());
                                     if (Objects.equals(currentNickname, borrowee)) {
                                         currentOwe += borrowedAmount;
-                                        Toast.makeText(getActivity(), "CurrentOwed:  " + currentOwe, Toast.LENGTH_SHORT).show();
                                     }
 
                                 }
