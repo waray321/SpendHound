@@ -599,11 +599,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public boolean isOwedListEmpty() {
-        return owedNum == 0;
+        if (owedNum==0){
+            return false;
+        }else {
+            return true;
+        }
     }
 
     public boolean isDebtListEmpty() {
-        return debtNum == 0;
+        if (debtNum==0){
+            return false;
+        }else {
+            return true;
+        }
     }
 
     public void showToast(String message) {

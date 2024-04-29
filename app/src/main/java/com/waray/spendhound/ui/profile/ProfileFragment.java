@@ -1,55 +1,61 @@
 package com.waray.spendhound.ui.profile;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.waray.spendhound.BorrowTransaction;
-import com.waray.spendhound.BorrowTransactionAdapter;
 import com.waray.spendhound.DeclareDatabase;
 import com.waray.spendhound.LoginActivity;
-import com.waray.spendhound.MainActivity;
 import com.waray.spendhound.R;
-import com.waray.spendhound.SpinnerItemMonths;
 import com.waray.spendhound.Transaction;
+import com.waray.spendhound.ui.home.HomeFragment;
 
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Set;
 
 public class ProfileFragment extends Fragment {
 
@@ -66,6 +72,10 @@ public class ProfileFragment extends Fragment {
     private int totalIndividualPayment, totalPaymentList, balance, unpaid, owe, debt, i, e, o, currentBalance, currentUnpaid, currentOwe, currentDebt;
     private View balanceUnpaidLayout, oweDebtLayout;
     private Drawable balanceUnpaidDrawable, oweDebtDrawable, balanceUnpaidDrawableTransparent, oweDebtDrawableTransparent;
+    private Button profileLogout;
+
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_IMAGE_PICK = 2;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -87,6 +97,7 @@ public class ProfileFragment extends Fragment {
         debtTextView = view.findViewById(R.id.debtTextView);
         balanceUnpaidLayout = view.findViewById(R.id.balanceUnpaidLayout);
         oweDebtLayout = view.findViewById(R.id.oweDebtLayout);
+        profileLogout = view.findViewById(R.id.profileLogout);
 
         balanceUnpaidDrawable = ContextCompat.getDrawable(getContext(), R.drawable.round_border_glassy);
         balanceUnpaidDrawableTransparent = ContextCompat.getDrawable(getContext(), R.drawable.transparent_background);
@@ -94,9 +105,10 @@ public class ProfileFragment extends Fragment {
         oweDebtDrawableTransparent = ContextCompat.getDrawable(getContext(), R.drawable.transparent_background);
         balanceUnpaidLayout.setForeground(balanceUnpaidDrawable);
 
-
         balanceTextView.setBackgroundResource(R.drawable.button_background_visible);
         balanceTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.yellow));
+
+        mAuth = FirebaseAuth.getInstance();
 
         loadNickname();
         EditNickname();
@@ -109,6 +121,8 @@ public class ProfileFragment extends Fragment {
         DebtButton();
         getDebt();
         getOwe();
+        profileImageViewButton();
+        ProfileLogoutButton();
 
 
 
@@ -150,6 +164,13 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 // Switch to edit mode
                 switchToEditMode();
+
+                // Request focus on the EditText where the user can input their new nickname
+                nicknameEditText.requestFocus();
+
+                // Show the keyboard
+                InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(nicknameEditText, InputMethodManager.SHOW_IMPLICIT);
             }
         });
     }
@@ -163,6 +184,10 @@ public class ProfileFragment extends Fragment {
 
                 // Switch back to display mode
                 switchToDisplayMode();
+
+                // Hide the keyboard
+                InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(nicknameEditText.getWindowToken(), 0);
             }
         });
     }
@@ -579,4 +604,186 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
+
+    private void profileImageViewButton() {
+        profileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showProfilePictureMenu();
+            }
+        });
+    }
+    private void showProfilePictureMenu() {
+        PopupMenu popupMenu = new PopupMenu(requireContext(), profileImageView);
+        popupMenu.getMenuInflater().inflate(R.menu.profile_picture_menu, popupMenu.getMenu());
+
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int itemId = item.getItemId();
+                if (itemId == R.id.action_view_profile_photo) {
+                    showLargeProfilePhoto();
+                    return true;
+                } else if (itemId == R.id.action_change_profile_photo) {
+                    showChangeProfilePhotoDialog();
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+
+        popupMenu.show();
+    }
+
+    private void showLargeProfilePhoto() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_profile_photo, null);
+        ImageView imageView = dialogView.findViewById(R.id.dialog_profile_photo);
+
+        // Load the profile photo into the ImageView using the setProfileImage() method
+        setProfileImage(imageView);
+
+        builder.setView(dialogView);
+
+        // Create and show the dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        // Set a click listener on the dialog to dismiss it when clicked
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+    }
+
+    private void selectNewProfilePhoto() {
+        // Create an intent to capture an image from the camera
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            // The user captured a photo with the camera
+            // Handle the captured image here
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+            // Convert the Bitmap image to a Uri
+            Uri imageUri = getImageUri(requireContext(), imageBitmap);
+
+            // Update the profile photo with the captured image
+            updateProfilePhoto(imageUri);
+        } else if (requestCode == REQUEST_IMAGE_PICK && resultCode == Activity.RESULT_OK) {
+            // The user selected a photo from the gallery
+            Uri imageUri = data.getData();
+            // Update the profile photo with the selected image
+            updateProfilePhoto(imageUri);
+        }
+    }
+
+    // Helper method to convert Bitmap image to Uri
+    private Uri getImageUri(Context context, Bitmap bitmap) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "Title", null);
+        return Uri.parse(path);
+    }
+
+
+    private void showChangeProfilePhotoDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Change Profile Photo");
+        String[] options = {"Take Photo", "Choose from Gallery"};
+
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        // Take photo option selected
+                        selectNewProfilePhoto();
+                        break;
+                    case 1:
+                        // Choose from gallery option selected
+                        Intent pickPhotoIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(pickPhotoIntent, REQUEST_IMAGE_PICK);
+                        break;
+                }
+            }
+        });
+
+        builder.create().show();
+    }
+
+    private void updateProfilePhoto(Uri imageUri) {
+        // Display the selected image in the ImageView
+        Glide.with(requireContext()).load(imageUri).into(profileImageView);
+
+        // Upload the new profile photo to Firebase Storage
+        uploadProfilePhoto(imageUri);
+
+        Toast.makeText(getActivity(), "Profile Photo Changed Successfully", Toast.LENGTH_SHORT).show();
+    }
+
+    private void uploadProfilePhoto(Uri imageUri) {
+        String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference("profile_images").child(userId);
+
+        // Upload the image to Firebase Storage
+        UploadTask uploadTask = storageRef.putFile(imageUri);
+        uploadTask.addOnSuccessListener(taskSnapshot -> {
+            // Image upload successful, get the download URL
+            storageRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
+                // Update the user's profile with the new photo URL
+                updateProfileWithPhotoUrl(downloadUri.toString());
+            }).addOnFailureListener(e -> {
+                // Handle error retrieving the download URL
+            });
+        }).addOnFailureListener(e -> {
+            // Handle image upload failure
+        });
+    }
+
+    private void updateProfileWithPhotoUrl(String photoUrl) {
+        // Update the user's profile with the new photo URL
+        // For example, if you are using Firebase Authentication, you can update the user's profile like this:
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setPhotoUri(Uri.parse(photoUrl))
+                .build();
+
+        FirebaseAuth.getInstance().getCurrentUser().updateProfile(profileUpdates)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Profile updated successfully
+                    } else {
+                        // Profile update failed
+                    }
+                });
+    }
+
+    private void ProfileLogoutButton(){
+        profileLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "Logout Successfully", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                startActivity(intent);
+                if (mAuth != null) {
+                    mAuth.signOut(); // Call signOut() method
+                    // Add any additional code you want to execute after sign out, such as navigating to another activity or fragment
+                } else {
+                    Log.e("ProfileFragment", "FirebaseAuth instance is null");
+                }
+            }
+        });
+    }
+
 }
