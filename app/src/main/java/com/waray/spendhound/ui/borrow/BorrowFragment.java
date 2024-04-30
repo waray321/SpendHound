@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -44,12 +45,13 @@ public class BorrowFragment extends Fragment {
     private Spinner monthYearSpinner;
     public List<String> debtSortedMonths, owedSortedMonths;
     private Button borrowNowBtn, payNowBtn;
-    private TextView owedTV, debtTV, noOwedTextView, noDebtTextView;
+    private TextView owedTV, debtTV, noOwedTextView, noDebtTextView, payTextView;
     private LinearLayout debtButtons;
     private ScrollView debtScrollView, owedScrollView;
     public String selectedMonth;
     private boolean monthFilter;
     public String currentNickname = "";
+    private CheckBox payCheckBox;
 
     @SuppressLint("MissingInflatedId")
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -65,6 +67,8 @@ public class BorrowFragment extends Fragment {
         owedScrollView = view.findViewById(R.id.owedScrollView);
         noOwedTextView = view.findViewById(R.id.noOwedTextView);
         noDebtTextView = view.findViewById(R.id.noDebtTextView);
+        payTextView = view.findViewById(R.id.payTextView);
+        payCheckBox = view.findViewById(R.id.payCheckBox);
         monthFilter = true;
 
 
@@ -307,6 +311,16 @@ public class BorrowFragment extends Fragment {
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
                 // Handle the case where nothing is selected (if needed)
+            }
+        });
+    }
+
+    private void PayNowButton(){
+        payNowBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                payTextView.setVisibility(View.VISIBLE);
+                payCheckBox.setVisibility(View.VISIBLE);
             }
         });
     }

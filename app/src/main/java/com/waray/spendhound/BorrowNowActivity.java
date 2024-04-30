@@ -62,12 +62,37 @@ public class BorrowNowActivity extends AppCompatActivity {
         getUsers();
         BorrowBtnClicked();
         exitEditText();
-        getCurrentNickname();
+        loadNickname();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+    private void loadNickname() {
+        String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        DatabaseReference usersRef = DeclareDatabase.getDatabaseReference().child(currentUserID);
+        usersRef.child("username").addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Get the username from the dataSnapshot and assign it to usernamePost
+                    currentNickname = dataSnapshot.getValue(String.class);
+                    Log.d("FirebaseDatabase", "Nickname loaded: " + currentNickname);
+
+                    // Update the TextView with the loaded nickname
+                    borrower.setText(currentNickname);
+                } else {
+                    Log.d("FirebaseDatabase", "Nickname not found in database.");
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle database read error
+                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                Log.e("FirebaseDatabase", errorMessage);
+            }
+        });
     }
 
     public void getUsers() {
@@ -76,7 +101,7 @@ public class BorrowNowActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 usernames = new ArrayList<>();
-                usernames.add("Select a borrowee:"); // Add the default value
+                usernames.add("Select a lender:"); // Add the default value
                 for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                     String username = userSnapshot.child("username").getValue(String.class);
                     if (username != null && !username.equals(currentNickname)) {
@@ -168,7 +193,7 @@ public class BorrowNowActivity extends AppCompatActivity {
                 }
                 progressBar.setVisibility(View.VISIBLE);
                 borrowee = borrowSpinner.getSelectedItem().toString();
-                if ("Select a borrowee:".equals(borrowee) || borrowedAmount == 0) {
+                if ("Select a lender:".equals(borrowee) || borrowedAmount == 0) {
                     Toast.makeText(BorrowNowActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.GONE);
                 } else {
@@ -199,28 +224,6 @@ public class BorrowNowActivity extends AppCompatActivity {
                 // Hide the keyboard when the user touches outside the EditText
                 hideKeyboard(borrowEditText);
                 return false;
-            }
-        });
-    }
-
-    private void getCurrentNickname() {
-        String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        DatabaseReference usersRef = DeclareDatabase.getDatabaseReference().child(currentUserID);
-        usersRef.child("username").addListenerForSingleValueEvent(new ValueEventListener() {
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // Get the username from the dataSnapshot and assign it to usernamePost
-                    currentNickname = dataSnapshot.getValue(String.class);
-                    Log.d("FirebaseDatabase", "Nickname loaded: " + currentNickname);
-                } else {
-                    Log.d("FirebaseDatabase", "Nickname not found in database.");
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Handle database read error
-                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
-                Log.e("FirebaseDatabase", errorMessage);
             }
         });
     }

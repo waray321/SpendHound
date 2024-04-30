@@ -293,6 +293,20 @@
                 android:paddingVertical="16dp"
                 android:text="Pay Now"
                 android:textColor="@color/whitest" />
+
+            <Button
+                android:id="@+id/cancelNowBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/darkBlue"
+                android:elevation="4dp"
+                android:fontFamily="@font/montserratalternatess_bold"
+                android:paddingVertical="16dp"
+                android:text="Cancel"
+                android:visibility="gone"
+                android:textColor="@color/whitest" />
         </LinearLayout>
 
     </LinearLayout>
