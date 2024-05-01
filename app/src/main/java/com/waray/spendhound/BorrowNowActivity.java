@@ -19,6 +19,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -60,7 +62,7 @@ public class BorrowNowActivity extends AppCompatActivity {
 
         setDate();
         getUsers();
-        BorrowBtnClicked();
+        borrowBtnClicked();
         exitEditText();
         loadNickname();
 
@@ -178,7 +180,7 @@ public class BorrowNowActivity extends AppCompatActivity {
         });
     }
 
-    private void BorrowBtnClicked() {
+    private void borrowBtnClicked() {
         borrowBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

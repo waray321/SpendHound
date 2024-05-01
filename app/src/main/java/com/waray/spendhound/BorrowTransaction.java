@@ -37,7 +37,6 @@ public class BorrowTransaction {
     public void setBorrowedAmountStr(String borrowedAmountStr) {
         this.borrowedAmountStr = borrowedAmountStr;
     }
-
     public String getStatus() {
         return status;
     }
@@ -45,4 +44,5 @@ public class BorrowTransaction {
     public void setStatus(String status) {
         this.status = status;
     }
+
 }

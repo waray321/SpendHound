@@ -20,6 +20,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -28,6 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.waray.spendhound.BorrowNowActivity;
 import com.waray.spendhound.BorrowTransaction;
+import com.waray.spendhound.BorrowTransactionAdapter;
 import com.waray.spendhound.DeclareDatabase;
 import com.waray.spendhound.MainActivity;
 import com.waray.spendhound.R;
@@ -52,6 +55,9 @@ public class BorrowFragment extends Fragment {
     private boolean monthFilter;
     public String currentNickname = "";
     private CheckBox payCheckBox;
+    private RecyclerView debtRecyclerList;
+    private BorrowTransactionAdapter adapter;
+
 
     @SuppressLint("MissingInflatedId")
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -69,6 +75,8 @@ public class BorrowFragment extends Fragment {
         noDebtTextView = view.findViewById(R.id.noDebtTextView);
         payTextView = view.findViewById(R.id.payTextView);
         payCheckBox = view.findViewById(R.id.payCheckBox);
+        debtRecyclerList = view.findViewById(R.id.debtRecyclerList);
+        payNowBtn = view.findViewById(R.id.payNowBtn);
         monthFilter = true;
 
 
@@ -78,6 +86,7 @@ public class BorrowFragment extends Fragment {
         DebtTVClicked();
         OwedMonthlyFilterList();
         monthFilterSelected();
+        payNowButton();
 
 
         // Get the hosting Activity and remove the ActionBar
@@ -315,12 +324,24 @@ public class BorrowFragment extends Fragment {
         });
     }
 
-    private void PayNowButton(){
+    private void payNowButton(){
         payNowBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                payTextView.setVisibility(View.VISIBLE);
-                payCheckBox.setVisibility(View.VISIBLE);
+                BorrowTransactionAdapter adapter = (BorrowTransactionAdapter) debtRecyclerList.getAdapter();
+                if (adapter != null) {
+                    ArrayList<Integer> checkedPositions = adapter.getCheckedPositions();
+                    if (!checkedPositions.isEmpty()) {
+                        StringBuilder checkedPositionsStr = new StringBuilder();
+                        for (int position : checkedPositions) {
+                            checkedPositionsStr.append(position).append(", ");
+                        }
+                        checkedPositionsStr.delete(checkedPositionsStr.length() - 2, checkedPositionsStr.length()); // Remove trailing comma and space
+                        Toast.makeText(getActivity(), "Checked positions: " + checkedPositionsStr.toString(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), "No transaction is selected", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
     }
