@@ -76,7 +76,6 @@ public class BorrowTransactionAdapter extends RecyclerView.Adapter<BorrowTransac
         public TextView debtBorroweeTV;
         public TextView debtAmountBorrowedTV;
         public TextView debtStatusTV;
-        public TextView payTextView;
         public CheckBox payCheckBox;
         public Button payNowBtn;
 
@@ -86,7 +85,6 @@ public class BorrowTransactionAdapter extends RecyclerView.Adapter<BorrowTransac
             debtBorroweeTV = itemView.findViewById(R.id.debtBorroweeTV);
             debtAmountBorrowedTV = itemView.findViewById(R.id.debtAmountBorrowedTV);
             debtStatusTV = itemView.findViewById(R.id.debtStatusTV);
-            payTextView = itemView.findViewById(R.id.payTextView);
             payCheckBox = itemView.findViewById(R.id.payCheckBox);
             payNowBtn = itemView.findViewById(R.id.payNowBtn);
         }

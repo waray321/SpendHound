@@ -5,126 +5,136 @@
     android:orientation="vertical"
     android:paddingHorizontal="4dp">
 
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/payTextView"
-            android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/montserratalternatess_regular"
-            android:text="Pay: "
-            android:textColor="@color/yellow"
-            android:textAlignment="textStart"
-            android:textSize="12dp" />
+            android:layout_gravity="end"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserratalternatess_regular"
+                android:text="Date: "
+                android:textAlignment="textEnd"
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/debtDateTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserratalternatess_regular"
+                android:text="October 6, 2023"
+                android:textColor="@color/darkBlue"
+                android:textAlignment="textEnd"
+                android:textSize="12dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserratalternatess_regular"
+                android:text="Lender: "
+                android:textAlignment="textStart"
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/debtBorroweeTV"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserratalternatess_regular"
+                android:text="Rovic"
+                android:textColor="@color/darkBlue"
+                android:textAlignment="textEnd"
+                android:textSize="12dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserratalternatess_regular"
+                android:text="Amount: "
+                android:textAlignment="textStart"
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/debtAmountBorrowedTV"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserratalternatess_regular"
+                android:text="₱ 6000.00"
+                android:textColor="@color/darkBlue"
+                android:textAlignment="textEnd"
+                android:textSize="12dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserratalternatess_regular"
+                android:text="Status: "
+                android:textAlignment="textStart"
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/debtStatusTV"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserratalternatess_regular"
+                android:text="Unpaid"
+                android:textColor="@color/red"
+                android:textAlignment="textEnd"
+                android:textSize="12dp" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:orientation="horizontal">
+
 
         <CheckBox
             android:id="@+id/payCheckBox"
             android:layout_width="20dp"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="12dp"
             android:layout_height="20dp"/>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/montserratalternatess_regular"
-            android:text="Date: "
-            android:textAlignment="textEnd"
-            android:textSize="12dp" />
-
-        <TextView
-            android:id="@+id/debtDateTV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/montserratalternatess_regular"
-            android:text="October 6, 2023"
-            android:textColor="@color/darkBlue"
-            android:textAlignment="textEnd"
-            android:textSize="12dp" />
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/montserratalternatess_regular"
-            android:text="Lender: "
-            android:textAlignment="textStart"
-            android:textSize="12dp" />
-
-        <TextView
-            android:id="@+id/debtBorroweeTV"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/montserratalternatess_regular"
-            android:text="Rovic"
-            android:textColor="@color/darkBlue"
-            android:textAlignment="textEnd"
-            android:textSize="12dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/montserratalternatess_regular"
-            android:text="Amount: "
-            android:textAlignment="textStart"
-            android:textSize="12dp" />
-
-        <TextView
-            android:id="@+id/debtAmountBorrowedTV"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/montserratalternatess_regular"
-            android:text="₱ 6000.00"
-            android:textColor="@color/darkBlue"
-            android:textAlignment="textEnd"
-            android:textSize="12dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/montserratalternatess_regular"
-            android:text="Status: "
-            android:textAlignment="textStart"
-            android:textSize="12dp" />
-
-        <TextView
-            android:id="@+id/debtStatusTV"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/montserratalternatess_regular"
-            android:text="Unpaid"
-            android:textColor="@color/red"
-            android:textAlignment="textEnd"
-            android:textSize="12dp" />
     </LinearLayout>
 
     <View

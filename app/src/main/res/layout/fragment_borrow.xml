@@ -110,7 +110,7 @@
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
+                            android:layout_weight="2"
                             android:orientation="vertical">
 
                             <TextView
@@ -118,25 +118,52 @@
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/montserratalternatess_regular"
                                 android:text="Month &amp; Year"
+                                android:textAlignment="center"
                                 android:textSize="12dp" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal">
+                                android:orientation="horizontal" >
 
                                 <Spinner
                                     android:id="@+id/monthYearSpinner"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
                                     android:background="@drawable/transparent_background"
-                                    android:textAlignment="textStart" />
+                                    android:textAlignment="center" />
 
                             </LinearLayout>
 
                         </LinearLayout>
 
                         <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/montserratalternatess_regular"
+                                android:text="Status"
+                                android:textAlignment="center"
+                                android:textSize="12dp" />
+
+                            <Spinner
+                                android:id="@+id/statusSpinner"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:textAlignment="center"
+                                android:background="@drawable/transparent_background" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/selectAllLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -146,16 +173,19 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/montserratalternatess_regular"
-                                android:text="Status"
+                                android:text="Select All"
                                 android:textAlignment="textEnd"
                                 android:textSize="12dp" />
 
-                            <Spinner
-                                android:id="@+id/statusSpinner"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="end"
-                                android:background="@drawable/transparent_background" />
+                            <CheckBox
+                                android:id="@+id/payCheckBox"
+                                android:layout_width="20dp"
+                                android:layout_gravity="center"
+                                android:layout_marginHorizontal="12dp"
+                                android:layout_marginTop="8dp"
+                                android:layout_height="20dp"/>
+
+
 
                         </LinearLayout>
 

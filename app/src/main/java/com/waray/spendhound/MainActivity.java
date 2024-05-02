@@ -26,9 +26,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.waray.spendhound.databinding.ActivityMainBinding;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -353,6 +355,16 @@ public class MainActivity extends AppCompatActivity {
                                         String borrowee = borrowTransaction.getBorrowee();
                                         String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
                                         String status = borrowTransaction.getStatus();
+
+                                        SimpleDateFormat originalFormat = new SimpleDateFormat("MMMM-dd-yyyy", Locale.ENGLISH); // Assuming "MMMM" for full month name
+                                        Date newDate = null;
+                                        try {
+                                            newDate = originalFormat.parse(date);
+                                        } catch (ParseException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                        SimpleDateFormat newFormat = new SimpleDateFormat("MMM-dd-yyyy");
+                                        date = newFormat.format(newDate);
 
                                         // Create a RecentTransaction object and add it to the list
                                         BorrowTransaction borrowTrans = new BorrowTransaction(

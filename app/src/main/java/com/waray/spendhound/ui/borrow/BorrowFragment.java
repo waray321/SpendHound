@@ -48,7 +48,7 @@ public class BorrowFragment extends Fragment {
     private Spinner monthYearSpinner;
     public List<String> debtSortedMonths, owedSortedMonths;
     private Button borrowNowBtn, payNowBtn;
-    private TextView owedTV, debtTV, noOwedTextView, noDebtTextView, payTextView;
+    private TextView owedTV, debtTV, noOwedTextView, noDebtTextView;
     private LinearLayout debtButtons;
     private ScrollView debtScrollView, owedScrollView;
     public String selectedMonth;
@@ -73,7 +73,6 @@ public class BorrowFragment extends Fragment {
         owedScrollView = view.findViewById(R.id.owedScrollView);
         noOwedTextView = view.findViewById(R.id.noOwedTextView);
         noDebtTextView = view.findViewById(R.id.noDebtTextView);
-        payTextView = view.findViewById(R.id.payTextView);
         payCheckBox = view.findViewById(R.id.payCheckBox);
         debtRecyclerList = view.findViewById(R.id.debtRecyclerList);
         payNowBtn = view.findViewById(R.id.payNowBtn);
