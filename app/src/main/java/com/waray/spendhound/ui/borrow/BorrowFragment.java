@@ -34,9 +34,11 @@ import com.waray.spendhound.BorrowTransactionAdapter;
 import com.waray.spendhound.DeclareDatabase;
 import com.waray.spendhound.MainActivity;
 import com.waray.spendhound.R;
+import com.waray.spendhound.SpinnerItem;
 import com.waray.spendhound.SpinnerItemMonths;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -45,11 +47,11 @@ import java.util.Set;
 
 public class BorrowFragment extends Fragment {
 
-    private Spinner monthYearSpinner;
+    private Spinner monthYearSpinner, statusSpinner;
     public List<String> debtSortedMonths, owedSortedMonths;
     private Button borrowNowBtn, payNowBtn;
     private TextView owedTV, debtTV, noOwedTextView, noDebtTextView;
-    private LinearLayout debtButtons;
+    private LinearLayout debtButtons, selectAllLayout;
     private ScrollView debtScrollView, owedScrollView;
     public String selectedMonth;
     private boolean monthFilter;
@@ -64,6 +66,7 @@ public class BorrowFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_borrow, container, false);
         monthYearSpinner = view.findViewById(R.id.monthYearSpinner);
+        statusSpinner = view.findViewById(R.id.statusSpinner);
         borrowNowBtn = view.findViewById(R.id.borrowNowBtn);
         payNowBtn = view.findViewById(R.id.payNowBtn);
         owedTV = view.findViewById(R.id.owedTV);
@@ -76,6 +79,7 @@ public class BorrowFragment extends Fragment {
         payCheckBox = view.findViewById(R.id.payCheckBox);
         debtRecyclerList = view.findViewById(R.id.debtRecyclerList);
         payNowBtn = view.findViewById(R.id.payNowBtn);
+        selectAllLayout = view.findViewById(R.id.selectAllLayout);
         monthFilter = true;
 
 
@@ -86,7 +90,9 @@ public class BorrowFragment extends Fragment {
         OwedMonthlyFilterList();
         monthFilterSelected();
         payNowButton();
+        BorrowStatusItems();
 
+        selectAllLayout.setVisibility(View.GONE);
 
         // Get the hosting Activity and remove the ActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -227,6 +233,7 @@ public class BorrowFragment extends Fragment {
                 debtButtons.setVisibility(View.INVISIBLE);
                 owedScrollView.setVisibility(View.VISIBLE);
                 debtScrollView.setVisibility(View.GONE);
+                selectAllLayout.setVisibility(View.GONE);
 
                 owedTV.setEnabled(false);
                 debtTV.setEnabled(true);
@@ -249,6 +256,7 @@ public class BorrowFragment extends Fragment {
                 debtButtons.setVisibility(View.VISIBLE);
                 owedScrollView.setVisibility(View.GONE);
                 debtScrollView.setVisibility(View.VISIBLE);
+                selectAllLayout.setVisibility(View.VISIBLE);
 
                 debtTV.setEnabled(false);
                 owedTV.setEnabled(true);
@@ -343,6 +351,13 @@ public class BorrowFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private void BorrowStatusItems(){
+        String[] transactionTypes = getResources().getStringArray(R.array.borrowStatus_String);
+        SpinnerItem adapter = new SpinnerItem(getActivity(), Arrays.asList(transactionTypes));
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        statusSpinner.setAdapter(adapter);
     }
 
     @Override

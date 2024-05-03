@@ -121,20 +121,12 @@
                                 android:textAlignment="center"
                                 android:textSize="12dp" />
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
                                 <Spinner
                                     android:id="@+id/monthYearSpinner"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="8dp"
-                                    android:background="@drawable/transparent_background"
-                                    android:textAlignment="center" />
-
-                            </LinearLayout>
+                                    android:textAlignment="center"
+                                    android:background="@drawable/transparent_background"/>
 
                         </LinearLayout>
 
@@ -156,7 +148,6 @@
                                 android:id="@+id/statusSpinner"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
                                 android:textAlignment="center"
                                 android:background="@drawable/transparent_background" />
 

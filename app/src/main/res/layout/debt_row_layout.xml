@@ -12,7 +12,7 @@
         android:orientation="horizontal">
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="3"
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <LinearLayout
@@ -120,21 +120,21 @@
                 android:textSize="12dp" />
         </LinearLayout>
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
-        android:orientation="horizontal">
 
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
 
-        <CheckBox
-            android:id="@+id/payCheckBox"
-            android:layout_width="20dp"
-            android:layout_gravity="center"
-            android:layout_marginHorizontal="12dp"
-            android:layout_height="20dp"/>
+            <CheckBox
+                android:id="@+id/payCheckBox"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"/>
 
-    </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
     <View

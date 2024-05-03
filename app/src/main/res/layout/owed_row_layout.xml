@@ -41,7 +41,7 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserratalternatess_regular"
-            android:text="Name of borrower: "
+            android:text="Borrower: "
             android:textAlignment="textStart"
             android:textSize="12dp" />
 
@@ -67,7 +67,7 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserratalternatess_regular"
-            android:text="Amount borrowed: "
+            android:text="Amount: "
             android:textAlignment="textStart"
             android:textSize="12dp" />
 

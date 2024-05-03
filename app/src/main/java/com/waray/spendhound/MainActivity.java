@@ -425,6 +425,18 @@ public class MainActivity extends AppCompatActivity {
                                             String date = borrowTransaction.getDate();
                                             String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
                                             String status = borrowTransaction.getStatus();
+
+                                            SimpleDateFormat originalFormat = new SimpleDateFormat("MMMM-dd-yyyy", Locale.ENGLISH); // Assuming "MMMM" for full month name
+                                            Date newDate = null;
+                                            try {
+                                                newDate = originalFormat.parse(date);
+                                            } catch (ParseException e) {
+                                                throw new RuntimeException(e);
+                                            }
+                                            SimpleDateFormat newFormat = new SimpleDateFormat("MMM-dd-yyyy");
+                                            date = newFormat.format(newDate);
+
+
                                             // Create a RecentTransaction object and add it to the list
                                             OwedTransaction owedTrans = new OwedTransaction(
                                                     date,
