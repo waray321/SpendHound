@@ -42,10 +42,17 @@ public class MainActivity extends AppCompatActivity {
     public int totalMonthSpends;
     private ProgressBar progressBar;
     public String currentNickname = "";
-    public int dailySpend, owedNum = 0, debtNum = 0;
+    public int dailySpend, owedNum, debtNum;
     private ArrayList<RecentTransaction> recentTransactionList = new ArrayList<>();
     public ArrayList<BorrowTransaction> debtList = new ArrayList<>();
     public ArrayList<OwedTransaction> owedList = new ArrayList<>();
+
+    public interface OwedNumCallback {
+        void onOwedNumReceived(int owedNum);
+    }
+    public interface DebtNumCallback {
+        void onDebtNumReceived(int debtNum);
+    }
 
 
     @Override
@@ -335,7 +342,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void getDebtList(String selectedStatus) {
+    public void getDebtList(String selectedStatus, DebtNumCallback callback) {
         debtList.clear();
 
         DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
@@ -402,8 +409,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 debtNum = debtList.size();
-                showToast(String.valueOf("DebtNumList: " + debtNum));
-                isDebtListEmpty();
+                callback.onDebtNumReceived(debtNum);
             }
 
             @Override
@@ -415,11 +421,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void getOwedList(String selectedStatus) {
+    public void getOwedList(String selectedStatus, OwedNumCallback callback) {
         owedList.clear();
 
         DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
-
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @SuppressLint("NotifyDataSetChanged")
@@ -482,8 +487,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 owedNum = owedList.size();
-                showToast(String.valueOf("OwedNumList: " + owedNum));
-                isOwedListEmpty();
+                callback.onOwedNumReceived(owedNum);
             }
 
             @Override
@@ -495,7 +499,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void getOwedListMonthly(String selectedMonth, String selectedStatus) {
+    public void getOwedListMonthly(String selectedMonth, String selectedStatus, OwedNumCallback callback) {
         owedList.clear();
 
         DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
@@ -561,8 +565,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     owedNum = owedList.size();
-                    showToast(String.valueOf("OwedNumMonth: " + owedNum));
-                    isOwedListEmpty();
+                    callback.onOwedNumReceived(owedNum);
                 }
 
                 @Override
@@ -578,7 +581,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void getDebtListMonthly(String selectedMonth, String selectedStatus) {
+    public void getDebtListMonthly(String selectedMonth, String selectedStatus, DebtNumCallback callback) {
         debtList.clear();
 
         DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
@@ -646,8 +649,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     debtNum = debtList.size();
-                    showToast(String.valueOf("DebtNumMonth: " + debtNum));
-                    isDebtListEmpty();
+                    callback.onDebtNumReceived(debtNum);
                 }
 
                 @Override
@@ -696,22 +698,6 @@ public class MainActivity extends AppCompatActivity {
         }
         SimpleDateFormat newFormat = new SimpleDateFormat("MMM-dd-yyyy");
         date = newFormat.format(newDate);
-    }
-
-    public boolean isOwedListEmpty() {
-        if (owedNum==0){
-            return true;
-        }else {
-            return false;
-        }
-    }
-
-    public boolean isDebtListEmpty() {
-        if (debtNum==0){
-            return true;
-        }else {
-            return false;
-        }
     }
 
     public void showToast(String message) {

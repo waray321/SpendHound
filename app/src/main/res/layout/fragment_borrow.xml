@@ -165,11 +165,11 @@
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/montserratalternatess_regular"
                                 android:text="Select All"
-                                android:textAlignment="textEnd"
+                                android:textAlignment="center"
                                 android:textSize="12dp" />
 
                             <CheckBox
-                                android:id="@+id/payCheckBox"
+                                android:id="@+id/payAllCheckBox"
                                 android:layout_width="20dp"
                                 android:layout_gravity="center"
                                 android:layout_marginHorizontal="12dp"
@@ -220,7 +220,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/montserratalternatess_regular"
-                        android:text="You have no debt!"
+                        android:text="No Debt Data!"
                         android:textAlignment="center"
                         android:textSize="12dp"
                         android:padding="16dp"
@@ -230,7 +230,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/montserratalternatess_regular"
-                        android:text="No one owed you money!"
+                        android:text="No Owed Data!"
                         android:textAlignment="center"
                         android:textSize="12dp"
                         android:padding="16dp"

@@ -52,7 +52,7 @@ public class BorrowFragment extends Fragment {
     private Spinner monthYearSpinner, statusSpinner;
     public List<String> debtSortedMonths, owedSortedMonths;
     private Button borrowNowBtn, payNowBtn;
-    private TextView owedTV, debtTV, noOwedTextView, noDebtTextView;
+    public TextView owedTV, debtTV, noOwedTextView, noDebtTextView;
     private LinearLayout debtButtons, selectAllLayout;
     private ScrollView debtScrollView, owedScrollView;
     public String selectedMonth, selectedStatus;
@@ -61,7 +61,6 @@ public class BorrowFragment extends Fragment {
     private CheckBox payCheckBox;
     private RecyclerView debtRecyclerList;
     private BorrowTransactionAdapter adapter;
-
 
     @SuppressLint("MissingInflatedId")
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -96,6 +95,7 @@ public class BorrowFragment extends Fragment {
         BorrowStatusItems();
 
         selectAllLayout.setVisibility(View.GONE);
+
 
         // Get the hosting Activity and remove the ActionBar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -274,43 +274,50 @@ public class BorrowFragment extends Fragment {
     }
 
     public void monthFilterSelected() {
-
         monthYearSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // Get the selected item (e.g., the selected month)
                 selectedMonth = (String) parentView.getItemAtPosition(position);
 
+                MainActivity mainActivity = (MainActivity) getActivity();
+                assert mainActivity != null;
+
                 if (owedDebtCLicked) {
                     if (Objects.equals(selectedMonth, "All") && Objects.equals(selectedStatus, "All") || Objects.equals(selectedMonth, "All") && !Objects.equals(selectedStatus, "All")) {
-                        MainActivity mainActivity = (MainActivity) getActivity();
-                        assert mainActivity != null;
-
-                        OwedSize();
-                        mainActivity.getOwedList(selectedStatus);
+                        mainActivity.getOwedList(selectedStatus, new MainActivity.OwedNumCallback() {
+                            @Override
+                            public void onOwedNumReceived(int owedNum) {
+                                OwedSize(owedNum);
+                            }
+                        });
 
                     }else {
-                        MainActivity mainActivity = (MainActivity) getActivity();
-                        assert mainActivity != null;
+                        mainActivity.getOwedListMonthly(selectedMonth, selectedStatus, new MainActivity.OwedNumCallback() {
+                            @Override
+                            public void onOwedNumReceived(int owedNum) {
+                                OwedSize(owedNum);
+                            }
+                        });
 
-                        OwedSize();
-                        mainActivity.getOwedListMonthly(selectedMonth, selectedStatus);
                     }
                 } else {
 
                     if (Objects.equals(selectedMonth, "All") && Objects.equals(selectedStatus, "All") || Objects.equals(selectedMonth, "All") && !Objects.equals(selectedStatus, "All")) {
-                        MainActivity mainActivity = (MainActivity) getActivity();
-                        assert mainActivity != null;
-
-                        DebtSize();
-                        mainActivity.getDebtList(selectedStatus);
+                        mainActivity.getDebtList(selectedStatus, new MainActivity.DebtNumCallback() {
+                            @Override
+                            public void onDebtNumReceived(int debtNum) {
+                                DebtSize(debtNum);
+                            }
+                        });
 
                     } else {
-                        MainActivity mainActivity = (MainActivity) getActivity();
-                        assert mainActivity != null;
-
-                        DebtSize();
-                        mainActivity.getDebtListMonthly(selectedMonth, selectedStatus);
+                        mainActivity.getDebtListMonthly(selectedMonth, selectedStatus, new MainActivity.DebtNumCallback() {
+                            @Override
+                            public void onDebtNumReceived(int debtNum) {
+                                DebtSize(debtNum);
+                            }
+                        });
                     }
                 }
             }
@@ -323,43 +330,49 @@ public class BorrowFragment extends Fragment {
     }
 
     public void statusFilterSelected() {
-
         statusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // Get the selected item (e.g., the selected month)
                 selectedStatus = (String) parentView.getItemAtPosition(position);
+                MainActivity mainActivity = (MainActivity) getActivity();
+                assert mainActivity != null;
 
                 if (owedDebtCLicked) {
                     if (Objects.equals(selectedMonth, "All") && Objects.equals(selectedStatus, "All") || Objects.equals(selectedMonth, "All") && !Objects.equals(selectedStatus, "All")) {
-                        MainActivity mainActivity = (MainActivity) getActivity();
-                        assert mainActivity != null;
-
-                        OwedSize();
-                        mainActivity.getOwedList(selectedStatus);
+                        mainActivity.getOwedList(selectedStatus, new MainActivity.OwedNumCallback() {
+                            @Override
+                            public void onOwedNumReceived(int owedNum) {
+                                OwedSize(owedNum);
+                            }
+                        });
 
                     }else {
-                        MainActivity mainActivity = (MainActivity) getActivity();
-                        assert mainActivity != null;
+                        mainActivity.getOwedListMonthly(selectedMonth, selectedStatus, new MainActivity.OwedNumCallback() {
+                            @Override
+                            public void onOwedNumReceived(int owedNum) {
+                                OwedSize(owedNum);
+                            }
+                        });
 
-                        OwedSize();
-                        mainActivity.getOwedListMonthly(selectedMonth, selectedStatus);
                     }
                 } else {
 
                     if (Objects.equals(selectedMonth, "All") && Objects.equals(selectedStatus, "All") || Objects.equals(selectedMonth, "All") && !Objects.equals(selectedStatus, "All")) {
-                        MainActivity mainActivity = (MainActivity) getActivity();
-                        assert mainActivity != null;
-
-                        DebtSize();
-                        mainActivity.getDebtList(selectedStatus);
+                        mainActivity.getDebtList(selectedStatus, new MainActivity.DebtNumCallback() {
+                            @Override
+                            public void onDebtNumReceived(int debtNum) {
+                                DebtSize(debtNum);
+                            }
+                        });
 
                     } else {
-                        MainActivity mainActivity = (MainActivity) getActivity();
-                        assert mainActivity != null;
-
-                        DebtSize();
-                        mainActivity.getDebtListMonthly(selectedMonth, selectedStatus);
+                        mainActivity.getDebtListMonthly(selectedMonth, selectedStatus, new MainActivity.DebtNumCallback() {
+                            @Override
+                            public void onDebtNumReceived(int debtNum) {
+                                DebtSize(debtNum);
+                            }
+                        });
                     }
                 }
             }
@@ -386,7 +399,7 @@ public class BorrowFragment extends Fragment {
                         checkedPositionsStr.delete(checkedPositionsStr.length() - 2, checkedPositionsStr.length()); // Remove trailing comma and space
                         Toast.makeText(getActivity(), "Checked positions: " + checkedPositionsStr, Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(getActivity(), "No transaction is selected", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "No debt is selected", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -424,13 +437,8 @@ public class BorrowFragment extends Fragment {
         statusSpinner.setAdapter(adapter);
     }
 
-    public void OwedSize() {
-        MainActivity mainActivity = (MainActivity) getActivity();
-        assert mainActivity != null;
-        boolean owedListIsEmpty = mainActivity.isOwedListEmpty();
-        showToast("OwedSize: " + owedListIsEmpty);
-
-        if (owedListIsEmpty){
+    public void OwedSize(int owedNum) {
+        if (owedNum==0){
             noOwedTextView.setVisibility(View.VISIBLE);
             noDebtTextView.setVisibility(View.GONE);
         }
@@ -440,13 +448,8 @@ public class BorrowFragment extends Fragment {
         }
     }
 
-    public void DebtSize() {
-        MainActivity mainActivity = (MainActivity) getActivity();
-        assert mainActivity != null;
-        boolean debtListIsEmpty = mainActivity.isDebtListEmpty();
-        showToast("DebtSize: " + debtListIsEmpty);
-
-        if (debtListIsEmpty){
+    public void DebtSize(int debtNum) {
+        if (debtNum==0){
             noDebtTextView.setVisibility(View.VISIBLE);
             noOwedTextView.setVisibility(View.GONE);
         }
@@ -456,15 +459,6 @@ public class BorrowFragment extends Fragment {
         }
     }
 
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        MainActivity mainActivity = (MainActivity) getActivity();
-        assert mainActivity != null;
-        mainActivity.getDebtList(selectedStatus);
-
-    }
 
     public void showToast(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
