@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_weight="3"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserratalternatess_regular"
+                    android:text="Date: "
+                    android:textAlignment="textEnd"
+                    android:textSize="12dp" />
+
+                <TextView
+                    android:id="@+id/dateTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserratalternatess_regular"
+                    android:text="October 6, 2023"
+                    android:textColor="@color/darkBlue"
+                    android:textAlignment="textEnd"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserratalternatess_regular"
+                    android:text="Lender: "
+                    android:textAlignment="textStart"
+                    android:textSize="12dp" />
+
+                <TextView
+                    android:id="@+id/borroweeTextView"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserratalternatess_regular"
+                    android:text="Rovic"
+                    android:textColor="@color/darkBlue"
+                    android:textAlignment="textEnd"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserratalternatess_regular"
+                    android:text="Amount: "
+                    android:textAlignment="textStart"
+                    android:textSize="12dp" />
+
+                <TextView
+                    android:id="@+id/amountTextView"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserratalternatess_regular"
+                    android:text="₱ 6000.00"
+                    android:textColor="@color/darkBlue"
+                    android:textAlignment="textEnd"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserratalternatess_regular"
+                    android:text="Status: "
+                    android:textAlignment="textStart"
+                    android:textSize="12dp" />
+
+                <TextView
+                    android:id="@+id/statusTextView"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserratalternatess_regular"
+                    android:text="Unpaid"
+                    android:textColor="@color/red"
+                    android:textAlignment="textEnd"
+                    android:textSize="12dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/bottom_border2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="4dp"
+        android:textColor="@color/darkBlue"
+        android:background="@drawable/border_line_darkblue"/>
+</LinearLayout>

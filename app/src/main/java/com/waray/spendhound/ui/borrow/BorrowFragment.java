@@ -1,6 +1,7 @@
 package com.waray.spendhound.ui.borrow;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -33,6 +35,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.waray.spendhound.BorrowNowActivity;
 import com.waray.spendhound.BorrowTransaction;
 import com.waray.spendhound.BorrowTransactionAdapter;
+import com.waray.spendhound.CheckedTransactionsAdapter;
 import com.waray.spendhound.DeclareDatabase;
 import com.waray.spendhound.MainActivity;
 import com.waray.spendhound.R;
@@ -61,6 +64,7 @@ public class BorrowFragment extends Fragment {
     private CheckBox payCheckBox;
     private RecyclerView debtRecyclerList;
     private BorrowTransactionAdapter adapter;
+    private CheckBox payAllCheckBox;
 
     @SuppressLint("MissingInflatedId")
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -81,6 +85,7 @@ public class BorrowFragment extends Fragment {
         debtRecyclerList = view.findViewById(R.id.debtRecyclerList);
         payNowBtn = view.findViewById(R.id.payNowBtn);
         selectAllLayout = view.findViewById(R.id.selectAllLayout);
+        payAllCheckBox = view.findViewById(R.id.payAllCheckBox);
         owedDebtCLicked = true;
 
 
@@ -384,28 +389,6 @@ public class BorrowFragment extends Fragment {
         });
     }
 
-    private void payNowButton(){
-        payNowBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                BorrowTransactionAdapter adapter = (BorrowTransactionAdapter) debtRecyclerList.getAdapter();
-                if (adapter != null) {
-                    ArrayList<Integer> checkedPositions = adapter.getCheckedPositions();
-                    if (!checkedPositions.isEmpty()) {
-                        StringBuilder checkedPositionsStr = new StringBuilder();
-                        for (int position : checkedPositions) {
-                            checkedPositionsStr.append(position).append(", ");
-                        }
-                        checkedPositionsStr.delete(checkedPositionsStr.length() - 2, checkedPositionsStr.length()); // Remove trailing comma and space
-                        Toast.makeText(getActivity(), "Checked positions: " + checkedPositionsStr, Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(getActivity(), "No debt is selected", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
-    }
-
     private void BorrowStatusItems() {
         String[] transactionTypes = getResources().getStringArray(R.array.borrowStatus_String);
         statusSpinner.setBackgroundResource(R.drawable.transparent_background);
@@ -458,6 +441,76 @@ public class BorrowFragment extends Fragment {
             noOwedTextView.setVisibility(View.GONE);
         }
     }
+
+    private void payNowButton(){
+        payNowBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BorrowTransactionAdapter adapter = (BorrowTransactionAdapter) debtRecyclerList.getAdapter();
+                if (adapter != null) {
+                    ArrayList<Integer> checkedPositions = adapter.getCheckedPositions();
+                    if (!checkedPositions.isEmpty()) {
+                        // Collect checked borrow transactions
+                        ArrayList<BorrowTransaction> checkedTransactions = new ArrayList<>();
+                        for (int position : checkedPositions) {
+                            checkedTransactions.add(adapter.getBorrowTransaction(position));
+                        }
+                        showCheckedTransactionsDialog(checkedTransactions);
+                    } else {
+                        Toast.makeText(getActivity(), "No debt is selected", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
+        payAllCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                BorrowTransactionAdapter adapter = (BorrowTransactionAdapter) debtRecyclerList.getAdapter();
+                if (adapter != null) {
+                    if (isChecked) {
+                        adapter.selectAll();
+                    } else {
+                        adapter.deselectAll();
+                    }
+                }
+            }
+        });
+    }
+
+    private void showCheckedTransactionsDialog(ArrayList<BorrowTransaction> checkedTransactions) {
+        // Create a dialog
+        Dialog dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.dialog_topaychecked_transaction);
+
+        // Set up RecyclerView in the dialog
+        RecyclerView recyclerView = dialog.findViewById(R.id.checkedTransactionsRecycler);
+        CheckedTransactionsAdapter adapter = new CheckedTransactionsAdapter(checkedTransactions);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
+
+        // Calculate the total amount
+        double totalAmount = 0;
+        for (BorrowTransaction transaction : checkedTransactions) {
+            totalAmount += Double.parseDouble(transaction.getBorrowedAmountStr());
+        }
+
+        // Display the total amount
+        TextView totalAmountTextView = dialog.findViewById(R.id.totalAmountTextView);
+        totalAmountTextView.setText("₱ " + totalAmount);
+
+        // Set up the close button
+        Button closeButton = dialog.findViewById(R.id.closeButton);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
 
 
     public void showToast(String message) {

@@ -25,6 +25,10 @@ public class BorrowTransactionAdapter extends RecyclerView.Adapter<BorrowTransac
         this.borrowTransactionList = borrowTransactionList;
         checkedPositions = new ArrayList<>();
     }
+    // Add this method to retrieve a BorrowTransaction by its position
+    public BorrowTransaction getBorrowTransaction(int position) {
+        return borrowTransactionList.get(position);
+    }
 
     @NonNull
     @Override
@@ -60,6 +64,19 @@ public class BorrowTransactionAdapter extends RecyclerView.Adapter<BorrowTransac
                 }
             }
         });
+    }
+
+    public void selectAll() {
+        checkedPositions.clear();
+        for (int i = 0; i < borrowTransactionList.size(); i++) {
+            checkedPositions.add(i);
+        }
+        notifyDataSetChanged();
+    }
+
+    public void deselectAll() {
+        checkedPositions.clear();
+        notifyDataSetChanged();
     }
 
     @Override
