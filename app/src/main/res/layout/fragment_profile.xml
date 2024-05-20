@@ -318,30 +318,13 @@
         android:layout_marginTop="12dp"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
             <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_bold"
                 android:text="Recent Notifications"
                 android:textColor="@color/grey"
                 android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/seeAllNotifTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/montserratalternatess_regular"
-                android:text="See All >"
-                android:textColor="@color/yellow"
-                android:textSize="16sp" />
-
-        </LinearLayout>
 
     </LinearLayout>
 

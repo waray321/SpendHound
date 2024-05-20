@@ -43,14 +43,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.waray.spendhound.AddTranscationActivity;
 import com.waray.spendhound.BorrowTransaction;
 import com.waray.spendhound.DeclareDatabase;
 import com.waray.spendhound.LoginActivity;
-import com.waray.spendhound.NotificationActivity;
+import com.waray.spendhound.PendingStatusActivity;
 import com.waray.spendhound.R;
 import com.waray.spendhound.Transaction;
-import com.waray.spendhound.ui.home.HomeFragment;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
@@ -62,7 +60,7 @@ import java.util.Objects;
 public class ProfileFragment extends Fragment {
 
     private ImageView profileImageView;
-    private TextView nicknameTextView, totalBalancedTextView, balanceTextView, unpaidTextView, oweTextView, debtTextView, totalTextView, seeAllNotifTextView;
+    private TextView nicknameTextView, totalBalancedTextView, balanceTextView, unpaidTextView, oweTextView, debtTextView, totalTextView;
     private EditText nicknameEditText;
     private ImageView editNickname;
     private ImageView saveNickname;
@@ -100,7 +98,6 @@ public class ProfileFragment extends Fragment {
         balanceUnpaidLayout = view.findViewById(R.id.balanceUnpaidLayout);
         oweDebtLayout = view.findViewById(R.id.oweDebtLayout);
         profileLogout = view.findViewById(R.id.profileLogout);
-        seeAllNotifTextView = view.findViewById(R.id.seeAllNotifTextView);
 
         balanceUnpaidDrawable = ContextCompat.getDrawable(getContext(), R.drawable.round_border_glassy);
         balanceUnpaidDrawableTransparent = ContextCompat.getDrawable(getContext(), R.drawable.transparent_background);
@@ -126,7 +123,6 @@ public class ProfileFragment extends Fragment {
         getOwe();
         profileImageViewButton();
         ProfileLogoutButton();
-        SeeAllNotifications();
 
 
 
@@ -786,15 +782,6 @@ public class ProfileFragment extends Fragment {
                 } else {
                     Log.e("ProfileFragment", "FirebaseAuth instance is null");
                 }
-            }
-        });
-    }
-    private void SeeAllNotifications(){
-        seeAllNotifTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), NotificationActivity.class);
-                startActivity(intent);
             }
         });
     }

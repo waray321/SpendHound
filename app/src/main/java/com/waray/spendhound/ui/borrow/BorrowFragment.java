@@ -38,6 +38,7 @@ import com.waray.spendhound.BorrowTransactionAdapter;
 import com.waray.spendhound.CheckedTransactionsAdapter;
 import com.waray.spendhound.DeclareDatabase;
 import com.waray.spendhound.MainActivity;
+import com.waray.spendhound.PendingStatusActivity;
 import com.waray.spendhound.R;
 import com.waray.spendhound.SpinnerItem;
 import com.waray.spendhound.SpinnerItemMonths;
@@ -54,7 +55,7 @@ public class BorrowFragment extends Fragment {
 
     private Spinner monthYearSpinner, statusSpinner;
     public List<String> debtSortedMonths, owedSortedMonths;
-    private Button borrowNowBtn, payNowBtn;
+    private Button borrowNowBtn, payNowBtn, pendingStatusBtn;
     public TextView owedTV, debtTV, noOwedTextView, noDebtTextView;
     private LinearLayout debtButtons, selectAllLayout;
     private ScrollView debtScrollView, owedScrollView;
@@ -86,6 +87,7 @@ public class BorrowFragment extends Fragment {
         payNowBtn = view.findViewById(R.id.payNowBtn);
         selectAllLayout = view.findViewById(R.id.selectAllLayout);
         payAllCheckBox = view.findViewById(R.id.payAllCheckBox);
+        pendingStatusBtn = view.findViewById(R.id.pendingStatusBtn);
         owedDebtCLicked = true;
 
 
@@ -98,6 +100,7 @@ public class BorrowFragment extends Fragment {
         statusFilterSelected();
         payNowButton();
         BorrowStatusItems();
+        PendingStatusButton();
 
         selectAllLayout.setVisibility(View.GONE);
 
@@ -242,6 +245,7 @@ public class BorrowFragment extends Fragment {
                 owedScrollView.setVisibility(View.VISIBLE);
                 debtScrollView.setVisibility(View.GONE);
                 selectAllLayout.setVisibility(View.GONE);
+                pendingStatusBtn.setVisibility(View.VISIBLE);
 
                 owedTV.setEnabled(false);
                 debtTV.setEnabled(true);
@@ -266,6 +270,7 @@ public class BorrowFragment extends Fragment {
                 owedScrollView.setVisibility(View.GONE);
                 debtScrollView.setVisibility(View.VISIBLE);
                 selectAllLayout.setVisibility(View.VISIBLE);
+                pendingStatusBtn.setVisibility(View.GONE);
 
                 debtTV.setEnabled(false);
                 owedTV.setEnabled(true);
@@ -509,6 +514,16 @@ public class BorrowFragment extends Fragment {
         });
 
         dialog.show();
+    }
+
+    private void PendingStatusButton(){
+        pendingStatusBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), PendingStatusActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
 

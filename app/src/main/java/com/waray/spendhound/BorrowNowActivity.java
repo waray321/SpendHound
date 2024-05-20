@@ -58,7 +58,7 @@ public class BorrowNowActivity extends AppCompatActivity {
         borrower = findViewById(R.id.borrower);
         progressBar = findViewById(R.id.progressBar);
         borrowBtn = findViewById(R.id.borrowBtn);
-        status = "Unpaid";
+        status = "Pending";
 
         setDate();
         getUsers();
@@ -195,6 +195,7 @@ public class BorrowNowActivity extends AppCompatActivity {
                 }
                 progressBar.setVisibility(View.VISIBLE);
                 borrowee = borrowSpinner.getSelectedItem().toString();
+
                 if ("Select a lender:".equals(borrowee) || borrowedAmount == 0) {
                     Toast.makeText(BorrowNowActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.GONE);

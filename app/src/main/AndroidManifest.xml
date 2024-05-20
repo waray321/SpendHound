@@ -64,7 +64,7 @@
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
-        <activity android:name=".NotificationActivity"
+        <activity android:name=".PendingStatusActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 

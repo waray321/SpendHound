@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    tools:context=".PendingStatusActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="4dp">
+
+        <ImageView
+            android:id="@+id/backBtn"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/left_arrow__darkblue"/>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:fontFamily="@font/montserratalternatess_bold"
+            android:text="Notifications"
+            android:textAlignment="center"
+            android:textColor="@color/darkBlue"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/bottom_border1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bottom_border" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/darkBlue"
+        android:elevation="4dp"
+        android:orientation="vertical"
+        android:padding="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/borrowerListTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/top_round_border"
+                android:fontFamily="@font/montserratalternatess_regular"
+                android:paddingVertical="12dp"
+                android:text="Borrower List"
+                android:textAlignment="center"
+                android:textColor="@color/darkBlue"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/payerListTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/montserratalternatess_regular"
+                android:paddingVertical="12dp"
+                android:text="Payer List"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="16dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bottom_round_border"
+            android:elevation="2dp"
+            android:orientation="vertical"
+            android:paddingVertical="20dp">
+
+            <LinearLayout
+                android:id="@+id/borrowerListLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserratalternatess_regular"
+                        android:text="Please confirm your transactions to borrowers"
+                        android:textAlignment="center"
+                        android:textSize="12dp" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="60dp">
+
+                    <Button
+                        android:id="@+id/acceptAllBorrowBtn"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="40dp"
+                        android:text="Accept All"
+                        android:backgroundTint="@color/yellow"
+                        android:elevation="4dp"
+                        android:textSize="11dp"
+                        android:fontFamily="@font/montserratalternatess_regular"
+                        android:textColor="@color/whitest"/>
+                    <Button
+                        android:id="@+id/declineAllBorrowBtn"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="40dp"
+                        android:text="Decline All"
+                        android:backgroundTint="@color/red"
+                        android:textSize="11dp"
+                        android:fontFamily="@font/montserratalternatess_regular"
+                        android:elevation="4dp"
+                        android:textColor="@color/whitest"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/payerListLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserratalternatess_regular"
+                        android:text="Please confirm borrower's payments to you"
+                        android:textAlignment="center"
+                        android:textSize="12dp" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="60dp">
+
+                    <Button
+                        android:id="@+id/confirmAllPayerBtn"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="40dp"
+                        android:text="Confirm All"
+                        android:backgroundTint="@color/yellow"
+                        android:elevation="4dp"
+                        android:textSize="11dp"
+                        android:fontFamily="@font/montserratalternatess_regular"
+                        android:textColor="@color/whitest"/>
+                    <Button
+                        android:id="@+id/denyPayerAllBtn"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="40dp"
+                        android:text="Deny All"
+                        android:backgroundTint="@color/red"
+                        android:textSize="11dp"
+                        android:fontFamily="@font/montserratalternatess_regular"
+                        android:elevation="4dp"
+                        android:textColor="@color/whitest"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/bottom_border"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="8dp"
+                android:background="@drawable/border_line_darkblue" />
+
+
+            <ScrollView
+                android:id="@+id/borrowerListScrollView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="4dp"
+                android:padding="12dp">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/borrowerListRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@layout/borrower_row_layout" />
+            </ScrollView>
+
+            <ScrollView
+                android:id="@+id/payerListScrollView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="4dp"
+                android:padding="12dp"
+                android:visibility="gone">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/payerListRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@layout/payer_row_layout" />
+            </ScrollView>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
