@@ -2,14 +2,28 @@ package com.waray.spendhound;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+import com.waray.spendhound.ui.borrow.BorrowFragment;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class PendingStatusActivity extends AppCompatActivity {
     private TextView borrowerListTV, payerListTV;
@@ -17,6 +31,10 @@ public class PendingStatusActivity extends AppCompatActivity {
     private boolean borrowerPayerClicked;
     private ImageView backBtn;
     private LinearLayout borrowerListLinearLayout, payerListLinearLayout;
+    public ArrayList<OwedTransaction> borrowerList = new ArrayList<OwedTransaction>();
+    public int borrowerNum;
+    public String currentNickname;
+    private RecyclerView borrowerListRecyclerView;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +54,17 @@ public class PendingStatusActivity extends AppCompatActivity {
         BorrowerListTVClicked();
         PayerListTVClicked();
         BackButtonCLicked();
+
+        MainActivity mainActivity = new MainActivity();
+        mainActivity.getCurrentNickname(new MainActivity.CurrentNicknameCallback() {
+            @Override
+            public void onCurrentNicknameReceived(String currentNickname) {
+                showToast(currentNickname);
+            }
+        });
+
+        BorrowerList();
+
     }
 
     private void BorrowerListTVClicked() {
@@ -80,6 +109,72 @@ public class PendingStatusActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void BorrowerList(){
+        borrowerList.clear();
+
+        DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            MainActivity mainActivity = new MainActivity();
+
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot monthSnapshot : dataSnapshot.getChildren()) {
+                    for (DataSnapshot daySnapshot : monthSnapshot.getChildren()) {
+                        for (DataSnapshot currentUserRef : daySnapshot.getChildren()) {
+                            String currentUserStr = currentUserRef.getKey();
+                            if (!Objects.equals(currentUserStr, currentNickname)) {
+                                for (DataSnapshot timeSnapshot : currentUserRef.getChildren()) {
+                                    BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
+                                    if (borrowTransaction != null) {
+                                        String status = borrowTransaction.getStatus();
+                                        if (Objects.equals(status, "Pending Borrow Approval")) {
+                                            String borrower = borrowTransaction.getBorrowee();
+                                            String date = borrowTransaction.getDate();
+                                            String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
+
+                                            mainActivity.changeFormatDate(date);
+
+                                            // Create a RecentTransaction object and add it to the list
+                                            OwedTransaction borrowerTrans = new OwedTransaction(
+                                                    date,
+                                                    borrower,
+                                                    borrowedAmount,
+                                                    status
+                                            );
+                                            borrowerList.add(borrowerTrans);
+                                        } else {
+                                            showToast("No Data" + status);
+                                        }
+
+                                    } else {
+                                        showToast("No data");
+                                    }
+                                    RecyclerView recyclerView = findViewById(R.id.borrowerListRecyclerView);
+                                    RecyclerView.Adapter<OwedTransactionAdapter.ViewHolder> adapter = new OwedTransactionAdapter(borrowerList);
+                                    recyclerView.setAdapter(adapter);
+                                    adapter.notifyDataSetChanged();
+
+                                    // Set the RecyclerView.LayoutManager
+                                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(PendingStatusActivity.this);
+                                    recyclerView.setLayoutManager(layoutManager);
+                                }
+                            }
+                        }
+                    }
+                }
+                borrowerNum = borrowerList.size();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle database read error
+                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
+                Log.e("FirebaseDatabase", errorMessage);
+            }
+        });
+    }
     private void BackButtonCLicked(){
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,5 +188,9 @@ public class PendingStatusActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         // Optionally add any additional logic here if needed
+    }
+
+    public void showToast(String message) {
+        Toast.makeText(PendingStatusActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 }

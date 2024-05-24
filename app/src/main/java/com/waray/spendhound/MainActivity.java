@@ -25,7 +25,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.waray.spendhound.databinding.ActivityMainBinding;
-import com.waray.spendhound.ui.borrow.BorrowFragment;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -53,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
     public interface DebtNumCallback {
         void onDebtNumReceived(int debtNum);
     }
+    public interface CurrentNicknameCallback {
+        void onCurrentNicknameReceived(String CurrentNickname);
+    }
 
 
     @Override
@@ -65,7 +67,12 @@ public class MainActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
 
         mAuth = DeclareDatabase.getAuth();
-        getCurrentNickname();
+        getCurrentNickname(new CurrentNicknameCallback() {
+            @Override
+            public void onCurrentNicknameReceived(String CurrentNickname) {
+
+            }
+        });
 
         navView = findViewById(R.id.navView);
         // Passing each menu ID as a set of Ids because each
@@ -664,7 +671,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void getCurrentNickname() {
+    public void getCurrentNickname(CurrentNicknameCallback callback) {
         String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         DatabaseReference usersRef = DeclareDatabase.getDatabaseReference().child(currentUserID);
         usersRef.child("username").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -672,6 +679,7 @@ public class MainActivity extends AppCompatActivity {
                 if (dataSnapshot.exists()) {
                     // Get the username from the dataSnapshot and assign it to usernamePost
                     currentNickname = dataSnapshot.getValue(String.class);
+                    callback.onCurrentNicknameReceived(currentNickname);
                     Log.d("FirebaseDatabase", "Nickname loaded: " + currentNickname);
                 } else {
                     Log.d("FirebaseDatabase", "Nickname not found in database.");
@@ -687,7 +695,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void changeFormatDate(String date) {
+    public void changeFormatDate(String date) {
         SimpleDateFormat originalFormat = new SimpleDateFormat("MMMM-dd-yyyy", Locale.ENGLISH); // Assuming "MMMM" for full month name
         Date newDate = null;
 

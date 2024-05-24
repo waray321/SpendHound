@@ -27,7 +27,7 @@
             android:layout_weight="1"
             android:layout_gravity="center"
             android:fontFamily="@font/montserratalternatess_bold"
-            android:text="Notifications"
+            android:text="Pending Status"
             android:textAlignment="center"
             android:textColor="@color/darkBlue"
             android:textSize="20sp" />
@@ -121,7 +121,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingHorizontal="60dp">
+                    android:paddingHorizontal="40dp">
 
                     <Button
                         android:id="@+id/acceptAllBorrowBtn"

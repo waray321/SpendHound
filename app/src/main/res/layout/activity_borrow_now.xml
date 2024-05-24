@@ -97,7 +97,7 @@
         android:elevation="3dp"
         android:layout_marginTop="40dp"
         android:fontFamily="@font/montserratalternatess_bold"
-        android:paddingVertical="20dp"
+        android:paddingVertical="16dp"
         android:text="Borrow"
         android:textColor="#ffffff" />
     <FrameLayout

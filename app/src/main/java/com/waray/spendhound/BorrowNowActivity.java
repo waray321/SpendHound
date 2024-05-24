@@ -19,8 +19,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -52,13 +50,13 @@ public class BorrowNowActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_borrow_now);
+        setContentView(R.layout.activity_borrow_now);
         borrowSpinner = findViewById(R.id.borrowee);
         date = findViewById(R.id.date);
         borrower = findViewById(R.id.borrower);
         progressBar = findViewById(R.id.progressBar);
         borrowBtn = findViewById(R.id.borrowBtn);
-        status = "Pending";
+        status = "Pending Borrow Approval";
 
         setDate();
         getUsers();
