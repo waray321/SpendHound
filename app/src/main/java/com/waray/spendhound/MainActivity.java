@@ -450,7 +450,7 @@ public class MainActivity extends AppCompatActivity {
                                         if (Objects.equals(borrower, currentNickname) && Objects.equals("All", selectedStatus)) {
                                             String date = borrowTransaction.getDate();
                                             String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
-
+                                            borrower = currentUserStr;
                                             changeFormatDate(date);
 
                                             // Create a RecentTransaction object and add it to the list
@@ -464,7 +464,7 @@ public class MainActivity extends AppCompatActivity {
                                         } else if (Objects.equals(borrower, currentNickname) && Objects.equals(status, selectedStatus)) {
                                             String date = borrowTransaction.getDate();
                                             String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
-
+                                            borrower = currentUserStr;
                                             changeFormatDate(date);
 
                                             // Create a RecentTransaction object and add it to the list
@@ -530,7 +530,7 @@ public class MainActivity extends AppCompatActivity {
                                         if (Objects.equals(borrower, currentNickname) && Objects.equals("All", selectedStatus)) {
                                             String date = borrowTransaction.getDate();
                                             String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
-
+                                            borrower = currentUserStr;
                                             changeFormatDate(date);
 
                                             // Create a RecentTransaction object and add it to the list
@@ -544,7 +544,7 @@ public class MainActivity extends AppCompatActivity {
                                         } else if (Objects.equals(borrower, currentNickname) && Objects.equals(status, selectedStatus)) {
                                             String date = borrowTransaction.getDate();
                                             String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
-
+                                            borrower = currentUserStr;
                                             changeFormatDate(date);
 
                                             // Create a RecentTransaction object and add it to the list
@@ -608,7 +608,6 @@ public class MainActivity extends AppCompatActivity {
                                     BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
                                     if (borrowTransaction != null) {
                                         String status = borrowTransaction.getStatus();
-
                                         if(Objects.equals("All", selectedStatus)) {
                                             String date = borrowTransaction.getDate();
                                             String borrowee = borrowTransaction.getBorrowee();

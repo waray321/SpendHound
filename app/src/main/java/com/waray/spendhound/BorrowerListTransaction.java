@@ -1,15 +1,23 @@
 package com.waray.spendhound;
 
-public class BorrowerListTransaction {
-    private String date, borrower, borrowedAmountStr, status;
+import android.widget.Button;
+import android.widget.ImageView;
 
+public class BorrowerListTransaction {
+    private String date;
+    private String borrowee;
+    private String borrowedAmountStr;
+    private String borrowerImgUrl; // URL to the image
+    private String status;
+    private String profileImageUrl;
+
+    // No-argument constructor
     public BorrowerListTransaction() {
-        // Default constructor required by Firebase Realtime Database
     }
 
-    public BorrowerListTransaction(String date, String borrower, String borrowedAmountStr, String status) {
-        this.date = String.valueOf(date);
-        this.borrower = borrower;
+    public BorrowerListTransaction(String date, String borrowee, String borrowedAmountStr, String status) {
+        this.date = date;
+        this.borrowee = borrowee;
         this.borrowedAmountStr = borrowedAmountStr;
         this.status = status;
     }
@@ -22,12 +30,12 @@ public class BorrowerListTransaction {
         this.date = date;
     }
 
-    public String getBorrower() {
-        return borrower;
+    public String getBorrowee() {
+        return borrowee;
     }
 
-    public void setBorrower(String borrower) {
-        this.borrower = borrower;
+    public void setBorrowee(String borrowee) {
+        this.borrowee = borrowee;
     }
 
     public String getBorrowedAmountStr() {
@@ -38,11 +46,27 @@ public class BorrowerListTransaction {
         this.borrowedAmountStr = borrowedAmountStr;
     }
 
+    public String getBorrowerImgUrl() {
+        return borrowerImgUrl;
+    }
+
+    public void setBorrowerImgUrl(String borrowerImgUrl) {
+        this.borrowerImgUrl = borrowerImgUrl;
+    }
+
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 }

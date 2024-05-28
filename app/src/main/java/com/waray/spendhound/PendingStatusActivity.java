@@ -1,6 +1,8 @@
 package com.waray.spendhound;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,30 +18,51 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.waray.spendhound.ui.borrow.BorrowFragment;
+import com.waray.spendhound.ui.profile.ProfileFragment;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class PendingStatusActivity extends AppCompatActivity {
     private TextView borrowerListTV, payerListTV;
     private ScrollView borrowerListScrollView, payerListScrollView;
     private boolean borrowerPayerClicked;
-    private ImageView backBtn;
+    private ImageView backBtn, borrowerImg;
     private LinearLayout borrowerListLinearLayout, payerListLinearLayout;
     public ArrayList<OwedTransaction> borrowerList = new ArrayList<OwedTransaction>();
     public int borrowerNum;
     public String currentNickname;
     private RecyclerView borrowerListRecyclerView;
+    private BorrowerListTransactionAdapter adapter;
+    private List<BorrowerListTransaction> borrowerListTransactions;
+    private Context context;
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pending_status);
+
+        context = this;
 
         borrowerListTV = findViewById(R.id.borrowerListTV);
         payerListTV = findViewById(R.id.payerListTV);
@@ -48,6 +71,7 @@ public class PendingStatusActivity extends AppCompatActivity {
         backBtn = findViewById(R.id.backBtn);
         borrowerListLinearLayout = findViewById(R.id.borrowerListLinearLayout);
         payerListLinearLayout = findViewById(R.id.payerListLinearLayout);
+        borrowerImg = findViewById(R.id.borrowerImg);
 
         borrowerPayerClicked = true;
 
@@ -59,12 +83,10 @@ public class PendingStatusActivity extends AppCompatActivity {
         mainActivity.getCurrentNickname(new MainActivity.CurrentNicknameCallback() {
             @Override
             public void onCurrentNicknameReceived(String currentNickname) {
-                showToast(currentNickname);
             }
         });
 
         BorrowerList();
-
     }
 
     private void BorrowerListTVClicked() {
@@ -88,6 +110,7 @@ public class PendingStatusActivity extends AppCompatActivity {
             }
         });
     }
+
     private void PayerListTVClicked() {
         payerListTV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,14 +133,12 @@ public class PendingStatusActivity extends AppCompatActivity {
         });
     }
 
-    private void BorrowerList(){
-        borrowerList.clear();
-
+    private void BorrowerList() {
+        borrowerListTransactions = new ArrayList<>();
         DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             MainActivity mainActivity = new MainActivity();
 
-            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot monthSnapshot : dataSnapshot.getChildren()) {
@@ -126,56 +147,63 @@ public class PendingStatusActivity extends AppCompatActivity {
                             String currentUserStr = currentUserRef.getKey();
                             if (!Objects.equals(currentUserStr, currentNickname)) {
                                 for (DataSnapshot timeSnapshot : currentUserRef.getChildren()) {
-                                    BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
-                                    if (borrowTransaction != null) {
-                                        String status = borrowTransaction.getStatus();
+                                    BorrowerListTransaction borrowerListTransaction = timeSnapshot.getValue(BorrowerListTransaction.class);
+                                    if (borrowerListTransaction != null) {
+                                        String status = borrowerListTransaction.getStatus();
                                         if (Objects.equals(status, "Pending Borrow Approval")) {
-                                            String borrower = borrowTransaction.getBorrowee();
-                                            String date = borrowTransaction.getDate();
-                                            String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
+                                            String borrowee = borrowerListTransaction.getBorrowee();
+                                            String borrowedAmountStr = borrowerListTransaction.getBorrowedAmountStr();
+                                            borrowedAmountStr = "₱" + borrowedAmountStr;
+                                            String date = borrowerListTransaction.getDate();
 
-                                            mainActivity.changeFormatDate(date);
+                                            String formatPattern = "MMMM-dd-yyyy";
+                                            long hoursSinceDate = 0;
+                                            try {
 
-                                            // Create a RecentTransaction object and add it to the list
-                                            OwedTransaction borrowerTrans = new OwedTransaction(
+                                                DateFormat dateFormat = new SimpleDateFormat(formatPattern, Locale.ENGLISH);
+                                                Date pastDate = dateFormat.parse(date);
+
+                                                Date currentDate = new Date();
+
+                                                long timeDifferenceMillis = currentDate.getTime() - pastDate.getTime();
+
+                                                hoursSinceDate = timeDifferenceMillis / (1000 * 60 * 60);
+
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
+                                            date = String.valueOf(hoursSinceDate) + "h";
+
+                                            BorrowerListTransaction borrowerTrans = new BorrowerListTransaction(
                                                     date,
-                                                    borrower,
-                                                    borrowedAmount,
+                                                    borrowee,
+                                                    borrowedAmountStr,
                                                     status
                                             );
-                                            borrowerList.add(borrowerTrans);
-                                        } else {
-                                            showToast("No Data" + status);
+                                            borrowerListTransactions.add(borrowerTrans);
                                         }
-
-                                    } else {
-                                        showToast("No data");
                                     }
-                                    RecyclerView recyclerView = findViewById(R.id.borrowerListRecyclerView);
-                                    RecyclerView.Adapter<OwedTransactionAdapter.ViewHolder> adapter = new OwedTransactionAdapter(borrowerList);
-                                    recyclerView.setAdapter(adapter);
-                                    adapter.notifyDataSetChanged();
-
-                                    // Set the RecyclerView.LayoutManager
-                                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(PendingStatusActivity.this);
-                                    recyclerView.setLayoutManager(layoutManager);
                                 }
                             }
                         }
                     }
                 }
-                borrowerNum = borrowerList.size();
+                adapter = new BorrowerListTransactionAdapter(context, borrowerListTransactions);
+                borrowerListRecyclerView = findViewById(R.id.borrowerListRecyclerView);
+                borrowerListRecyclerView.setAdapter(adapter);
+                borrowerListRecyclerView.setLayoutManager(new LinearLayoutManager(PendingStatusActivity.this));
+                adapter.notifyDataSetChanged();
+                borrowerNum = borrowerListTransactions.size();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle database read error
-                String errorMessage = "Database read error occurred: " + databaseError.getMessage();
-                Log.e("FirebaseDatabase", errorMessage);
+                Log.e("FirebaseDatabase", "Database read error: " + databaseError.getMessage());
             }
         });
     }
-    private void BackButtonCLicked(){
+
+    private void BackButtonCLicked() {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -187,10 +215,10 @@ public class PendingStatusActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        // Optionally add any additional logic here if needed
     }
 
     public void showToast(String message) {
         Toast.makeText(PendingStatusActivity.this, message, Toast.LENGTH_SHORT).show();
     }
+
 }
