@@ -66,15 +66,52 @@ public class BorrowerListTransactionAdapter extends RecyclerView.Adapter<Borrowe
     }
 
     private void showConfirmationDialog(String action, BorrowerListTransaction transaction) {
+        // Inflate the custom layout
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.dialog_borrowerlistconfirmation, null);
+
+        // Create the dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage("Are you sure you want to " + action + " this borrower?");
-        builder.setPositiveButton("Yes", (dialog, which) -> {
+        builder.setView(dialogView);
+
+        // Find views in the custom layout
+        TextView confirmAction = dialogView.findViewById(R.id.confirmAction);
+        Button payNowConfirmBtn = dialogView.findViewById(R.id.payNowConfirmBtn);
+        Button closeButton = dialogView.findViewById(R.id.closeButton);
+
+        // Set the action text
+        confirmAction.setText(action);
+
+        // Create the dialog
+        AlertDialog dialog = builder.create();
+
+        // Set button click listeners
+        payNowConfirmBtn.setOnClickListener(v -> {
             // Handle the action (Accept/Decline)
-            Toast.makeText(context, action + "d: " + transaction.getBorrowee(), Toast.LENGTH_SHORT).show();
+            if ("Accept".equalsIgnoreCase(action)) {
+                transaction.setStatus("Unpaid");
+                Toast.makeText(context, "Accepted: " + transaction.getBorrowee(), Toast.LENGTH_SHORT).show();
+            } else if ("Decline".equalsIgnoreCase(action)) {
+                transaction.setStatus("Declined");
+                Toast.makeText(context, "Declined: " + transaction.getBorrowee(), Toast.LENGTH_SHORT).show();
+            }
+
+            // Notify the adapter that the data has changed
+            notifyDataSetChanged();
+
+            // Close the dialog
+            dialog.dismiss();
         });
-        builder.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
-        builder.show();
+
+        closeButton.setOnClickListener(v -> {
+            dialog.dismiss(); // Close the dialog
+        });
+
+        // Show the dialog
+        dialog.show();
     }
+
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView borrowerImg;

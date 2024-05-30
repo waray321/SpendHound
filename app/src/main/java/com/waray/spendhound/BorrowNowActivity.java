@@ -56,7 +56,7 @@ public class BorrowNowActivity extends AppCompatActivity {
         borrower = findViewById(R.id.borrower);
         progressBar = findViewById(R.id.progressBar);
         borrowBtn = findViewById(R.id.borrowBtn);
-        status = "Pending Borrow Approval";
+        status = "Pending Approval";
 
         setDate();
         getUsers();

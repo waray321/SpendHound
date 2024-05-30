@@ -50,7 +50,7 @@ public class PendingStatusActivity extends AppCompatActivity {
     private LinearLayout borrowerListLinearLayout, payerListLinearLayout;
     public ArrayList<OwedTransaction> borrowerList = new ArrayList<OwedTransaction>();
     public int borrowerNum;
-    public String currentNickname;
+    public String currentNickname, currentNickname2;
     private RecyclerView borrowerListRecyclerView;
     private BorrowerListTransactionAdapter adapter;
     private List<BorrowerListTransaction> borrowerListTransactions;
@@ -83,6 +83,7 @@ public class PendingStatusActivity extends AppCompatActivity {
         mainActivity.getCurrentNickname(new MainActivity.CurrentNicknameCallback() {
             @Override
             public void onCurrentNicknameReceived(String currentNickname) {
+                currentNickname2 = currentNickname;
             }
         });
 
@@ -145,34 +146,62 @@ public class PendingStatusActivity extends AppCompatActivity {
                     for (DataSnapshot daySnapshot : monthSnapshot.getChildren()) {
                         for (DataSnapshot currentUserRef : daySnapshot.getChildren()) {
                             String currentUserStr = currentUserRef.getKey();
-                            if (!Objects.equals(currentUserStr, currentNickname)) {
+                            if (!Objects.equals(currentUserStr, currentNickname2)) {
                                 for (DataSnapshot timeSnapshot : currentUserRef.getChildren()) {
+                                    String time = timeSnapshot.getKey();
                                     BorrowerListTransaction borrowerListTransaction = timeSnapshot.getValue(BorrowerListTransaction.class);
                                     if (borrowerListTransaction != null) {
                                         String status = borrowerListTransaction.getStatus();
-                                        if (Objects.equals(status, "Pending Borrow Approval")) {
+                                        if (Objects.equals(status, "Pending Approval")) {
                                             String borrowee = borrowerListTransaction.getBorrowee();
+                                            borrowee = currentUserStr;
                                             String borrowedAmountStr = borrowerListTransaction.getBorrowedAmountStr();
                                             borrowedAmountStr = "₱" + borrowedAmountStr;
                                             String date = borrowerListTransaction.getDate();
 
-                                            String formatPattern = "MMMM-dd-yyyy";
-                                            long hoursSinceDate = 0;
-                                            try {
 
+                                            String formatPattern = "MMMM-dd-yyyy HH:mm:ss";
+                                            long secondsSinceDate = 0;
+
+                                            try {
+                                                // Combine date and time string
+                                                String dateTime = date + " " + time;  // Assuming 'time' is in "HH:mm:ss" format
                                                 DateFormat dateFormat = new SimpleDateFormat(formatPattern, Locale.ENGLISH);
-                                                Date pastDate = dateFormat.parse(date);
+                                                Date pastDate = dateFormat.parse(dateTime);
 
                                                 Date currentDate = new Date();
 
                                                 long timeDifferenceMillis = currentDate.getTime() - pastDate.getTime();
 
-                                                hoursSinceDate = timeDifferenceMillis / (1000 * 60 * 60);
+                                                secondsSinceDate = timeDifferenceMillis / 1000;
 
+                                                String timeDifferenceStr;
+                                                // Convert seconds to appropriate units
+                                                if (secondsSinceDate >= 60 * 60 * 24 * 365) { // More than or equal to a year
+                                                    long years = secondsSinceDate / (60 * 60 * 24 * 365);
+                                                    timeDifferenceStr = years + "y";
+                                                } else if (secondsSinceDate >= 60 * 60 * 24 * 30) { // More than or equal to a month
+                                                    long months = secondsSinceDate / (60 * 60 * 24 * 30);
+                                                    timeDifferenceStr = months + "mo";
+                                                } else if (secondsSinceDate >= 60 * 60 * 24) { // More than or equal to a day
+                                                    long days = secondsSinceDate / (60 * 60 * 24);
+                                                    timeDifferenceStr = days + "d";
+                                                } else if (secondsSinceDate >= 60 * 60) { // More than or equal to an hour
+                                                    long hours = secondsSinceDate / (60 * 60);
+                                                    timeDifferenceStr = hours + "h";
+                                                } else if (secondsSinceDate >= 60) { // More than or equal to a minute
+                                                    long minutes = secondsSinceDate / 60;
+                                                    timeDifferenceStr = minutes + "m";
+                                                } else { // Less than a minute
+                                                    timeDifferenceStr = secondsSinceDate + "s";
+                                                }
+
+                                                date = timeDifferenceStr;
                                             } catch (ParseException e) {
                                                 e.printStackTrace();
                                             }
-                                            date = String.valueOf(hoursSinceDate) + "h";
+
+
 
                                             BorrowerListTransaction borrowerTrans = new BorrowerListTransaction(
                                                     date,

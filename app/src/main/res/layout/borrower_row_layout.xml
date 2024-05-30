@@ -9,12 +9,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginVertical="4dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginHorizontal="8dp"
             android:orientation="horizontal">
 
             <androidx.cardview.widget.CardView
@@ -30,8 +32,8 @@
 
                 <ImageView
                     android:id="@+id/borrowerImg"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/placeholder_profile_image" />
             </androidx.cardview.widget.CardView>
