@@ -69,4 +69,5 @@ public class BorrowerListTransaction {
     public void setProfileImageUrl(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;
     }
+
 }

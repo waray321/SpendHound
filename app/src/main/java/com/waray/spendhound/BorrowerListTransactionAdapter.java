@@ -12,9 +12,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,15 +26,26 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 public class BorrowerListTransactionAdapter extends RecyclerView.Adapter<BorrowerListTransactionAdapter.ViewHolder> {
     private List<BorrowerListTransaction> transactionList;
     private Context context;
+    private String currentNickname2;
 
     public BorrowerListTransactionAdapter(Context context, List<BorrowerListTransaction> transactionList) {
         this.context = context;
         this.transactionList = transactionList;
+    }
+
+    public BorrowerListTransaction getBorrowerListTransaction(int position) {
+        return transactionList.get(position);
     }
 
     @NonNull
@@ -56,8 +69,8 @@ public class BorrowerListTransactionAdapter extends RecyclerView.Adapter<Borrowe
         // Load the profile image asynchronously
         setProfileImage(holder.borrowerImg, transaction.getBorrowee());
 
-        holder.acceptBorrowerBtn.setOnClickListener(v -> showConfirmationDialog("Accept", transaction));
-        holder.declineBorrowerBtn.setOnClickListener(v -> showConfirmationDialog("Decline", transaction));
+        holder.acceptBorrowerBtn.setOnClickListener(v -> showConfirmationDialog("Accept", transaction, position));
+        holder.declineBorrowerBtn.setOnClickListener(v -> showConfirmationDialog("Decline", transaction, position));
     }
 
     @Override
@@ -65,7 +78,14 @@ public class BorrowerListTransactionAdapter extends RecyclerView.Adapter<Borrowe
         return transactionList.size();
     }
 
-    private void showConfirmationDialog(String action, BorrowerListTransaction transaction) {
+    private void showConfirmationDialog(String action, BorrowerListTransaction transaction, int position) {
+        MainActivity mainActivity = new MainActivity();
+        mainActivity.getCurrentNickname(new MainActivity.CurrentNicknameCallback() {
+            @Override
+            public void onCurrentNicknameReceived(String currentNickname) {
+                currentNickname2 = currentNickname;
+            }
+        });
         // Inflate the custom layout
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.dialog_borrowerlistconfirmation, null);
@@ -89,12 +109,16 @@ public class BorrowerListTransactionAdapter extends RecyclerView.Adapter<Borrowe
         payNowConfirmBtn.setOnClickListener(v -> {
             // Handle the action (Accept/Decline)
             if ("Accept".equalsIgnoreCase(action)) {
+                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("borrows");
                 transaction.setStatus("Unpaid");
-                Toast.makeText(context, "Accepted: " + transaction.getBorrowee(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Accepted: " + transaction.getBorrowee() + position, Toast.LENGTH_SHORT).show();
             } else if ("Decline".equalsIgnoreCase(action)) {
                 transaction.setStatus("Declined");
                 Toast.makeText(context, "Declined: " + transaction.getBorrowee(), Toast.LENGTH_SHORT).show();
             }
+
+            // Update the transaction in the list
+            transactionList.set(position, transaction);
 
             // Notify the adapter that the data has changed
             notifyDataSetChanged();
@@ -110,8 +134,6 @@ public class BorrowerListTransactionAdapter extends RecyclerView.Adapter<Borrowe
         // Show the dialog
         dialog.show();
     }
-
-
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView borrowerImg;

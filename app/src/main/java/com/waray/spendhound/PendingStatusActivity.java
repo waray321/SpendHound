@@ -201,8 +201,6 @@ public class PendingStatusActivity extends AppCompatActivity {
                                                 e.printStackTrace();
                                             }
 
-
-
                                             BorrowerListTransaction borrowerTrans = new BorrowerListTransaction(
                                                     date,
                                                     borrowee,
