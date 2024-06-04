@@ -143,8 +143,8 @@
                     <Button
                         android:id="@+id/declineBorrowerBtn"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="35dp"
+                        android:layout_weight="1"
                         android:backgroundTint="@color/red"
                         android:elevation="4dp"
                         android:fontFamily="@font/montserratalternatess_regular"

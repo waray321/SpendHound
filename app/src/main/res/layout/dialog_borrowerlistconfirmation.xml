@@ -8,12 +8,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="40dp"
         android:orientation="horizontal">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Are you sure you want to "
-            android:paddingVertical="20dp"
             android:fontFamily="@font/montserratalternatess_regular"
             android:textSize="16sp"/>
         <TextView
@@ -25,6 +25,18 @@
             android:textColor="@color/darkBlue"
             android:textSize="16sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/allTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" All"
+            android:fontFamily="@font/montserratalternatess_regular"
+            android:textColor="@color/darkBlue"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="gone"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

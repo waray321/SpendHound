@@ -2,10 +2,12 @@ package com.waray.spendhound;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -13,25 +15,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.waray.spendhound.ui.borrow.BorrowFragment;
-import com.waray.spendhound.ui.profile.ProfileFragment;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -42,19 +37,22 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class PendingStatusActivity extends AppCompatActivity {
-    private TextView borrowerListTV, payerListTV;
+public class PendingStatusActivity extends AppCompatActivity implements BorrowerListTransactionAdapter.OnTransactionStatusUpdatedListener {
+    private TextView borrowerListTV, payerListTV, allTV;
     private ScrollView borrowerListScrollView, payerListScrollView;
     private boolean borrowerPayerClicked;
     private ImageView backBtn, borrowerImg;
     private LinearLayout borrowerListLinearLayout, payerListLinearLayout;
-    public ArrayList<OwedTransaction> borrowerList = new ArrayList<OwedTransaction>();
     public int borrowerNum;
     public String currentNickname, currentNickname2;
     private RecyclerView borrowerListRecyclerView;
     private BorrowerListTransactionAdapter adapter;
     private List<BorrowerListTransaction> borrowerListTransactions;
+    private List<String[]> borrowerListPath;
+    List<BorrowerListTransaction> transactionList;
+    List<String[]> pathList;
     private Context context;
+    public Button acceptAllBorrowerBtn, declineAllBorrowerBtn, acceptBorrowerBtn, declineBorrowerBtn;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -72,6 +70,11 @@ public class PendingStatusActivity extends AppCompatActivity {
         borrowerListLinearLayout = findViewById(R.id.borrowerListLinearLayout);
         payerListLinearLayout = findViewById(R.id.payerListLinearLayout);
         borrowerImg = findViewById(R.id.borrowerImg);
+        acceptBorrowerBtn = findViewById(R.id.acceptBorrowerBtn);
+        declineBorrowerBtn = findViewById(R.id.declineBorrowerBtn);
+        acceptAllBorrowerBtn = findViewById(R.id.acceptAllBorrowerBtn);
+        declineAllBorrowerBtn = findViewById(R.id.declineAllBorrowerBtn);
+        allTV = findViewById(R.id.allTV);
 
         borrowerPayerClicked = true;
 
@@ -136,6 +139,7 @@ public class PendingStatusActivity extends AppCompatActivity {
 
     private void BorrowerList() {
         borrowerListTransactions = new ArrayList<>();
+        borrowerListPath = new ArrayList<String[]>();
         DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             MainActivity mainActivity = new MainActivity();
@@ -143,7 +147,9 @@ public class PendingStatusActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot monthSnapshot : dataSnapshot.getChildren()) {
+                    String month = monthSnapshot.getKey();
                     for (DataSnapshot daySnapshot : monthSnapshot.getChildren()) {
+                        String day = daySnapshot.getKey();
                         for (DataSnapshot currentUserRef : daySnapshot.getChildren()) {
                             String currentUserStr = currentUserRef.getKey();
                             if (!Objects.equals(currentUserStr, currentNickname2)) {
@@ -208,6 +214,9 @@ public class PendingStatusActivity extends AppCompatActivity {
                                                     status
                                             );
                                             borrowerListTransactions.add(borrowerTrans);
+
+                                            borrowerListPath.add(new String[]{month, day, currentUserStr, time});
+
                                         }
                                     }
                                 }
@@ -215,7 +224,7 @@ public class PendingStatusActivity extends AppCompatActivity {
                         }
                     }
                 }
-                adapter = new BorrowerListTransactionAdapter(context, borrowerListTransactions);
+                adapter = new BorrowerListTransactionAdapter(context, borrowerListTransactions, borrowerListPath, PendingStatusActivity.this,  acceptAllBorrowerBtn, declineAllBorrowerBtn);
                 borrowerListRecyclerView = findViewById(R.id.borrowerListRecyclerView);
                 borrowerListRecyclerView.setAdapter(adapter);
                 borrowerListRecyclerView.setLayoutManager(new LinearLayoutManager(PendingStatusActivity.this));
@@ -241,7 +250,29 @@ public class PendingStatusActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        Intent intent = new Intent(this, BorrowFragment.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onTransactionStatusUpdated() {
+        BorrowerList();
+    }
+
+
+    private void AcceptDeclineBtnClicked(){
+        acceptBorrowerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                allTV.setVisibility(View.GONE);
+            }
+        });
+        declineBorrowerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                allTV.setVisibility(View.GONE);
+            }
+        });
     }
 
     public void showToast(String message) {

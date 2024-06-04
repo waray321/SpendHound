@@ -124,7 +124,7 @@
                     android:paddingHorizontal="40dp">
 
                     <Button
-                        android:id="@+id/acceptAllBorrowBtn"
+                        android:id="@+id/acceptAllBorrowerBtn"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="40dp"
@@ -135,7 +135,7 @@
                         android:fontFamily="@font/montserratalternatess_regular"
                         android:textColor="@color/whitest"/>
                     <Button
-                        android:id="@+id/declineAllBorrowBtn"
+                        android:id="@+id/declineAllBorrowerBtn"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="40dp"

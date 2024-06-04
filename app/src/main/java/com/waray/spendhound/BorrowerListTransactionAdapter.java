@@ -1,5 +1,6 @@
 package com.waray.spendhound;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,11 +13,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,22 +25,26 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 public class BorrowerListTransactionAdapter extends RecyclerView.Adapter<BorrowerListTransactionAdapter.ViewHolder> {
     private List<BorrowerListTransaction> transactionList;
+    private final List<String[]> pathList;
     private Context context;
-    private String currentNickname2;
+    private OnTransactionStatusUpdatedListener statusUpdatedListener;
 
-    public BorrowerListTransactionAdapter(Context context, List<BorrowerListTransaction> transactionList) {
+    public interface OnTransactionStatusUpdatedListener {
+        void onTransactionStatusUpdated();
+    }
+
+    public BorrowerListTransactionAdapter(Context context, List<BorrowerListTransaction> transactionList, List<String[]> pathList, PendingStatusActivity statusUpdatedListener, Button acceptAllBorrowerBtn, Button declineAllBorrowerBtn) {
         this.context = context;
         this.transactionList = transactionList;
+        this.pathList = pathList;
+        this.statusUpdatedListener = statusUpdatedListener;
+
+        acceptAllBorrowerBtn.setOnClickListener(v -> handleAllTransactions("Accept"));
+        declineAllBorrowerBtn.setOnClickListener(v -> handleAllTransactions("Decline"));
     }
 
     public BorrowerListTransaction getBorrowerListTransaction(int position) {
@@ -69,8 +72,8 @@ public class BorrowerListTransactionAdapter extends RecyclerView.Adapter<Borrowe
         // Load the profile image asynchronously
         setProfileImage(holder.borrowerImg, transaction.getBorrowee());
 
-        holder.acceptBorrowerBtn.setOnClickListener(v -> showConfirmationDialog("Accept", transaction, position));
-        holder.declineBorrowerBtn.setOnClickListener(v -> showConfirmationDialog("Decline", transaction, position));
+        holder.acceptBorrowerBtn.setOnClickListener(v -> showConfirmationDialog("Accept", transaction, pathList.get(position), position));
+        holder.declineBorrowerBtn.setOnClickListener(v -> showConfirmationDialog("Decline", transaction, pathList.get(position), position));
     }
 
     @Override
@@ -78,61 +81,50 @@ public class BorrowerListTransactionAdapter extends RecyclerView.Adapter<Borrowe
         return transactionList.size();
     }
 
-    private void showConfirmationDialog(String action, BorrowerListTransaction transaction, int position) {
-        MainActivity mainActivity = new MainActivity();
-        mainActivity.getCurrentNickname(new MainActivity.CurrentNicknameCallback() {
-            @Override
-            public void onCurrentNicknameReceived(String currentNickname) {
-                currentNickname2 = currentNickname;
-            }
-        });
-        // Inflate the custom layout
+    private void showConfirmationDialog(String action, BorrowerListTransaction transaction, String[] path, int position) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.dialog_borrowerlistconfirmation, null);
 
-        // Create the dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(dialogView);
 
-        // Find views in the custom layout
         TextView confirmAction = dialogView.findViewById(R.id.confirmAction);
         Button payNowConfirmBtn = dialogView.findViewById(R.id.payNowConfirmBtn);
         Button closeButton = dialogView.findViewById(R.id.closeButton);
 
-        // Set the action text
         confirmAction.setText(action);
 
-        // Create the dialog
         AlertDialog dialog = builder.create();
 
-        // Set button click listeners
         payNowConfirmBtn.setOnClickListener(v -> {
-            // Handle the action (Accept/Decline)
             if ("Accept".equalsIgnoreCase(action)) {
-                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("borrows");
-                transaction.setStatus("Unpaid");
-                Toast.makeText(context, "Accepted: " + transaction.getBorrowee() + position, Toast.LENGTH_SHORT).show();
+                updateTransactionStatus(transaction, path, position, "Unpaid");
             } else if ("Decline".equalsIgnoreCase(action)) {
-                transaction.setStatus("Declined");
-                Toast.makeText(context, "Declined: " + transaction.getBorrowee(), Toast.LENGTH_SHORT).show();
+                updateTransactionStatus(transaction, path, position, "Declined");
             }
-
-            // Update the transaction in the list
-            transactionList.set(position, transaction);
-
-            // Notify the adapter that the data has changed
-            notifyDataSetChanged();
-
-            // Close the dialog
             dialog.dismiss();
         });
 
-        closeButton.setOnClickListener(v -> {
-            dialog.dismiss(); // Close the dialog
-        });
+        closeButton.setOnClickListener(v -> dialog.dismiss());
 
-        // Show the dialog
         dialog.show();
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void updateTransactionStatus(BorrowerListTransaction transaction, String[] path, int position, String status) {
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("borrows")
+                .child(path[0]).child(path[1]).child(path[2]).child(path[3]);
+
+        transaction.setStatus(status);
+        userRef.child("status").setValue(status)
+                .addOnSuccessListener(aVoid -> {
+                    transactionList.set(position, transaction);
+                    notifyDataSetChanged();
+                    if (statusUpdatedListener != null) {
+                        statusUpdatedListener.onTransactionStatusUpdated();
+                    }
+                })
+                .addOnFailureListener(e -> Toast.makeText(context, "Failed to update status: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -140,8 +132,7 @@ public class BorrowerListTransactionAdapter extends RecyclerView.Adapter<Borrowe
         public TextView hoursAgoTV;
         public TextView borrowerNameTV;
         public TextView amountBorrowedTV;
-        public Button acceptBorrowerBtn;
-        public Button declineBorrowerBtn;
+        public Button acceptBorrowerBtn,declineBorrowerBtn, acceptAllBorrowerBtn, declineAllBorrowerBtn ;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -151,8 +142,32 @@ public class BorrowerListTransactionAdapter extends RecyclerView.Adapter<Borrowe
             amountBorrowedTV = itemView.findViewById(R.id.amountBorrowedTV);
             acceptBorrowerBtn = itemView.findViewById(R.id.acceptBorrowerBtn);
             declineBorrowerBtn = itemView.findViewById(R.id.declineBorrowerBtn);
+            acceptAllBorrowerBtn = itemView.findViewById(R.id.acceptAllBorrowerBtn);
+            declineAllBorrowerBtn = itemView.findViewById(R.id.declineAllBorrowerBtn);
         }
     }
+
+    public void handleAllTransactions(String action) {
+        Toast.makeText(context, "Transaction List: " + transactionList.size(), Toast.LENGTH_SHORT).show();
+        for (int i = 0; i < transactionList.size(); i++) {
+            showConfirmationDialog(action, transactionList.get(i), pathList.get(i), i);
+        }
+    }
+
+    /*public void AcceptDeclineAllBtnClicked(){
+        acceptAllBorrowerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                allTV.setVisibility(View.VISIBLE);
+            }
+        });
+        declineAllBorrowerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                allTV.setVisibility(View.VISIBLE);
+            }
+        });
+    }*/
 
     private void setProfileImage(ImageView imageView, String borrowerNameTV) {
         if (imageView == null || borrowerNameTV == null) {
