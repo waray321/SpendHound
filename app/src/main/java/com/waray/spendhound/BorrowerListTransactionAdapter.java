@@ -147,10 +147,64 @@ public class BorrowerListTransactionAdapter extends RecyclerView.Adapter<Borrowe
         }
     }
 
-    public void handleAllTransactions(String action) {
-        Toast.makeText(context, "Transaction List: " + transactionList.size(), Toast.LENGTH_SHORT).show();
+    private void handleAllTransactions(String action) {
+        showConfirmationDialog(action, transactionList.get(0), pathList.get(0), 0, true);
+    }
+
+    private void showConfirmationDialog(String action, BorrowerListTransaction transaction, String[] path, int position, boolean isAll) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.dialog_borrowerlistconfirmation, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setView(dialogView);
+
+        TextView confirmAction = dialogView.findViewById(R.id.confirmAction);
+        Button payNowConfirmBtn = dialogView.findViewById(R.id.payNowConfirmBtn);
+        Button closeButton = dialogView.findViewById(R.id.closeButton);
+
+        confirmAction.setText(action);
+
+        AlertDialog dialog = builder.create();
+
+        payNowConfirmBtn.setOnClickListener(v -> {
+            if (isAll) {
+                updateAllTransactionStatus(action.equals("Accept") ? "Unpaid" : "Declined");
+            } else {
+                if ("Accept".equalsIgnoreCase(action)) {
+                    updateTransactionStatus(transaction, path, position, "Unpaid");
+                } else if ("Decline".equalsIgnoreCase(action)) {
+                    updateTransactionStatus(transaction, path, position, "Declined");
+                }
+            }
+            dialog.dismiss();
+        });
+
+        closeButton.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void updateAllTransactionStatus(String status) {
         for (int i = 0; i < transactionList.size(); i++) {
-            showConfirmationDialog(action, transactionList.get(i), pathList.get(i), i);
+            BorrowerListTransaction transaction = transactionList.get(i);
+            String[] path = pathList.get(i);
+            final int index = i;
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("borrows")
+                    .child(path[0]).child(path[1]).child(path[2]).child(path[3]);
+
+            transaction.setStatus(status);
+            userRef.child("status").setValue(status)
+                    .addOnSuccessListener(aVoid -> {
+                        transactionList.set(index, transaction);
+                        if (index == transactionList.size() - 1) {
+                            notifyDataSetChanged();
+                            if (statusUpdatedListener != null) {
+                                statusUpdatedListener.onTransactionStatusUpdated();
+                            }
+                        }
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(context, "Failed to update status: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         }
     }
 

@@ -367,7 +367,6 @@ public class MainActivity extends AppCompatActivity {
                                     BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
                                     if (borrowTransaction != null) {
                                         String status = borrowTransaction.getStatus();
-                                        if (!Objects.equals("Pending Approval", status)) {
                                             if (Objects.equals("All", selectedStatus)) {
                                                 String date = borrowTransaction.getDate();
                                                 String borrowee = borrowTransaction.getBorrowee();
@@ -399,7 +398,6 @@ public class MainActivity extends AppCompatActivity {
                                                 );
                                                 debtList.add(borrowTrans);
                                             }
-                                        }
                                     }
 
                                     RecyclerView recyclerView = findViewById(R.id.debtRecyclerList);
@@ -448,34 +446,36 @@ public class MainActivity extends AppCompatActivity {
                                     if (borrowTransaction != null) {
                                         String borrower = borrowTransaction.getBorrowee();
                                         String status = borrowTransaction.getStatus();
-                                        if (Objects.equals(borrower, currentNickname) && Objects.equals("All", selectedStatus)) {
-                                            String date = borrowTransaction.getDate();
-                                            String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
-                                            borrower = currentUserStr;
-                                            changeFormatDate(date);
+                                        if (!Objects.equals(status, "Pending Approval") && !Objects.equals(status, "Declined")){
+                                            if (Objects.equals(borrower, currentNickname) && Objects.equals("All", selectedStatus)) {
+                                                String date = borrowTransaction.getDate();
+                                                String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
+                                                borrower = currentUserStr;
+                                                changeFormatDate(date);
 
-                                            // Create a RecentTransaction object and add it to the list
-                                            OwedTransaction owedTrans = new OwedTransaction(
-                                                    date,
-                                                    borrower,
-                                                    borrowedAmount,
-                                                    status
-                                            );
-                                            owedList.add(owedTrans);
-                                        } else if (Objects.equals(borrower, currentNickname) && Objects.equals(status, selectedStatus)) {
-                                            String date = borrowTransaction.getDate();
-                                            String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
-                                            borrower = currentUserStr;
-                                            changeFormatDate(date);
+                                                // Create a RecentTransaction object and add it to the list
+                                                OwedTransaction owedTrans = new OwedTransaction(
+                                                        date,
+                                                        borrower,
+                                                        borrowedAmount,
+                                                        status
+                                                );
+                                                owedList.add(owedTrans);
+                                            } else if (Objects.equals(borrower, currentNickname) && Objects.equals(status, selectedStatus)) {
+                                                String date = borrowTransaction.getDate();
+                                                String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
+                                                borrower = currentUserStr;
+                                                changeFormatDate(date);
 
-                                            // Create a RecentTransaction object and add it to the list
-                                            OwedTransaction owedTrans = new OwedTransaction(
-                                                    date,
-                                                    borrower,
-                                                    borrowedAmount,
-                                                    status
-                                            );
-                                            owedList.add(owedTrans);
+                                                // Create a RecentTransaction object and add it to the list
+                                                OwedTransaction owedTrans = new OwedTransaction(
+                                                        date,
+                                                        borrower,
+                                                        borrowedAmount,
+                                                        status
+                                                );
+                                                owedList.add(owedTrans);
+                                            }
                                         }
 
                                     } else {
@@ -528,34 +528,36 @@ public class MainActivity extends AppCompatActivity {
                                     if (borrowTransaction != null) {
                                         String borrower = borrowTransaction.getBorrowee();
                                         String status = borrowTransaction.getStatus();
-                                        if (Objects.equals(borrower, currentNickname) && Objects.equals("All", selectedStatus)) {
-                                            String date = borrowTransaction.getDate();
-                                            String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
-                                            borrower = currentUserStr;
-                                            changeFormatDate(date);
+                                        if (!Objects.equals(status, "Pending Approval") && !Objects.equals(status, "Declined")) {
+                                            if (Objects.equals(borrower, currentNickname) && Objects.equals("All", selectedStatus)) {
+                                                String date = borrowTransaction.getDate();
+                                                String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
+                                                borrower = currentUserStr;
+                                                changeFormatDate(date);
 
-                                            // Create a RecentTransaction object and add it to the list
-                                            OwedTransaction owedTrans = new OwedTransaction(
-                                                    date,
-                                                    borrower,
-                                                    borrowedAmount,
-                                                    status
-                                            );
-                                            owedList.add(owedTrans);
-                                        } else if (Objects.equals(borrower, currentNickname) && Objects.equals(status, selectedStatus)) {
-                                            String date = borrowTransaction.getDate();
-                                            String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
-                                            borrower = currentUserStr;
-                                            changeFormatDate(date);
+                                                // Create a RecentTransaction object and add it to the list
+                                                OwedTransaction owedTrans = new OwedTransaction(
+                                                        date,
+                                                        borrower,
+                                                        borrowedAmount,
+                                                        status
+                                                );
+                                                owedList.add(owedTrans);
+                                            } else if (Objects.equals(borrower, currentNickname) && Objects.equals(status, selectedStatus)) {
+                                                String date = borrowTransaction.getDate();
+                                                String borrowedAmount = String.valueOf(borrowTransaction.getBorrowedAmountStr());
+                                                borrower = currentUserStr;
+                                                changeFormatDate(date);
 
-                                            // Create a RecentTransaction object and add it to the list
-                                            OwedTransaction owedTrans = new OwedTransaction(
-                                                    date,
-                                                    borrower,
-                                                    borrowedAmount,
-                                                    status
-                                            );
-                                            owedList.add(owedTrans);
+                                                // Create a RecentTransaction object and add it to the list
+                                                OwedTransaction owedTrans = new OwedTransaction(
+                                                        date,
+                                                        borrower,
+                                                        borrowedAmount,
+                                                        status
+                                                );
+                                                owedList.add(owedTrans);
+                                            }
                                         }
                                     } else {
                                         showToast("Borrow Transaction has no data");

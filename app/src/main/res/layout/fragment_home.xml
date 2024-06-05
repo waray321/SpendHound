@@ -28,9 +28,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:innerRadius="0dp"
-            android:elevation="4dp"
             android:layout_margin="4dp"
+            android:elevation="4dp"
+            android:innerRadius="0dp"
             android:shape="ring"
             android:thicknessRatio="1.9"
             app:cardCornerRadius="10dp">
@@ -48,17 +48,17 @@
     <View
         android:id="@+id/bottom_border"
         android:layout_width="match_parent"
-        android:layout_marginTop="8dp"
         android:layout_height="1dp"
-        android:background="@drawable/bottom_border"/>
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bottom_border" />
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginVertical="36dp"
         android:gravity="center"
-        android:orientation="vertical"
-        android:layout_marginVertical="36dp">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/textView2"
@@ -91,8 +91,8 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_below="@+id/textView"
-        android:elevation="4dp"
         android:background="@drawable/rounded_background8"
+        android:elevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView">
@@ -102,7 +102,7 @@
             android:id="@+id/textView7"
             android:layout_width="match_parent"
             android:layout_height="32dp"
-            android:alpha="0.5"
+            android:alpha="0.8"
             android:fontFamily="sans-serif-thin"
             android:text="- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
             android:textColor="@color/grey"
@@ -119,8 +119,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:paddingHorizontal="16dp"
             android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -129,9 +129,9 @@
                 android:id="@+id/textView5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="4"
                 android:fontFamily="@font/montserratalternatess_regular"
                 android:text="Analytics"
-                android:layout_weight="4"
                 android:textAlignment="textStart"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
@@ -140,9 +140,9 @@
                 android:id="@+id/textView6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
                 android:fontFamily="@font/montserratalternatess_regular"
                 android:text="This month"
-                android:layout_weight="2"
                 android:textAlignment="textEnd"
                 android:textColor="#adb5bd"
                 android:textSize="16sp" />
@@ -159,17 +159,19 @@
 
         <LinearLayout
             android:id="@+id/linearLayout4"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="24dp"
+            app:layout_constraintEnd_toStartOf="@+id/myImageView2"
+            app:layout_constraintStart_toEndOf="@+id/myImageView"
             app:layout_constraintTop_toBottomOf="@+id/topBarText">
 
             <TextView
                 android:id="@+id/totalday7"
-                android:layout_width="45dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_regular"
                 android:text="1000"
@@ -179,17 +181,19 @@
 
             <TextView
                 android:id="@+id/totalday6"
-                android:layout_width="45dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_regular"
                 android:text="1000"
                 android:textAlignment="center"
                 android:textColor="@color/grey"
-                android:textSize="12sp"/>
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/totalday5"
-                android:layout_width="45dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_regular"
                 android:text="1000"
@@ -199,17 +203,19 @@
 
             <TextView
                 android:id="@+id/totalday4"
-                android:layout_width="45dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_regular"
                 android:text="1000"
                 android:textAlignment="center"
                 android:textColor="@color/grey"
-                android:textSize="12sp"/>
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/totalday3"
-                android:layout_width="45dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_regular"
                 android:text="1000"
@@ -219,17 +225,19 @@
 
             <TextView
                 android:id="@+id/totalday2"
-                android:layout_width="45dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_regular"
                 android:text="1000"
                 android:textAlignment="center"
                 android:textColor="@color/grey"
-                android:textSize="12sp"/>
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/totalday1"
-                android:layout_width="45dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_regular"
                 android:text="1000"
@@ -240,17 +248,19 @@
 
         <LinearLayout
             android:id="@+id/linearLayout2"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginBottom="20dp"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintEnd_toStartOf="@+id/myImageView2"
+            app:layout_constraintStart_toEndOf="@+id/myImageView">
 
             <TextView
                 android:id="@+id/day7"
-                android:layout_width="45dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_regular"
                 android:text="Mon"
@@ -259,7 +269,8 @@
 
             <TextView
                 android:id="@+id/day6"
-                android:layout_width="45dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_regular"
                 android:text="Tue"
@@ -268,7 +279,8 @@
 
             <TextView
                 android:id="@+id/day5"
-                android:layout_width="45dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_regular"
                 android:text="Wed"
@@ -277,7 +289,8 @@
 
             <TextView
                 android:id="@+id/day4"
-                android:layout_width="45dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_regular"
                 android:text="Thu"
@@ -286,7 +299,8 @@
 
             <TextView
                 android:id="@+id/day3"
-                android:layout_width="45dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_regular"
                 android:text="Fri"
@@ -295,7 +309,8 @@
 
             <TextView
                 android:id="@+id/day2"
-                android:layout_width="45dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_regular"
                 android:text="Sat"
@@ -304,7 +319,8 @@
 
             <TextView
                 android:id="@+id/day1"
-                android:layout_width="45dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserratalternatess_bold"
                 android:text="Sun"
@@ -314,68 +330,119 @@
 
         <LinearLayout
             android:id="@+id/linearLayout3"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/myImageView2"
+            app:layout_constraintStart_toEndOf="@+id/myImageView"
             app:layout_constraintTop_toTopOf="parent">
 
-            <View
-                android:id="@+id/day7_bar"
-                android:layout_width="10dp"
-                android:layout_height="10dp"
-                android:layout_marginRight="35dp"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/rounded_background" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-            <View
-                android:id="@+id/day6_bar"
-                android:layout_width="10dp"
-                android:layout_height="10dp"
-                android:layout_marginRight="35dp"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/rounded_background2" />
+                <View
+                    android:id="@+id/day7_bar"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/rounded_background" />
+            </LinearLayout>
 
-            <View
-                android:id="@+id/day5_bar"
-                android:layout_width="10dp"
-                android:layout_height="10dp"
-                android:layout_marginRight="35dp"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/rounded_background3" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-            <View
-                android:id="@+id/day4_bar"
-                android:layout_width="10dp"
-                android:layout_height="10dp"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/rounded_background4" />
+                <View
+                    android:id="@+id/day6_bar"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/rounded_background2" />
+            </LinearLayout>
 
-            <View
-                android:id="@+id/day3_bar"
-                android:layout_width="10dp"
-                android:layout_height="10dp"
-                android:layout_marginLeft="35dp"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/rounded_background5" />
 
-            <View
-                android:id="@+id/day2_bar"
-                android:layout_width="10dp"
-                android:layout_height="10dp"
-                android:layout_marginLeft="35dp"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/rounded_background6" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-            <View
-                android:id="@+id/day1_bar"
-                android:layout_width="10dp"
-                android:layout_height="10dp"
-                android:layout_marginLeft="35dp"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/rounded_background7" />
+                <View
+                    android:id="@+id/day5_bar"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/rounded_background3" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/day4_bar"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:background="@drawable/rounded_background4" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/day3_bar"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/rounded_background5" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/day2_bar"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/rounded_background6" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/day1_bar"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/rounded_background7" />
+            </LinearLayout>
         </LinearLayout>
 
         <ImageView
@@ -428,9 +495,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="40dp"
         android:layout_weight="5"
-        android:orientation="vertical"
-        android:layout_marginBottom="40dp">
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"

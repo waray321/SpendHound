@@ -241,7 +241,7 @@ public class BorrowFragment extends Fragment {
                 owedTV.setBackgroundResource(R.drawable.top_round_border);
                 debtTV.setTextColor(ContextCompat.getColor(getContext(), R.color.whitest));
                 owedTV.setTextColor(ContextCompat.getColor(getContext(), R.color.darkBlue));
-                debtButtons.setVisibility(View.INVISIBLE);
+                debtButtons.setVisibility(View.GONE);
                 owedScrollView.setVisibility(View.VISIBLE);
                 debtScrollView.setVisibility(View.GONE);
                 selectAllLayout.setVisibility(View.GONE);
