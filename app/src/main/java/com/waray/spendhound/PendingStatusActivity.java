@@ -3,6 +3,8 @@ package com.waray.spendhound;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -229,7 +231,19 @@ public class PendingStatusActivity extends AppCompatActivity implements Borrower
                 borrowerListRecyclerView.setAdapter(adapter);
                 borrowerListRecyclerView.setLayoutManager(new LinearLayoutManager(PendingStatusActivity.this));
                 adapter.notifyDataSetChanged();
+
                 borrowerNum = borrowerListTransactions.size();
+                if (borrowerNum < 2){
+                    acceptAllBorrowerBtn.setEnabled(false);
+                    declineAllBorrowerBtn.setEnabled(false);
+                    acceptAllBorrowerBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(PendingStatusActivity.this, R.color.grey)));
+                    declineAllBorrowerBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(PendingStatusActivity.this, R.color.grey)));
+                } else {
+                    acceptAllBorrowerBtn.setEnabled(true);
+                    declineAllBorrowerBtn.setEnabled(true);
+                    acceptAllBorrowerBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(PendingStatusActivity.this, R.color.yellow)));
+                    declineAllBorrowerBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(PendingStatusActivity.this, R.color.red)));
+                }
             }
 
             @Override

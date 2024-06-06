@@ -191,27 +191,27 @@
                     <ScrollView
                         android:id="@+id/owedScrollView"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="4dp">
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/owedRecyclerList"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             tools:listitem="@layout/owed_row_layout" />
                     </ScrollView>
 
                     <ScrollView
                         android:id="@+id/debtScrollView"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:visibility="gone">
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/debtRecyclerList"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             tools:listitem="@layout/debt_row_layout" />
                     </ScrollView>
 
@@ -223,8 +223,8 @@
                         android:text="No Debt Data!"
                         android:textAlignment="center"
                         android:textSize="12dp"
-                        android:padding="16dp"
-                        android:visibility="gone"/>
+                        android:visibility="gone"
+                        android:padding="16dp"/>
                     <TextView
                         android:id="@+id/noOwedTextView"
                         android:layout_width="match_parent"
@@ -233,8 +233,8 @@
                         android:text="No Owed Data!"
                         android:textAlignment="center"
                         android:textSize="12dp"
-                        android:padding="16dp"
-                        android:visibility="gone"/>
+                        android:visibility="gone"
+                        android:padding="16dp"/>
 
 
                 </LinearLayout>
