@@ -156,8 +156,9 @@
             <ScrollView
                 android:id="@+id/payerListScrollView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_margin="8dp"
                 android:visibility="gone">
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -168,6 +169,7 @@
             </ScrollView>
 
             <LinearLayout
+                android:id="@+id/borrowerListBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -182,7 +184,7 @@
                     android:text="Accept All"
                     android:backgroundTint="@color/yellow"
                     android:elevation="4dp"
-                    android:textSize="11dp"
+                    android:textSize="12dp"
                     android:fontFamily="@font/montserratalternatess_regular"
                     android:textColor="@color/whitest"/>
                 <Button
@@ -192,7 +194,7 @@
                     android:layout_height="wrap_content"
                     android:text="Decline All"
                     android:backgroundTint="@color/red"
-                    android:textSize="11dp"
+                    android:textSize="12dp"
                     android:fontFamily="@font/montserratalternatess_regular"
                     android:elevation="4dp"
                     android:textColor="@color/whitest"/>
@@ -200,6 +202,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/payerListBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -219,7 +222,7 @@
                     android:fontFamily="@font/montserratalternatess_regular"
                     android:textColor="@color/whitest"/>
                 <Button
-                    android:id="@+id/denyPayerAllBtn"
+                    android:id="@+id/denyAllPayerBtn"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"

@@ -39,22 +39,23 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class PendingStatusActivity extends AppCompatActivity implements BorrowerListTransactionAdapter.OnTransactionStatusUpdatedListener {
+public class PendingStatusActivity extends AppCompatActivity implements BorrowerListTransactionAdapter.OnTransactionStatusUpdatedListener, PayerListTransactionAdapter.OnTransactionStatusUpdatedListener {
     private TextView borrowerListTV, payerListTV, allTV;
     private ScrollView borrowerListScrollView, payerListScrollView;
     private boolean borrowerPayerClicked;
-    private ImageView backBtn, borrowerImg;
-    private LinearLayout borrowerListLinearLayout, payerListLinearLayout;
-    public int borrowerNum;
+    private ImageView backBtn, borrowerImg, payerImg;
+    private LinearLayout borrowerListLinearLayout, payerListLinearLayout, borrowerListBtn, payerListBtn;
+    public int borrowerNum, payerNum;
     public String currentNickname, currentNickname2;
-    private RecyclerView borrowerListRecyclerView;
+    private RecyclerView borrowerListRecyclerView, payerListRecyclerView;
     private BorrowerListTransactionAdapter adapter;
-    private List<BorrowerListTransaction> borrowerListTransactions;
-    private List<String[]> borrowerListPath;
+    private PayerListTransactionAdapter adapterPayer;
+    private List<BorrowerListTransaction> borrowerListTransactions, payerListTransactions;
+    private List<String[]> borrowerListPath, payerListPath;
     List<BorrowerListTransaction> transactionList;
     List<String[]> pathList;
     private Context context;
-    public Button acceptAllBorrowerBtn, declineAllBorrowerBtn, acceptBorrowerBtn, declineBorrowerBtn;
+    public Button acceptAllBorrowerBtn, declineAllBorrowerBtn, acceptBorrowerBtn, declineBorrowerBtn, confirmPayerBtn,denyPayerBtn,confirmAllPayerBtn,denyAllPayerBtn;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -77,6 +78,13 @@ public class PendingStatusActivity extends AppCompatActivity implements Borrower
         acceptAllBorrowerBtn = findViewById(R.id.acceptAllBorrowerBtn);
         declineAllBorrowerBtn = findViewById(R.id.declineAllBorrowerBtn);
         allTV = findViewById(R.id.allTV);
+        payerListBtn = findViewById(R.id.payerListBtn);
+        borrowerListBtn = findViewById(R.id.borrowerListBtn);
+        payerImg = findViewById(R.id.payerImg);
+        confirmPayerBtn = findViewById(R.id.confirmPayerBtn);
+        denyPayerBtn = findViewById(R.id.denyPayerBtn);
+        confirmAllPayerBtn = findViewById(R.id.confirmAllPayerBtn);
+        denyAllPayerBtn = findViewById(R.id.denyAllPayerBtn);
 
         borrowerPayerClicked = true;
 
@@ -93,6 +101,7 @@ public class PendingStatusActivity extends AppCompatActivity implements Borrower
         });
 
         BorrowerList();
+        PayerList();
     }
 
     private void BorrowerListTVClicked() {
@@ -107,8 +116,8 @@ public class PendingStatusActivity extends AppCompatActivity implements Borrower
                 payerListScrollView.setVisibility(View.GONE);
                 borrowerListLinearLayout.setVisibility(View.VISIBLE);
                 payerListLinearLayout.setVisibility(View.GONE);
-                borrowerListScrollView.setVisibility(View.VISIBLE);
-                payerListScrollView.setVisibility(View.GONE);
+                borrowerListBtn.setVisibility(View.VISIBLE);
+                payerListBtn.setVisibility(View.GONE);
 
                 borrowerListTV.setEnabled(false);
                 payerListTV.setEnabled(true);
@@ -129,8 +138,8 @@ public class PendingStatusActivity extends AppCompatActivity implements Borrower
                 borrowerListScrollView.setVisibility(View.GONE);
                 borrowerListLinearLayout.setVisibility(View.GONE);
                 payerListLinearLayout.setVisibility(View.VISIBLE);
-                borrowerListScrollView.setVisibility(View.GONE);
-                payerListScrollView.setVisibility(View.VISIBLE);
+                borrowerListBtn.setVisibility(View.GONE);
+                payerListBtn.setVisibility(View.VISIBLE);
 
                 payerListTV.setEnabled(false);
                 borrowerListTV.setEnabled(true);
@@ -161,8 +170,7 @@ public class PendingStatusActivity extends AppCompatActivity implements Borrower
                                     if (borrowerListTransaction != null) {
                                         String status = borrowerListTransaction.getStatus();
                                         if (Objects.equals(status, "Pending Approval")) {
-                                            String borrowee = borrowerListTransaction.getBorrowee();
-                                            borrowee = currentUserStr;
+                                            String borrowee = currentUserStr;
                                             String borrowedAmountStr = borrowerListTransaction.getBorrowedAmountStr();
                                             borrowedAmountStr = "₱" + borrowedAmountStr;
                                             String date = borrowerListTransaction.getDate();
@@ -243,6 +251,119 @@ public class PendingStatusActivity extends AppCompatActivity implements Borrower
                     declineAllBorrowerBtn.setEnabled(true);
                     acceptAllBorrowerBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(PendingStatusActivity.this, R.color.yellow)));
                     declineAllBorrowerBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(PendingStatusActivity.this, R.color.red)));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("FirebaseDatabase", "Database read error: " + databaseError.getMessage());
+            }
+        });
+    }
+
+    private void PayerList() {
+        payerListTransactions = new ArrayList<>();
+        payerListPath = new ArrayList<String[]>();
+        DatabaseReference databaseReference = DeclareDatabase.getDBRefBorrows();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            MainActivity mainActivity = new MainActivity();
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot monthSnapshot : dataSnapshot.getChildren()) {
+                    String month = monthSnapshot.getKey();
+                    for (DataSnapshot daySnapshot : monthSnapshot.getChildren()) {
+                        String day = daySnapshot.getKey();
+                        for (DataSnapshot currentUserRef : daySnapshot.getChildren()) {
+                            String currentUserStr = currentUserRef.getKey();
+                            if (!Objects.equals(currentUserStr, currentNickname2)) {
+                                for (DataSnapshot timeSnapshot : currentUserRef.getChildren()) {
+                                    String time = timeSnapshot.getKey();
+                                    BorrowerListTransaction borrowerListTransaction = timeSnapshot.getValue(BorrowerListTransaction.class);
+                                    if (borrowerListTransaction != null) {
+                                        String status = borrowerListTransaction.getStatus();
+                                        if (Objects.equals(status, "Payment Pending")) {
+                                            String borrowee = currentUserStr;
+                                            String borrowedAmountStr = borrowerListTransaction.getBorrowedAmountStr();
+                                            borrowedAmountStr = "₱" + borrowedAmountStr;
+                                            String date = borrowerListTransaction.getDate();
+
+
+                                            String formatPattern = "MMMM-dd-yyyy HH:mm:ss";
+                                            long secondsSinceDate = 0;
+
+                                            try {
+                                                // Combine date and time string
+                                                String dateTime = date + " " + time;  // Assuming 'time' is in "HH:mm:ss" format
+                                                DateFormat dateFormat = new SimpleDateFormat(formatPattern, Locale.ENGLISH);
+                                                Date pastDate = dateFormat.parse(dateTime);
+
+                                                Date currentDate = new Date();
+
+                                                long timeDifferenceMillis = currentDate.getTime() - pastDate.getTime();
+
+                                                secondsSinceDate = timeDifferenceMillis / 1000;
+
+                                                String timeDifferenceStr;
+                                                // Convert seconds to appropriate units
+                                                if (secondsSinceDate >= 60 * 60 * 24 * 365) { // More than or equal to a year
+                                                    long years = secondsSinceDate / (60 * 60 * 24 * 365);
+                                                    timeDifferenceStr = years + "y";
+                                                } else if (secondsSinceDate >= 60 * 60 * 24 * 30) { // More than or equal to a month
+                                                    long months = secondsSinceDate / (60 * 60 * 24 * 30);
+                                                    timeDifferenceStr = months + "mo";
+                                                } else if (secondsSinceDate >= 60 * 60 * 24) { // More than or equal to a day
+                                                    long days = secondsSinceDate / (60 * 60 * 24);
+                                                    timeDifferenceStr = days + "d";
+                                                } else if (secondsSinceDate >= 60 * 60) { // More than or equal to an hour
+                                                    long hours = secondsSinceDate / (60 * 60);
+                                                    timeDifferenceStr = hours + "h";
+                                                } else if (secondsSinceDate >= 60) { // More than or equal to a minute
+                                                    long minutes = secondsSinceDate / 60;
+                                                    timeDifferenceStr = minutes + "m";
+                                                } else { // Less than a minute
+                                                    timeDifferenceStr = secondsSinceDate + "s";
+                                                }
+
+                                                date = timeDifferenceStr;
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
+
+                                            BorrowerListTransaction borrowerTrans = new BorrowerListTransaction(
+                                                    date,
+                                                    borrowee,
+                                                    borrowedAmountStr,
+                                                    status
+                                            );
+                                            payerListTransactions.add(borrowerTrans);
+
+                                            payerListPath.add(new String[]{month, day, currentUserStr, time});
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                adapterPayer = new PayerListTransactionAdapter(context, payerListTransactions, payerListPath, PendingStatusActivity.this,  confirmAllPayerBtn, denyAllPayerBtn);
+                payerListRecyclerView = findViewById(R.id.payerListRecyclerView);
+                payerListRecyclerView.setAdapter(adapterPayer);
+                payerListRecyclerView.setLayoutManager(new LinearLayoutManager(PendingStatusActivity.this));
+                adapterPayer.notifyDataSetChanged();
+
+                payerNum = payerListTransactions.size();
+                if (payerNum < 2){
+                    confirmAllPayerBtn.setEnabled(false);
+                    denyAllPayerBtn.setEnabled(false);
+                    confirmAllPayerBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(PendingStatusActivity.this, R.color.grey)));
+                    denyAllPayerBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(PendingStatusActivity.this, R.color.grey)));
+                } else {
+                    confirmAllPayerBtn.setEnabled(true);
+                    denyAllPayerBtn.setEnabled(true);
+                    confirmAllPayerBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(PendingStatusActivity.this, R.color.yellow)));
+                    denyAllPayerBtn.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(PendingStatusActivity.this, R.color.red)));
                 }
             }
 
