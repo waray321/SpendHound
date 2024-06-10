@@ -169,8 +169,9 @@ public class PendingStatusActivity extends AppCompatActivity implements Borrower
                                     BorrowerListTransaction borrowerListTransaction = timeSnapshot.getValue(BorrowerListTransaction.class);
                                     if (borrowerListTransaction != null) {
                                         String status = borrowerListTransaction.getStatus();
-                                        if (Objects.equals(status, "Pending Approval")) {
-                                            String borrowee = currentUserStr;
+                                        String borrowee = borrowerListTransaction.getBorrowee();
+                                        if (Objects.equals(status, "Pending Approval") && Objects.equals(borrowee, currentNickname2)) {
+                                            borrowee = currentUserStr;
                                             String borrowedAmountStr = borrowerListTransaction.getBorrowedAmountStr();
                                             borrowedAmountStr = "₱" + borrowedAmountStr;
                                             String date = borrowerListTransaction.getDate();
@@ -282,8 +283,9 @@ public class PendingStatusActivity extends AppCompatActivity implements Borrower
                                     BorrowerListTransaction borrowerListTransaction = timeSnapshot.getValue(BorrowerListTransaction.class);
                                     if (borrowerListTransaction != null) {
                                         String status = borrowerListTransaction.getStatus();
-                                        if (Objects.equals(status, "Payment Pending")) {
-                                            String borrowee = currentUserStr;
+                                        String borrowee = borrowerListTransaction.getBorrowee();
+                                        if (Objects.equals(status, "Payment Pending") && Objects.equals(borrowee, currentNickname2)) {
+                                            borrowee = currentUserStr;
                                             String borrowedAmountStr = borrowerListTransaction.getBorrowedAmountStr();
                                             borrowedAmountStr = "₱" + borrowedAmountStr;
                                             String date = borrowerListTransaction.getDate();
@@ -339,7 +341,6 @@ public class PendingStatusActivity extends AppCompatActivity implements Borrower
                                             payerListTransactions.add(borrowerTrans);
 
                                             payerListPath.add(new String[]{month, day, currentUserStr, time});
-
                                         }
                                     }
                                 }

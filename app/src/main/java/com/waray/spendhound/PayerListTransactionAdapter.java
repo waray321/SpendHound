@@ -228,7 +228,7 @@ public class PayerListTransactionAdapter extends RecyclerView.Adapter<PayerListT
 
     private void setProfileImage(ImageView imageView, String payerNameTV) {
         if (imageView == null || payerNameTV == null) {
-            Log.e("BorrowerListTransactionAdapter", "ImageView or borrowerNameTV is null.");
+            Log.e("PayerListTransactionAdapter", "ImageView or payerNameTV is null.");
             return;
         }
 
@@ -245,8 +245,12 @@ public class PayerListTransactionAdapter extends RecyclerView.Adapter<PayerListT
                             StorageReference storageRef = FirebaseStorage.getInstance().getReference("profile_images").child(userId);
                             storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                 // Check if the tag is still valid before loading the image
+                                Log.d("PayerListTransactionAdapter", "Fetched profile image URL: " + uri.toString());
                                 if (payerNameTV.equals(imageView.getTag()) && context != null) {
-                                    Glide.with(context).load(uri).placeholder(R.drawable.placeholder_profile_image).into(imageView);
+                                    Glide.with(context)
+                                            .load(uri)
+                                            .placeholder(R.drawable.placeholder_profile_image)
+                                            .into(imageView);
                                 }
                             }).addOnFailureListener(e -> {
                                 Log.e("FirebaseStorage", "Failed to get download URL: " + e.getMessage());
@@ -257,6 +261,7 @@ public class PayerListTransactionAdapter extends RecyclerView.Adapter<PayerListT
                         }
                     }
                 } else {
+                    Log.e("PayerListTransactionAdapter", "No user found with username: " + payerNameTV);
                     if (payerNameTV.equals(imageView.getTag())) {
                         imageView.setImageResource(R.drawable.placeholder_profile_image); // default image
                     }
@@ -272,4 +277,5 @@ public class PayerListTransactionAdapter extends RecyclerView.Adapter<PayerListT
             }
         });
     }
+
 }
