@@ -37,23 +37,14 @@ public class PayerListTransactionAdapter extends RecyclerView.Adapter<PayerListT
         void onTransactionStatusUpdated();
     }
 
-    public PayerListTransactionAdapter(Context context, List<BorrowerListTransaction> transactionList, List<String[]> pathList, PendingStatusActivity statusUpdatedListener, Button confirmAllPayerBtn, Button denyAllPayerBtn) {
+    public PayerListTransactionAdapter(Context context, List<BorrowerListTransaction> transactionList, List<String[]> pathList, OnTransactionStatusUpdatedListener statusUpdatedListener, Button confirmAllPayerBtn, Button denyAllPayerBtn) {
         this.context = context;
         this.transactionList = transactionList;
         this.pathList = pathList;
         this.statusUpdatedListener = statusUpdatedListener;
 
-        if (confirmAllPayerBtn != null) {
-            confirmAllPayerBtn.setOnClickListener(v -> handleAllTransactions("Confirm"));
-        } else {
-            Log.e("PayerListTransactionAdapter", "confirmAllPayerBtn is null");
-        }
-
-        if (denyAllPayerBtn != null) {
-            denyAllPayerBtn.setOnClickListener(v -> handleAllTransactions("Deny"));
-        } else {
-            Log.e("PayerListTransactionAdapter", "denyAllPayerBtn is null");
-        }
+        confirmAllPayerBtn.setOnClickListener(v -> handleAllTransactions("Confirm"));
+        denyAllPayerBtn.setOnClickListener(v -> handleAllTransactions("Deny"));
     }
 
     public BorrowerListTransaction getBorrowerListTransaction(int position) {
@@ -76,22 +67,13 @@ public class PayerListTransactionAdapter extends RecyclerView.Adapter<PayerListT
 
         // Set a placeholder image and a tag for the ImageView
         holder.payerImg.setImageResource(R.drawable.placeholder_profile_image);
-        holder.payerNameTV.setTag(transaction.getBorrowee());
+        holder.payerImg.setTag(transaction.getBorrowee());
 
         // Load the profile image asynchronously
         setProfileImage(holder.payerImg, transaction.getBorrowee());
 
-        if (holder.confirmAllPayerBtn != null) {
-            holder.confirmAllPayerBtn.setOnClickListener(v -> showConfirmationDialog("Confirm", transaction, pathList.get(position), position));
-        } else {
-            Log.e("PayerListTransactionAdapter", "confirmAllPayerBtn is null in onBindViewHolder");
-        }
-
-        if (holder.denyAllPayerBtn != null) {
-            holder.denyAllPayerBtn.setOnClickListener(v -> showConfirmationDialog("Deny", transaction, pathList.get(position), position));
-        } else {
-            Log.e("PayerListTransactionAdapter", "denyAllPayerBtn is null in onBindViewHolder");
-        }
+        holder.confirmPayerBtn.setOnClickListener(v -> showConfirmationDialog("Confirm", transaction, pathList.get(position), position));
+        holder.denyPayerBtn.setOnClickListener(v -> showConfirmationDialog("Deny", transaction, pathList.get(position), position));
     }
 
     @Override
@@ -115,10 +97,10 @@ public class PayerListTransactionAdapter extends RecyclerView.Adapter<PayerListT
         AlertDialog dialog = builder.create();
 
         payNowConfirmBtn.setOnClickListener(v -> {
-            if ("Accept".equalsIgnoreCase(action)) {
-                updateTransactionStatus(transaction, path, position, "Unpaid");
-            } else if ("Decline".equalsIgnoreCase(action)) {
-                updateTransactionStatus(transaction, path, position, "Declined");
+            if ("Confirm".equalsIgnoreCase(action)) {
+                updateTransactionStatus(transaction, path, position, "Paid");
+            } else if ("Deny".equalsIgnoreCase(action)) {
+                updateTransactionStatus(transaction, path, position, "Payment Denied");
             }
             dialog.dismiss();
         });
@@ -150,7 +132,7 @@ public class PayerListTransactionAdapter extends RecyclerView.Adapter<PayerListT
         public TextView hoursAgoTV;
         public TextView payerNameTV;
         public TextView amountPaidTV;
-        public Button confirmPayerBtn, denyPayerBtn, confirmAllPayerBtn, denyAllPayerBtn;
+        public Button confirmPayerBtn, denyPayerBtn;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -160,16 +142,14 @@ public class PayerListTransactionAdapter extends RecyclerView.Adapter<PayerListT
             amountPaidTV = itemView.findViewById(R.id.amountPaidTV);
             confirmPayerBtn = itemView.findViewById(R.id.confirmPayerBtn);
             denyPayerBtn = itemView.findViewById(R.id.denyPayerBtn);
-            confirmAllPayerBtn = itemView.findViewById(R.id.confirmAllPayerBtn);
-            denyAllPayerBtn = itemView.findViewById(R.id.denyAllPayerBtn);
         }
     }
 
     private void handleAllTransactions(String action) {
-        showConfirmationDialog(action, transactionList.get(0), pathList.get(0), 0, true);
+        showAllConfirmationDialog(action);
     }
 
-    private void showConfirmationDialog(String action, BorrowerListTransaction transaction, String[] path, int position, boolean isAll) {
+    private void showAllConfirmationDialog(String action) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.dialog_borrowerlistconfirmation, null);
 
@@ -185,15 +165,7 @@ public class PayerListTransactionAdapter extends RecyclerView.Adapter<PayerListT
         AlertDialog dialog = builder.create();
 
         payNowConfirmBtn.setOnClickListener(v -> {
-            if (isAll) {
-                updateAllTransactionStatus(action.equals("Confirm") ? "Paid" : "Denied Payment");
-            } else {
-                if ("Confirm".equalsIgnoreCase(action)) {
-                    updateTransactionStatus(transaction, path, position, "Paid");
-                } else if ("Deny".equalsIgnoreCase(action)) {
-                    updateTransactionStatus(transaction, path, position, "Denied Payment");
-                }
-            }
+            updateAllTransactionStatus(action.equals("Confirm") ? "Paid" : "Payment Denied");
             dialog.dismiss();
         });
 
@@ -245,12 +217,8 @@ public class PayerListTransactionAdapter extends RecyclerView.Adapter<PayerListT
                             StorageReference storageRef = FirebaseStorage.getInstance().getReference("profile_images").child(userId);
                             storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                 // Check if the tag is still valid before loading the image
-                                Log.d("PayerListTransactionAdapter", "Fetched profile image URL: " + uri.toString());
                                 if (payerNameTV.equals(imageView.getTag()) && context != null) {
-                                    Glide.with(context)
-                                            .load(uri)
-                                            .placeholder(R.drawable.placeholder_profile_image)
-                                            .into(imageView);
+                                    Glide.with(context).load(uri).placeholder(R.drawable.placeholder_profile_image).into(imageView);
                                 }
                             }).addOnFailureListener(e -> {
                                 Log.e("FirebaseStorage", "Failed to get download URL: " + e.getMessage());
@@ -277,5 +245,4 @@ public class PayerListTransactionAdapter extends RecyclerView.Adapter<PayerListT
             }
         });
     }
-
 }

@@ -369,7 +369,8 @@ public class MainActivity extends AppCompatActivity {
                                     BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
                                     if (borrowTransaction != null) {
                                         String status = borrowTransaction.getStatus();
-                                        if (!Objects.equals(status, "Pending Approval") && !Objects.equals(status, "Declined")) {
+                                        if (!Objects.equals(status, "Pending Approval") && !Objects.equals(status, "Declined")
+                                                && !Objects.equals(status, "Payment Pending") && !Objects.equals(status, "Payment Denied")) {
                                             if (Objects.equals("All", selectedStatus)) {
                                                 addDebtTransactionToList(borrowTransaction);
                                             } else if (Objects.equals(status, selectedStatus)) {
@@ -439,7 +440,8 @@ public class MainActivity extends AppCompatActivity {
                                     BorrowTransaction borrowTransaction = timeSnapshot.getValue(BorrowTransaction.class);
                                     if (borrowTransaction != null) {
                                         String status = borrowTransaction.getStatus();
-                                        if (!Objects.equals(status, "Pending Approval") && !Objects.equals(status, "Declined")) {
+                                        if (!Objects.equals(status, "Pending Approval") && !Objects.equals(status, "Declined")
+                                                && !Objects.equals(status, "Payment Pending") && !Objects.equals(status, "Payment Denied")) {
                                             if (Objects.equals("All", selectedStatus)) {
                                                 addDebtTransactionToList(borrowTransaction);
                                             } else if (Objects.equals(status, selectedStatus)) {
@@ -528,7 +530,8 @@ public class MainActivity extends AppCompatActivity {
                                     if (borrowTransaction != null) {
                                         String borrower = borrowTransaction.getBorrowee();
                                         String status = borrowTransaction.getStatus();
-                                        if (!Objects.equals(status, "Pending Approval") && !Objects.equals(status, "Declined")){
+                                        if (!Objects.equals(status, "Pending Approval") && !Objects.equals(status, "Declined")
+                                                && !Objects.equals(status, "Payment Pending") && !Objects.equals(status, "Payment Denied")){
                                             if (Objects.equals(borrower, currentNickname) && Objects.equals("All", selectedStatus)) {
                                                 addOwedTransactionToList(borrowTransaction, currentUserStr);
                                             } else if (Objects.equals(borrower, currentNickname) && Objects.equals(status, selectedStatus)) {
@@ -603,7 +606,8 @@ public class MainActivity extends AppCompatActivity {
                                     if (borrowTransaction != null) {
                                         String borrower = borrowTransaction.getBorrowee();
                                         String status = borrowTransaction.getStatus();
-                                        if (!Objects.equals(status, "Pending Approval") && !Objects.equals(status, "Declined")) {
+                                        if (!Objects.equals(status, "Pending Approval") && !Objects.equals(status, "Declined")
+                                                && !Objects.equals(status, "Payment Pending") && !Objects.equals(status, "Payment Denied")) {
                                             if (Objects.equals(borrower, currentNickname) && Objects.equals("All", selectedStatus)) {
                                                 addOwedTransactionToList(borrowTransaction, currentUserStr);
                                             } else if (Objects.equals(borrower, currentNickname) && Objects.equals(status, selectedStatus)) {

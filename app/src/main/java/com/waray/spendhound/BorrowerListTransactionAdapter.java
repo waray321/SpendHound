@@ -148,10 +148,10 @@ public class BorrowerListTransactionAdapter extends RecyclerView.Adapter<Borrowe
     }
 
     private void handleAllTransactions(String action) {
-        showConfirmationDialog(action, transactionList.get(0), pathList.get(0), 0, true);
+        showAllConfirmationDialog(action, transactionList.get(0), pathList.get(0), 0, true);
     }
 
-    private void showConfirmationDialog(String action, BorrowerListTransaction transaction, String[] path, int position, boolean isAll) {
+    private void showAllConfirmationDialog(String action, BorrowerListTransaction transaction, String[] path, int position, boolean isAll) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.dialog_borrowerlistconfirmation, null);
 
