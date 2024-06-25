@@ -378,36 +378,43 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                         }
                                     }
+
+                                    // Sort debtList by date in descending order
+                                    Collections.sort(debtList, new Comparator<BorrowTransaction>() {
+                                        SimpleDateFormat format = new SimpleDateFormat("MMM-dd-yyyy", Locale.ENGLISH);
+
+                                        @Override
+                                        public int compare(BorrowTransaction o1, BorrowTransaction o2) {
+                                            try {
+                                                Date date1 = format.parse(o1.getDate());
+                                                Date date2 = format.parse(o2.getDate());
+                                                return date2.compareTo(date1); // For descending order
+                                            } catch (ParseException e) {
+                                                throw new RuntimeException(e);
+                                            }
+                                        }
+                                    });
+
+                                    // To Show Debt List without Checkbox
+                                    RecyclerView recyclerView = findViewById(R.id.debtRecyclerList);
+                                    RecyclerView.Adapter<DebtTransactionAdapter.ViewHolder> adapter = new DebtTransactionAdapter(debtList);
+                                    recyclerView.setAdapter(adapter);
+                                    adapter.notifyDataSetChanged();
+                                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+                                    recyclerView.setLayoutManager(layoutManager);
+
+                                    // To Show Debt List with Checkbox
+                                    RecyclerView recyclerViewCheckBox = findViewById(R.id.debtCheckboxRecyclerList);
+                                    RecyclerView.Adapter<BorrowTransactionAdapter.ViewHolder> adapterCheckbox = new BorrowTransactionAdapter(debtList);
+                                    recyclerViewCheckBox.setAdapter(adapterCheckbox);
+                                    adapterCheckbox.notifyDataSetChanged();
+                                    RecyclerView.LayoutManager layoutManagerCheckbox = new LinearLayoutManager(MainActivity.this);
+                                    recyclerViewCheckBox.setLayoutManager(layoutManagerCheckbox);
                                 }
                             }
                         }
                     }
                 }
-
-                // Sort debtList by date in descending order
-                Collections.sort(debtList, new Comparator<BorrowTransaction>() {
-                    SimpleDateFormat format = new SimpleDateFormat("MMM-dd-yyyy", Locale.ENGLISH);
-
-                    @Override
-                    public int compare(BorrowTransaction o1, BorrowTransaction o2) {
-                        try {
-                            Date date1 = format.parse(o1.getDate());
-                            Date date2 = format.parse(o2.getDate());
-                            return date2.compareTo(date1); // For descending order
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
-
-                RecyclerView recyclerView = findViewById(R.id.debtRecyclerList);
-                RecyclerView.Adapter<BorrowTransactionAdapter.ViewHolder> adapter = new BorrowTransactionAdapter(debtList);
-                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-
-                // Set the RecyclerView.LayoutManager
-                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
-                recyclerView.setLayoutManager(layoutManager);
 
                 debtNum = debtList.size();
                 callback.onDebtNumReceived(debtNum);
@@ -451,33 +458,40 @@ public class MainActivity extends AppCompatActivity {
                                     }else {
                                         showToast("Borrow Transaction has no data");
                                     }
+                                    Collections.sort(debtList, new Comparator<BorrowTransaction>() {
+                                        SimpleDateFormat format = new SimpleDateFormat("MMM-dd-yyyy", Locale.ENGLISH);
+
+                                        @Override
+                                        public int compare(BorrowTransaction o1, BorrowTransaction o2) {
+                                            try {
+                                                Date date1 = format.parse(o1.getDate());
+                                                Date date2 = format.parse(o2.getDate());
+                                                return date2.compareTo(date1); // For descending order
+                                            } catch (ParseException e) {
+                                                throw new RuntimeException(e);
+                                            }
+                                        }
+                                    });
+
+                                    // To Show Debt List without Checkbox
                                     RecyclerView recyclerView = findViewById(R.id.debtRecyclerList);
-                                    RecyclerView.Adapter<BorrowTransactionAdapter.ViewHolder> adapter = new BorrowTransactionAdapter(debtList);
+                                    RecyclerView.Adapter<DebtTransactionAdapter.ViewHolder> adapter = new DebtTransactionAdapter(debtList);
                                     recyclerView.setAdapter(adapter);
                                     adapter.notifyDataSetChanged();
-
-                                    // Set the RecyclerView.LayoutManager
                                     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
                                     recyclerView.setLayoutManager(layoutManager);
+
+                                    // To Show Debt List with Checkbox
+                                    RecyclerView recyclerViewCheckBox = findViewById(R.id.debtCheckboxRecyclerList);
+                                    RecyclerView.Adapter<BorrowTransactionAdapter.ViewHolder> adapterCheckbox = new BorrowTransactionAdapter(debtList);
+                                    recyclerViewCheckBox.setAdapter(adapterCheckbox);
+                                    adapterCheckbox.notifyDataSetChanged();
+                                    RecyclerView.LayoutManager layoutManagerCheckbox = new LinearLayoutManager(MainActivity.this);
+                                    recyclerViewCheckBox.setLayoutManager(layoutManagerCheckbox);
                                 }
                             }
                         }
                     }
-
-                    Collections.sort(debtList, new Comparator<BorrowTransaction>() {
-                        SimpleDateFormat format = new SimpleDateFormat("MMM-dd-yyyy", Locale.ENGLISH);
-
-                        @Override
-                        public int compare(BorrowTransaction o1, BorrowTransaction o2) {
-                            try {
-                                Date date1 = format.parse(o1.getDate());
-                                Date date2 = format.parse(o2.getDate());
-                                return date2.compareTo(date1); // For descending order
-                            } catch (ParseException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    });
 
                     debtNum = debtList.size();
                     callback.onDebtNumReceived(debtNum);
@@ -719,4 +733,5 @@ public class MainActivity extends AppCompatActivity {
     public void showToast(String message) {
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
     }
+
 }

@@ -23,9 +23,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.waray.spendhound.ui.borrow.BorrowFragment;
 
@@ -40,10 +42,11 @@ public class BorrowNowActivity extends AppCompatActivity {
     public List<String> usernames;
     private Spinner borrowSpinner;
     private TextView date, borrower;
-    private String currentNickname, borrowee, currentDate, status, borrowedAmountSTR;
+    public String currentNickname, lender, currentDate, status, borrowedAmountSTR, borrowerID, lenderID;
     private Integer borrowedAmount = 0;
     private ProgressBar progressBar;
     private Button borrowBtn;
+    private DatabaseReference usersRef;
 
 
     @SuppressLint("MissingInflatedId")
@@ -145,6 +148,8 @@ public class BorrowNowActivity extends AppCompatActivity {
     }
 
     private void addBorrowTransaction() {
+
+
         // Get the current date and time
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM-yyyy", Locale.getDefault());
@@ -161,9 +166,27 @@ public class BorrowNowActivity extends AppCompatActivity {
         DatabaseReference currentUserRef = dayRef.child(currentNickname);
         DatabaseReference timestampRef = currentUserRef.child(currentTime);
 
-        BorrowTransaction borrowTransaction = new BorrowTransaction(currentDate, borrowee, borrowedAmountSTR, status);
+        // Get the current authenticated user
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            if (lender != null) {
+                String getBorrowerID = currentUser.getUid();
+                usersRef = FirebaseDatabase.getInstance().getReference("users");
+                borrowerID = getBorrowerID;
 
-        timestampRef.setValue(borrowTransaction).addOnSuccessListener(new OnSuccessListener<Void>() {
+                getUserIDByName(lender, new UserIDCallback() {
+                    @Override
+                    public void onUserIDRetrieved(String getLenderID) {
+                        lenderID = getLenderID;
+                        Toast.makeText(BorrowNowActivity.this, "Lender ID: " + lenderID, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
+
+        BorrowNowTransaction borrowNowTransaction = new BorrowNowTransaction(borrowerID, lenderID, currentDate, lender, borrowedAmountSTR, status);
+
+        timestampRef.setValue(borrowNowTransaction).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
                 Toast.makeText(BorrowNowActivity.this, "Borrowed successfully", Toast.LENGTH_SHORT).show();
@@ -192,9 +215,9 @@ public class BorrowNowActivity extends AppCompatActivity {
                     borrowedAmountSTR = String.valueOf(borrowedAmount);
                 }
                 progressBar.setVisibility(View.VISIBLE);
-                borrowee = borrowSpinner.getSelectedItem().toString();
+                lender = borrowSpinner.getSelectedItem().toString();
 
-                if ("Select a lender:".equals(borrowee) || borrowedAmount == 0) {
+                if ("Select a lender:".equals(lender) || borrowedAmount == 0) {
                     Toast.makeText(BorrowNowActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.GONE);
                 } else {
@@ -227,6 +250,32 @@ public class BorrowNowActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    public void getUserIDByName(String name, UserIDCallback callback) {
+
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    String userName = userSnapshot.child("username").getValue(String.class);
+                    if (name.equals(userName)) {
+                        lenderID = userSnapshot.getKey();
+                        callback.onUserIDRetrieved(lenderID);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("FirebaseDatabase", "Database error: " + databaseError.getMessage());
+            }
+        });
+    }
+
+    public interface UserIDCallback {
+        void onUserIDRetrieved(String getLenderID);
     }
 
     private void hideKeyboard(EditText editText) {

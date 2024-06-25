@@ -56,15 +56,15 @@ public class BorrowFragment extends Fragment {
 
     private Spinner monthYearSpinner, statusSpinner;
     public List<String> debtSortedMonths, owedSortedMonths;
-    private Button borrowNowBtn, payNowBtn, pendingStatusBtn;
+    private Button borrowNowBtn, payNowBtn, pendingStatusBtn, debtSelectBtn, debtCancelPayBtn;
     public TextView owedTV, debtTV, noOwedTextView, noDebtTextView;
-    private LinearLayout debtButtons, selectAllLayout;
-    private ScrollView debtScrollView, owedScrollView;
+    private LinearLayout debtButtons, selectAllLayout, borrowFiltersLayout;
+    private ScrollView debtScrollView, owedScrollView, debtCheckboxScrollView;
     public String selectedMonth, selectedStatus;
     private boolean owedDebtCLicked;
     public String currentNickname = "";
-    private CheckBox payCheckBox;
-    private RecyclerView debtRecyclerList;
+    private CheckBox payCheckBox, debtCheckboxes;
+    private RecyclerView debtRecyclerList, debtCheckboxRecyclerList;
     private BorrowTransactionAdapter adapter;
     private CheckBox payAllCheckBox;
 
@@ -85,10 +85,16 @@ public class BorrowFragment extends Fragment {
         noDebtTextView = view.findViewById(R.id.noDebtTextView);
         payCheckBox = view.findViewById(R.id.payCheckBox);
         debtRecyclerList = view.findViewById(R.id.debtRecyclerList);
+        debtCheckboxRecyclerList = view.findViewById(R.id.debtCheckboxRecyclerList);
         payNowBtn = view.findViewById(R.id.payNowBtn);
         selectAllLayout = view.findViewById(R.id.selectAllLayout);
         payAllCheckBox = view.findViewById(R.id.payAllCheckBox);
         pendingStatusBtn = view.findViewById(R.id.pendingStatusBtn);
+        debtSelectBtn = view.findViewById(R.id.debtSelectBtn);
+        debtCheckboxes = view.findViewById(R.id.debtCheckboxes);
+        borrowFiltersLayout = view.findViewById(R.id.borrowFiltersLayout);
+        debtCheckboxScrollView = view.findViewById(R.id.debtCheckboxScrollView);
+        debtCancelPayBtn = view.findViewById(R.id.debtCancelPayBtn);
         owedDebtCLicked = true;
 
 
@@ -99,9 +105,11 @@ public class BorrowFragment extends Fragment {
         OwedMonthlyFilterList();
         monthFilterSelected();
         statusFilterSelected();
-        payNowButton();
+        DebtSelectClicked();
         BorrowStatusItems();
         PendingStatusButton();
+        PayNowClicked();
+        CancelPayBtnClicked();
 
         selectAllLayout.setVisibility(View.GONE);
 
@@ -245,6 +253,7 @@ public class BorrowFragment extends Fragment {
                 debtButtons.setVisibility(View.GONE);
                 owedScrollView.setVisibility(View.VISIBLE);
                 debtScrollView.setVisibility(View.GONE);
+                debtCheckboxScrollView.setVisibility(View.GONE);
                 selectAllLayout.setVisibility(View.GONE);
                 pendingStatusBtn.setVisibility(View.VISIBLE);
 
@@ -270,8 +279,13 @@ public class BorrowFragment extends Fragment {
                 debtButtons.setVisibility(View.VISIBLE);
                 owedScrollView.setVisibility(View.GONE);
                 debtScrollView.setVisibility(View.VISIBLE);
-                selectAllLayout.setVisibility(View.VISIBLE);
+                debtCheckboxScrollView.setVisibility(View.GONE);
+                selectAllLayout.setVisibility(View.GONE);
                 pendingStatusBtn.setVisibility(View.GONE);
+                debtSelectBtn.setVisibility(View.GONE);
+                debtCancelPayBtn.setVisibility(View.GONE);
+                payNowBtn.setVisibility(View.VISIBLE);
+                borrowNowBtn.setVisibility(View.VISIBLE);
 
                 debtTV.setEnabled(false);
                 owedTV.setEnabled(true);
@@ -280,6 +294,37 @@ public class BorrowFragment extends Fragment {
                 monthYearSpinner.setSelection(0);
                 statusSpinner.setSelection(0);
                 DebtMonthlyFilterList();
+            }
+        });
+    }
+
+    private void PayNowClicked() {
+        payNowBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectAllLayout.setVisibility(View.VISIBLE);
+                debtSelectBtn.setVisibility(View.VISIBLE);
+                debtCancelPayBtn.setVisibility(View.VISIBLE);
+                payNowBtn.setVisibility(View.GONE);
+                debtScrollView.setVisibility(View.GONE);
+                debtCheckboxScrollView.setVisibility(View.VISIBLE);
+                borrowNowBtn.setVisibility(View.GONE);
+                CheckboxStatus();
+            }
+        });
+    }
+
+    private void CancelPayBtnClicked(){
+        debtCancelPayBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectAllLayout.setVisibility(View.GONE);
+                debtSelectBtn.setVisibility(View.GONE);
+                debtCancelPayBtn.setVisibility(View.GONE);
+                payNowBtn.setVisibility(View.VISIBLE);
+                debtScrollView.setVisibility(View.VISIBLE);
+                debtCheckboxScrollView.setVisibility(View.GONE);
+                borrowNowBtn.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -426,6 +471,37 @@ public class BorrowFragment extends Fragment {
         statusSpinner.setAdapter(adapter);
     }
 
+    private void CheckboxStatus() {
+        String[] transactionTypes = getResources().getStringArray(R.array.checkboxStatus_String);
+        statusSpinner.setBackgroundResource(R.drawable.transparent_background);
+
+        // Create a custom adapter using ArrayAdapter<String>
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_item_status, R.id.status, Arrays.asList(transactionTypes)) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView textView = view.findViewById(R.id.status);
+                // Set the text for the spinner item
+                textView.setText(transactionTypes[position]);
+                return view;
+            }
+
+            @Override
+            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                // Inflate custom layout for drop-down items
+                View view = LayoutInflater.from(getContext()).inflate(R.layout.spinner_item_status, parent, false);
+                TextView textView = view.findViewById(R.id.status);
+                // Set the text for the spinner item
+                textView.setText(transactionTypes[position]);
+                return view;
+            }
+        };
+
+        // Set the custom adapter to the spinner
+        statusSpinner.setAdapter(adapter);
+    }
+
     public void OwedSize(int owedNum) {
         if (owedNum==0){
             noOwedTextView.setVisibility(View.VISIBLE);
@@ -448,11 +524,11 @@ public class BorrowFragment extends Fragment {
         }
     }
 
-    private void payNowButton(){
-        payNowBtn.setOnClickListener(new View.OnClickListener() {
+    private void DebtSelectClicked(){
+        debtSelectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BorrowTransactionAdapter adapter = (BorrowTransactionAdapter) debtRecyclerList.getAdapter();
+                BorrowTransactionAdapter adapter = (BorrowTransactionAdapter) debtCheckboxRecyclerList.getAdapter();
                 if (adapter != null) {
                     ArrayList<Integer> checkedPositions = adapter.getCheckedPositions();
                     if (!checkedPositions.isEmpty()) {
@@ -472,7 +548,7 @@ public class BorrowFragment extends Fragment {
         payAllCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                BorrowTransactionAdapter adapter = (BorrowTransactionAdapter) debtRecyclerList.getAdapter();
+                BorrowTransactionAdapter adapter = (BorrowTransactionAdapter) debtCheckboxRecyclerList.getAdapter();
                 if (adapter != null) {
                     if (isChecked) {
                         adapter.selectAll();
@@ -483,6 +559,7 @@ public class BorrowFragment extends Fragment {
             }
         });
     }
+
 
     private void showCheckedTransactionsDialog(ArrayList<BorrowTransaction> checkedTransactions) {
         // Create a dialog

@@ -31,4 +31,9 @@
         <item>Paid</item>
         <item>Paid Partially</item>
     </string-array>
+
+    <string-array name="checkboxStatus_String">
+        <item>Unpaid</item>
+        <item>Paid Partially</item>
+    </string-array>
 </resources>

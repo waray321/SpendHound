@@ -33,7 +33,7 @@
                     android:textSize="12dp" />
 
                 <TextView
-                    android:id="@+id/debtDateTV"
+                    android:id="@+id/cbDebtDateTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/montserratalternatess_regular"
@@ -57,7 +57,7 @@
                     android:textSize="12dp" />
 
                 <TextView
-                    android:id="@+id/debtBorroweeTV"
+                    android:id="@+id/cbDebtBorroweeTV"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -82,7 +82,7 @@
                     android:textSize="12dp" />
 
                 <TextView
-                    android:id="@+id/debtAmountBorrowedTV"
+                    android:id="@+id/cbDebtAmountBorrowedTV"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -108,7 +108,7 @@
                     android:textSize="12dp" />
 
                 <TextView
-                    android:id="@+id/debtStatusTV"
+                    android:id="@+id/cbDebtStatusTV"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -118,6 +118,22 @@
                     android:textColor="@color/red"
                     android:textSize="12dp" />
             </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/debtCheckboxes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <CheckBox
+                android:id="@+id/payCheckBox"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center" />
+
         </LinearLayout>
     </LinearLayout>
 

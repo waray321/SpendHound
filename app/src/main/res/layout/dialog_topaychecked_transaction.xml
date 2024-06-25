@@ -57,27 +57,27 @@
         android:layout_marginTop="16dp" >
 
         <Button
-            android:id="@+id/payNowConfirmBtn"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/yellow"
-            android:elevation="4dp"
-            android:padding="12dp"
-            android:layout_marginRight="8dp"
-            android:text="Confirm"
-            android:layout_gravity="end"/>
-
-        <Button
             android:id="@+id/closeButton"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/red"
             android:elevation="4dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:padding="12dp"
-            android:text="Cancel"
-            android:layout_gravity="end"/>
+            android:text="Cancel"/>
+
+        <Button
+            android:id="@+id/payNowConfirmBtn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/yellow"
+            android:layout_marginLeft="8dp"
+            android:elevation="4dp"
+            android:padding="12dp"
+            android:text="Pay Now"/>
+
+
     </LinearLayout>
 </LinearLayout>

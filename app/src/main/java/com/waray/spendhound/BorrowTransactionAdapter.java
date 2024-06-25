@@ -33,7 +33,7 @@ public class BorrowTransactionAdapter extends RecyclerView.Adapter<BorrowTransac
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.debt_row_layout, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.debt_rowcheckbox_layout, parent, false);
         return new ViewHolder(itemView);
     }
 
@@ -42,10 +42,10 @@ public class BorrowTransactionAdapter extends RecyclerView.Adapter<BorrowTransac
         BorrowTransaction transaction = borrowTransactionList.get(position);
 
         // Bind data to the ViewHolder's views
-        holder.debtDateTV.setText(transaction.getDate());
-        holder.debtBorroweeTV.setText(transaction.getBorrowee());
-        holder.debtAmountBorrowedTV.setText(transaction.getBorrowedAmountStr());
-        holder.debtStatusTV.setText(transaction.getStatus());
+        holder.cbDebtDateTV.setText(transaction.getDate());
+        holder.cbDebtBorroweeTV.setText(transaction.getBorrowee());
+        holder.cbDebtAmountBorrowedTV.setText(transaction.getBorrowedAmountStr());
+        holder.cbDebtStatusTV.setText(transaction.getStatus());
 
         // Set click listener for payCheckBox
         holder.payCheckBox.setOnCheckedChangeListener(null); // To prevent triggering listener for recycled views
@@ -89,19 +89,19 @@ public class BorrowTransactionAdapter extends RecyclerView.Adapter<BorrowTransac
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView debtDateTV;
-        public TextView debtBorroweeTV;
-        public TextView debtAmountBorrowedTV;
-        public TextView debtStatusTV;
+        public TextView cbDebtDateTV;
+        public TextView cbDebtBorroweeTV;
+        public TextView cbDebtAmountBorrowedTV;
+        public TextView cbDebtStatusTV;
         public CheckBox payCheckBox;
         public Button payNowBtn;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            debtDateTV = itemView.findViewById(R.id.debtDateTV);
-            debtBorroweeTV = itemView.findViewById(R.id.debtBorroweeTV);
-            debtAmountBorrowedTV = itemView.findViewById(R.id.debtAmountBorrowedTV);
-            debtStatusTV = itemView.findViewById(R.id.debtStatusTV);
+            cbDebtDateTV = itemView.findViewById(R.id.cbDebtDateTV);
+            cbDebtBorroweeTV = itemView.findViewById(R.id.cbDebtBorroweeTV);
+            cbDebtAmountBorrowedTV = itemView.findViewById(R.id.cbDebtAmountBorrowedTV);
+            cbDebtStatusTV = itemView.findViewById(R.id.cbDebtStatusTV);
             payCheckBox = itemView.findViewById(R.id.payCheckBox);
             payNowBtn = itemView.findViewById(R.id.payNowBtn);
         }

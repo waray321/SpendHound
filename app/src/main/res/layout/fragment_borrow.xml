@@ -102,6 +102,7 @@
                     android:orientation="vertical">
 
                     <LinearLayout
+                        android:id="@+id/borrowFiltersLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -158,7 +159,8 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:visibility="gone">
 
                             <TextView
                                 android:layout_width="match_parent"
@@ -212,7 +214,22 @@
                             android:id="@+id/debtRecyclerList"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            tools:listitem="@layout/debt_row_layout" />
+                            tools:listitem="@layout/debt_row_layout"/>
+
+                    </ScrollView>
+
+                    <ScrollView
+                        android:id="@+id/debtCheckboxScrollView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:visibility="gone">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/debtCheckboxRecyclerList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:listitem="@layout/debt_rowcheckbox_layout"/>
                     </ScrollView>
 
                     <TextView
@@ -302,6 +319,7 @@
                 android:text="Borrow Now"
                 android:textColor="@color/whitest" />
 
+
             <Button
                 android:id="@+id/payNowBtn"
                 android:layout_width="0dp"
@@ -316,6 +334,32 @@
                 android:textColor="@color/whitest" />
 
             <Button
+                android:id="@+id/debtCancelPayBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/red"
+                android:elevation="4dp"
+                android:fontFamily="@font/montserratalternatess_bold"
+                android:paddingVertical="16dp"
+                android:text="Cancel"
+                android:textColor="@color/whitest" />
+
+            <Button
+                android:id="@+id/debtSelectBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/yellow"
+                android:elevation="4dp"
+                android:fontFamily="@font/montserratalternatess_bold"
+                android:paddingVertical="16dp"
+                android:text="Select"
+                android:textColor="@color/whitest" />
+
+            <!--<Button
                 android:id="@+id/cancelNowBtn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -327,7 +371,7 @@
                 android:paddingVertical="16dp"
                 android:text="Cancel"
                 android:visibility="gone"
-                android:textColor="@color/whitest" />
+                android:textColor="@color/whitest" />-->
         </LinearLayout>
 
         <Button
