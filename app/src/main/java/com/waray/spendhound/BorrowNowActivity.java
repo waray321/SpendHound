@@ -178,27 +178,25 @@ public class BorrowNowActivity extends AppCompatActivity {
                     @Override
                     public void onUserIDRetrieved(String getLenderID) {
                         lenderID = getLenderID;
-                        Toast.makeText(BorrowNowActivity.this, "Lender ID: " + lenderID, Toast.LENGTH_SHORT).show();
+                        BorrowNowTransaction borrowNowTransaction = new BorrowNowTransaction(borrowerID, lenderID, currentDate, lender, borrowedAmountSTR, status);
+
+                        timestampRef.setValue(borrowNowTransaction).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Toast.makeText(BorrowNowActivity.this, "Borrowed successfully", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(BorrowNowActivity.this, BorrowFragment.class);
+                                startActivity(intent);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(BorrowNowActivity.this, "Failed to Borrow", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
             }
         }
-
-        BorrowNowTransaction borrowNowTransaction = new BorrowNowTransaction(borrowerID, lenderID, currentDate, lender, borrowedAmountSTR, status);
-
-        timestampRef.setValue(borrowNowTransaction).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                Toast.makeText(BorrowNowActivity.this, "Borrowed successfully", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(BorrowNowActivity.this, BorrowFragment.class);
-                startActivity(intent);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(BorrowNowActivity.this, "Failed to Borrow", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void borrowBtnClicked() {
@@ -210,19 +208,19 @@ public class BorrowNowActivity extends AppCompatActivity {
                 if (!borrowedAmountStr.isEmpty()) {
                     borrowedAmount = Integer.parseInt(borrowedAmountStr);
                     borrowedAmountSTR = String.valueOf(borrowedAmount);
+                    progressBar.setVisibility(View.VISIBLE);
+                    lender = borrowSpinner.getSelectedItem().toString();
+
+                    if ("Select a lender:".equals(lender) || borrowedAmount == 0) {
+                        Toast.makeText(BorrowNowActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                    } else {
+                        addBorrowTransaction();
+                        progressBar.setVisibility(View.GONE);
+                    }
                 } else {
                     borrowedAmount = 0;
                     borrowedAmountSTR = String.valueOf(borrowedAmount);
-                }
-                progressBar.setVisibility(View.VISIBLE);
-                lender = borrowSpinner.getSelectedItem().toString();
-
-                if ("Select a lender:".equals(lender) || borrowedAmount == 0) {
-                    Toast.makeText(BorrowNowActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.GONE);
-                } else {
-                    addBorrowTransaction();
-                    progressBar.setVisibility(View.GONE);
                 }
             }
         });
